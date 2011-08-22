@@ -1,0 +1,25 @@
+fcterm - advanced terminal emulator for X11
+
+Sep 2008
+Paul Fox
+
+Introduction
+
+	fcterm is an advanced terminal emulator. Originally written
+	in 1991/1992 as a color terminal replacement for the monochrome
+	xterm, it has subsequently been updated to include the following
+	features:
+
+	- Infinite scrollback
+	- Auto gzip of scrolled logs
+	- Fast: measurably faster than any other terminal emulator
+	- Features for monitoring character mode applications
+	- Integration support for the 'cr' CRiSP text editor
+	- Modern looking scrollbar operation
+
+Usage
+
+	fcterm is designed to be used as an xterm replacement - it
+	supports many of the same X resource entries as xterm,
+	including '*saveLines' to limit how much memory is used
+	for the scrollback history.

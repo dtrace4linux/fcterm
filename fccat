@@ -1,0 +1,13 @@
+#! /bin/sh
+# Author: Paul Fox
+# Tool to copy files via the logfile mechanism.
+# Logging needs to be turned on.
+esc=`perl -e 'print "\033";'`
+for i in $*
+do
+	echo "$esc]46;"
+	echo "$esc]46;/tmp/$i"
+	cat $i
+	echo "$esc]46;"
+done
+

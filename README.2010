@@ -1,0 +1,78 @@
+FCTerm is a terminal emulator, written a long time ago (circa 1991)
+to act as a color terminal emulator, back in the days where a 50MHz Sparc
+CPU or a 50MHz 386 was state of the art, and the only xterm available
+didnt understand color.
+
+It has been my only terminal emulator in all this time. Originally an
+experiment in learning X11 programming - it evolved into code which
+drives the CRiSP editor. (CRiSP took an alternate evolution 
+which involved writing its own widget toolkit and being ported to
+other platforms, including Windows and MacOSX).
+
+As the years have gone by, fcterm has been enhanced to include the 
+following facilities:
+
+- blinking
+- infinite scrollback
+- multiple terminal support
+- map view of screens
+- resistance to server restart (i.e. you wont lose sessions if X server needs
+  to restart)
+- speed - beating all competitors
+- support for pty detaching/attaching
+- highlighted search support (highlight all strings which match a pattern)
+
+Most recently, fcterm was extended to include support for vector type
+drawing, similar to the tektronix emulation found in other terminal
+emulators. FCTerm doesnt support tektronix, because the tektronix mode is
+very outdated (e.g. no color support).
+
+What FCTerm supports is Xlib like drawing via escape sequences. This
+means you can do some very interesting and impressive things.
+
+One thing that interested me, after seeing so many panel widgets in systems
+like GNOME and KDE and iStat (tool for MacOSX), was looking at all
+the statistics available on a Linux system. You never know which stats
+will tell a story, and fcterm was modified to support graph drawing,
+along with a suite of perl tools and modules to collect and display the
+stats.
+
+A simple perl tool collects the statistics, and another draws the collected
+data, in zoomable graphs.
+
+Some screen shots of these graphs are available below.
+
+(FCTerm is the name of the terminal emulator, but underlying fcterm
+is the CTW (color terminal widget) which implements the semantics
+of a terminal emulator)
+
+Tools
+-----
+
+FCTerm comes with a variety of tools to demonstrate the graphics
+mode.
+
+samples/collect.pl
+	This can be used to collect samples of data from
+	the /proc filesystem - cpu, memory, vm, disk, etc.
+	This is stored in a CSV file.
+
+samples/display.pl
+	Tool to display the graphs collected by collect.pl.
+	A menu bar is shown at the left, and you can click on the menu
+	entries to show different subsets of graphs (which update in
+	real time).
+
+	Click on a mini graph to zoom it to full window size.
+
+	display.pl understands the terminal being resized and adjusts
+	appropriately.
+
+	All of this is done by escape sequences.
+
+Getting Help
+------------
+
+You can see what escape sequences are supported from the
+inbuilt command line. Type <Ctrl-Shift-F10> and type the command 'esc'.
+

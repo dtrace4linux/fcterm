@@ -1,0 +1,2 @@
+OS_TYPE=${OS_TYPE:-linux-x86_32} ; export OS_TYPE
+. bin.$OS_TYPE/config

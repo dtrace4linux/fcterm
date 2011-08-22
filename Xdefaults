@@ -1,0 +1,377 @@
+! Key bindings to emulate a VT-100. Although fcterm emulates them anyway
+! with the default bindings, the issue of key bindings on a non-VT100
+! keyboard is a problem since each software package assumes different
+! key layouts. The following key descriptions are enough for a certain
+! package I use. Your mileage may vary.
+vt100*sunFunctionKeys:	false
+vt100*VT100.Translations:	#override \
+	<Key>F1:	string("OP")\n\
+	<Key>F2:	string("OQ")\n\
+	<Key>F3:	string("OR")\n\
+	<Key>F4:	string("OS")\n\
+	<Key>F5:	string("OT")\n\
+	<Key>F6:	string("OU")\n\
+	<Key>F7:	string("OV")\n\
+	<Key>F8:	string("OW")\n\
+	<Key>F9:	string("OX")\n\
+	<Key>F10:	string("OY")\n\
+	<Key>F11:	string("OZ")\n\
+	<Key>F12:	string("O[")\n\
+	<Key>KP_0:	string("Op")\n\
+	<Key>KP_1:	string("Oq")\n\
+	Shift<Key>KP_2:	string("Or")\n\
+	<Key>KP_3:	string("Os")\n\
+	Shift<Key>KP_4:	string("Ot")\n\
+	<Key>KP_5:	string("Ou")\n\
+	Shift<Key>KP_6:	string("Ov")\n\
+	<Key>KP_7:	string("Ow")\n\
+	Shift<Key>KP_8:	string("Ox")\n\
+	<Key>KP_9:	string("Oy")\n\
+	<Key>KP_Multiply:	string("Ol")\n\
+	<Key>KP_Subtract:	string("Om")\n\
+	<Key>KP_Add:	string("On")\n
+
+!	The following entry should be used for running fcterm in a mode
+!	which is compatable with CRISP. (Set CRTERM to xcrisp or xcrisp-col).
+xcrisp*ReverseWrap:             false
+xcrisp*ScrollBar:               false
+xcrisp*VT100.Geometry:          80x24
+xcrisp*SunFunctionKeys:         true
+xcrisp*VT100.Translations:	#override \
+	Meta<Key>A:	string("a")\n\
+	Meta<Key>B:	string("b")\n\
+	Meta<Key>C:	string("c")\n\
+	Meta<Key>D:	string("d")\n\
+	Meta<Key>E:	string("e")\n\
+	Meta<Key>F:	string("f")\n\
+	Meta<Key>G:	string("g")\n\
+	Meta<Key>H:	string("h")\n\
+	Meta<Key>I:	string("i")\n\
+	Meta<Key>J:	string("j")\n\
+	Meta<Key>K:	string("k")\n\
+	Meta<Key>L:	string("l")\n\
+	Meta<Key>M:	string("m")\n\
+	Meta<Key>N:	string("n")\n\
+	Meta<Key>O:	string("o")\n\
+	Meta<Key>P:	string("p")\n\
+	Meta<Key>Q:	string("q")\n\
+	Meta<Key>R:	string("r")\n\
+	Meta<Key>S:	string("s")\n\
+	Meta<Key>T:	string("t")\n\
+	Meta<Key>U:	string("u")\n\
+	Meta<Key>V:	string("v")\n\
+	Meta<Key>W:	string("w")\n\
+	Meta<Key>X:	string("x")\n\
+	Meta<Key>Y:	string("y")\n\
+	Meta<Key>Z:	string("z")\n\
+	Meta<Key>0:	string("0")\n\
+	Meta<Key>1:	string("1")\n\
+	Meta<Key>2:	string("2")\n\
+	Meta<Key>3:	string("3")\n\
+	Meta<Key>4:	string("4")\n\
+	Meta<Key>5:	string("5")\n\
+	Meta<Key>6:	string("6")\n\
+	Meta<Key>7:	string("7")\n\
+	Meta<Key>8:	string("8")\n\
+	Meta<Key>9:	string("9")\n\
+	None<Key>Tab:	string("	")\n\
+	Shift<Key>Tab:	string("	")\n\
+	<Key>L1:	string("[NL1~")\n\
+	<Key>L2:	string("[NL2~")\n\
+	<Key>L3:	string("[NL3~")\n\
+	<Key>L4:	string("[NL4~")\n\
+	<Key>L5:	string("[NL5~")\n\
+	<Key>L6:	string("[NL6~")\n\
+	<Key>L7:	string("[NL7~")\n\
+	<Key>L8:	string("[NL8~")\n\
+	<Key>L9:	string("[NL9~")\n\
+	<Key>L10:	string("[NL10~")\n\
+	Shift<Key>L1:	string("[SL1~")\n\
+	Shift<Key>L2:	string("[SL2~")\n\
+	Shift<Key>L3:	string("[SL3~")\n\
+	Shift<Key>L4:	string("[SL4~")\n\
+	Shift<Key>L5:	string("[SL5~")\n\
+	Shift<Key>L6:	string("[SL6~")\n\
+	Shift<Key>L7:	string("[SL7~")\n\
+	Shift<Key>L8:	string("[SL8~")\n\
+	Shift<Key>L9:	string("[SL9~")\n\
+	Shift<Key>L10:	string("[SL10~")\n\
+	Ctrl<Key>L1:	string("[CL1~")\n\
+	Ctrl<Key>L2:	string("[CL2~")\n\
+	Ctrl<Key>L3:	string("[CL3~")\n\
+	Ctrl<Key>L4:	string("[CL4~")\n\
+	Ctrl<Key>L5:	string("[CL5~")\n\
+	Ctrl<Key>L6:	string("[CL6~")\n\
+	Ctrl<Key>L7:	string("[CL7~")\n\
+	Ctrl<Key>L8:	string("[CL8~")\n\
+	Ctrl<Key>L9:	string("[CL9~")\n\
+	Ctrl<Key>L10:	string("[CL10~")\n\
+	Meta<Key>L1:	string("[mL1~")\n\
+	Meta<Key>L2:	string("[mL2~")\n\
+	Meta<Key>L3:	string("[mL3~")\n\
+	Meta<Key>L4:	string("[mL4~")\n\
+	Meta<Key>L5:	string("[mL5~")\n\
+	Meta<Key>L6:	string("[mL6~")\n\
+	Meta<Key>L7:	string("[mL7~")\n\
+	Meta<Key>L8:	string("[mL8~")\n\
+	Meta<Key>L9:	string("[mL9~")\n\
+	Meta<Key>L10:	string("[mL10~")\n\
+	None<Key>F1:	string("[224z")\n\
+	None<Key>F2:	string("[225z")\n\
+	None<Key>F3:	string("[226z")\n\
+	None<Key>F4:	string("[227z")\n\
+	None<Key>F5:	string("[228z")\n\
+	None<Key>F6:	string("[229z")\n\
+	None<Key>F7:	string("[230z")\n\
+	None<Key>F8:	string("[231z")\n\
+	None<Key>F9:	string("[232z")\n\
+	None<Key>F10:	string("[233z")\n\
+	Shift<Key>F1:	string("[SF1~")\n\
+	Shift<Key>F2:	string("[SF2~")\n\
+	Shift<Key>F3:	string("[SF3~")\n\
+	Shift<Key>F4:	string("[SF4~")\n\
+	Shift<Key>F5:	string("[SF5~")\n\
+	Shift<Key>F6:	string("[SF6~")\n\
+	Shift<Key>F7:	string("[SF7~")\n\
+	Shift<Key>F8:	string("[SF8~")\n\
+	Shift<Key>F9:	string("[SF9~")\n\
+	Shift<Key>F10:	string("[SF10~")\n\
+	Ctrl<Key>F1:	string("[CF1~")\n\
+	Ctrl<Key>F2:	string("[CF2~")\n\
+	Ctrl<Key>F3:	string("[CF3~")\n\
+	Ctrl<Key>F4:	string("[CF4~")\n\
+	Ctrl<Key>F5:	string("[CF5~")\n\
+	Ctrl<Key>F6:	string("[CF6~")\n\
+	Ctrl<Key>F7:	string("[CF7~")\n\
+	Ctrl<Key>F8:	string("[CF8~")\n\
+	Ctrl<Key>F9:	string("[CF9~")\n\
+	Ctrl<Key>F10:	string("[CF10~")\n\
+	Meta<Key>F1:	string("[mF1~")\n\
+	Meta<Key>F2:	string("[mF2~")\n\
+	Meta<Key>F3:	string("[mF3~")\n\
+	Meta<Key>F4:	string("[mF4~")\n\
+	Meta<Key>F5:	string("[mF5~")\n\
+	Meta<Key>F6:	string("[mF6~")\n\
+	Meta<Key>F7:	string("[mF7~")\n\
+	Meta<Key>F8:	string("[mF8~")\n\
+	Meta<Key>F9:	string("[mF9~")\n\
+	Meta<Key>F10:	string("[mF10~")\n\
+	None<Key>R1:	string("[208z")\n\
+	None<Key>R2:	string("[209z")\n\
+	None<Key>R3:	string("[210z")\n\
+	None<Key>R4:	string("[211z")\n\
+	None<Key>R5:	string("[212z")\n\
+	None<Key>R6:	string("[213z")\n\
+	None<Key>R7:	string("[214z")\n\
+	None<Key>Home:	string("[214z")\n\
+	None<Key>R8:	string("OA")\n\
+	None<Key>R9:	string("[216z")\n\
+	None<Key>Prior:	string("[216z")\n\
+	None<Key>R10:	string("OD")\n\
+	None<Key>R11:	string("[218z")\n\
+	None<Key>R12:	string("OC")\n\
+	None<Key>R13:	string("[220z")\n\
+	None<Key>End:	string("[220z")\n\
+	None<Key>R14:	string("OB")\n\
+	None<Key>R15:	string("[222z")\n\
+	None<Key>Next:	string("[222z")\n\
+	None<Key>Insert:string("[NR16~")\n\
+	Shift<Key>R1:	string("[SR1~")\n\
+	Shift<Key>R2:	string("[SR2~")\n\
+	Shift<Key>R3:	string("[SR3~")\n\
+	Shift<Key>R4:	string("[SR4~")\n\
+	Shift<Key>R5:	string("[SR5~")\n\
+	Shift<Key>R6:	string("[SR6~")\n\
+	Shift<Key>R7:	string("[SR7~")\n\
+	Shift<Key>Home:	string("[SR7~")\n\
+	Shift<Key>R8:	string("[SR8~")\n\
+	Shift<Key>R9:	string("[SR9~")\n\
+	Shift<Key>Prior:	string("[SR9~")\n\
+	Shift<Key>R10:	string("[SR10~")\n\
+	Shift<Key>R11:	string("[SR11~")\n\
+	Shift<Key>R12:	string("[SR12~")\n\
+	Shift<Key>R13:	string("[SR13~")\n\
+	Shift<Key>End:	string("[SR13~")\n\
+	Shift<Key>R14:	string("[SR14~")\n\
+	Shift<Key>R15:	string("[SR15~")\n\
+	Shift<Key>Next:	string("[SR15~")\n\
+	Shift<Key>Insert:string("[SR16~")\n\
+	Shift<Key>Delete:string("[SDEL~")\n\
+	Shift<Key>BackSpace:string("[SBKSP~")\n\
+	Ctrl<Key>R13:	 string("[CR13~")\n\
+	Ctrl<Key>Down:	 string("[CR14~")\n\
+	Ctrl<Key>F35:	 string("[CR15~")\n\
+	Ctrl<Key>Left:   string("[CR10~")\n\
+	Ctrl<Key>F31:   string("[CR11~")\n\
+	Ctrl<Key>Right:  string("[CR12~")\n\
+	Ctrl<Key>F27:	 string("[CR7~")\n\
+	Ctrl<Key>Up:	 string("[CR8~")\n\
+	Ctrl<Key>F29:	 string("[CR9~")\n\
+	Meta<Key>R1:	string("[mR1~")\n\
+	Meta<Key>R2:	string("[mR2~")\n\
+	Meta<Key>R3:	string("[mR3~")\n\
+	Meta<Key>R4:	string("[mR4~")\n\
+	Meta<Key>R5:	string("[mR5~")\n\
+	Meta<Key>R6:	string("[mR6~")\n\
+	Meta<Key>R7:	string("[mR7~")\n\
+	Meta<Key>Home:	string("[mR7~")\n\
+	Meta<Key>R8:	string("[mR8~")\n\
+	Meta<Key>R9:	string("[mR9~")\n\
+	Meta<Key>Prior:	string("[mR9~")\n\
+	Meta<Key>R10:	string("[mR10~")\n\
+	Meta<Key>R11:	string("[mR11~")\n\
+	Meta<Key>R12:	string("[mR12~")\n\
+	Meta<Key>R13:	string("[mR13~")\n\
+	Meta<Key>End:	string("[mR13~")\n\
+	Meta<Key>R14:	string("[mR14~")\n\
+	Meta<Key>R15:	string("[mR15~")\n\
+	Meta<Key>Next:	string("[mR15~")\n\
+	Meta<Key>Insert:string("[mR16~")\n\
+	Ctrl<Key>Insert:string("[CR16~")\n\
+	Ctrl<Key>KP_Add: string("[KC+~")\n\
+	Ctrl<Key>KP_Subtract:string("[KC-~")\n\
+	Meta<Key>KP_Subtract:string("[KM-~")\n\
+	Shift<Key>KP_Add: string("[SK+~")\n\
+	Shift<Key>KP_Subtract: string("[SK-~")\n\
+	Ctrl<Key>-: string("[-C~")\n
+
+! Key bindings to emulate an Interactive Unix console 
+*iscterm*VT100.Translations:	#override \
+	Shift<Key>F1:	string("Op")\n\
+	Shift<Key>F2:	string("Oq")\n\
+	Shift<Key>F3:	string("Or")\n\
+	Shift<Key>F4:	string("Os")\n\
+	Shift<Key>F5:	string("Ot")\n\
+	Shift<Key>F6:	string("Ou")\n\
+	Shift<Key>F7:	string("Ov")\n\
+	Shift<Key>F8:	string("Ow")\n\
+	Shift<Key>F9:	string("Ox")\n\
+	Shift<Key>F10:	string("Oy")\n\
+	Shift<Key>F11:	string("Oz")\n\
+	Shift<Key>F12:	string("O{")\n\
+	Ctrl<Key>F1:	string("O")\n\
+	Ctrl<Key>F2:	string("O")\n\
+	Ctrl<Key>F3:	string("O")\n\
+	Ctrl<Key>F4:	string("O")\n\
+	Ctrl<Key>F5:	string("O")\n\
+	Ctrl<Key>F6:	string("O")\n\
+	Ctrl<Key>F7:	string("O")\n\
+	Ctrl<Key>F8:	string("O")\n\
+	Ctrl<Key>F9:	string("O")\n\
+	Ctrl<Key>F10:	string("O")\n\
+	Ctrl<Key>F11:	string("O")\n\
+	Ctrl<Key>F12:	string("O")\n\
+	<Key>F1:	string("OP")\n\
+	<Key>F2:	string("OQ")\n\
+	<Key>F3:	string("OR")\n\
+	<Key>F4:	string("OS")\n\
+	<Key>F5:	string("OT")\n\
+	<Key>F6:	string("OU")\n\
+	<Key>F7:	string("OV")\n\
+	<Key>F8:	string("OW")\n\
+	<Key>F9:	string("OX")\n\
+	<Key>F10:	string("OY")\n\
+	<Key>F11:	string("OZ")\n\
+	<Key>F12:	string("O[")\n\
+	Meta<Key>A:	string("Na")\n\
+	Meta<Key>B:	string("Nb")\n\
+	Meta<Key>C:	string("Nc")\n\
+	Meta<Key>D:	string("Nd")\n\
+	Meta<Key>E:	string("Ne")\n\
+	Meta<Key>F:	string("Nf")\n\
+	Meta<Key>G:	string("Ng")\n\
+	Meta<Key>H:	string("Nh")\n\
+	Meta<Key>I:	string("Ni")\n\
+	Meta<Key>J:	string("Nj")\n\
+	Meta<Key>K:	string("Nk")\n\
+	Meta<Key>L:	string("Nl")\n\
+	Meta<Key>M:	string("Nm")\n\
+	Meta<Key>N:	string("Nn")\n\
+	Meta<Key>O:	string("No")\n\
+	Meta<Key>P:	string("Np")\n\
+	Meta<Key>Q:	string("Nq")\n\
+	Meta<Key>R:	string("Nr")\n\
+	Meta<Key>S:	string("Ns")\n\
+	Meta<Key>T:	string("Nt")\n\
+	Meta<Key>U:	string("Nu")\n\
+	Meta<Key>V:	string("Nv")\n\
+	Meta<Key>W:	string("Nw")\n\
+	Meta<Key>X:	string("Nx")\n\
+	Meta<Key>Y:	string("Ny")\n\
+	Meta<Key>Z:	string("Nz")\n\
+	Ctrl<Key>Insert:	string("?0")\n\
+	Ctrl<Key>R13:	string("?1")\n\
+	Ctrl<Key>End:	string("?1")\n\
+	Ctrl<Key>R14:	string("?2")\n\
+	Ctrl<Key>R15:	string("?3")\n\
+	Ctrl<Key>Next:	string("?3")\n\
+	Ctrl<Key>R10:	string("?4")\n\
+	Ctrl<Key>R11:	string("?5")\n\
+	Ctrl<Key>R12:	string("?6")\n\
+	Ctrl<Key>R7:	string("?7")\n\
+	Ctrl<Key>Home:	string("?7")\n\
+	Ctrl<Key>R8:	string("?8")\n\
+	Ctrl<Key>R9:	string("?9")\n\
+	Ctrl<Key>Prior:	string("?9")\n\
+	Meta<Key>0:	string("N0")\n\
+	Meta<Key>1:	string("N1")\n\
+	Meta<Key>2:	string("N2")\n\
+	Meta<Key>3:	string("N3")\n\
+	Meta<Key>4:	string("N4")\n\
+	Meta<Key>5:	string("N5")\n\
+	Meta<Key>6:	string("N6")\n\
+	Meta<Key>7:	string("N7")\n\
+	Meta<Key>8:	string("N8")\n\
+	Meta<Key>9:	string("N9")\n\
+	Shift<Key>Tab:	string("[Z")\n\
+	Shift<Key>Insert:	string("O4")\n\
+	Shift<Key>KP_Add:	string("O3")\n\
+	Shift<Key>KP_Subtract:	string("O2")\n\
+	Shift<Key>R14:	string("?D")\n\
+	Shift<Key>R10:	string("?L")\n\
+	Shift<Key>R12:	string("?R")\n\
+	Shift<Key>R8:	string("?U")\n\
+	<Key>R3:	string("O1")\n\
+	<Key>Insert:	string("[@")\n\
+	<Key>R13:	string("[Y")\n\
+	<Key>End:	string("[Y")\n\
+	<Key>R14:	string("[B")\n\
+	<Key>R15:	string("[U")\n\
+	<Key>Next:	string("[U")\n\
+	<Key>R10:	string("[D")\n\
+	<Key>R11:	string("[G")\n\
+	<Key>R12:	string("[C")\n\
+	<Key>R7:	string("[H")\n\
+	<Key>Home:	string("[H")\n\
+	<Key>R8:	string("[A")\n\
+	<Key>R9:	string("[V")\n\
+	<Key>Prior:	string("[V")\n\
+	Ctrl<Key>KP_End:   string("[CR13~")\n\
+	Ctrl<Key>KP_Home:   string("[CR7~")\n\
+	Ctrl<Key>KP_Next:   string("[CR15~")\n\
+	Ctrl<Key>KP_Prior:   string("[CR9~")\n\
+	Ctrl<Key>KP_Up:   string("[CR8~")\n\
+	Ctrl<Key>KP_Down:   string("[CR14~")\n\
+	Ctrl<Key>KP_Begin:   string("[CR11~")\n\
+	Ctrl<Key>KP_Left:   string("[CR10~")\n\
+	Ctrl<Key>KP_Right:   string("[CR12~")\n\
+	Shift<Key>KP_Add:	string("[T")\n\
+	Shift<Key>KP_Subtract:	string("[S")\n
+
+! Try the following for some pretty colors -- thanks to Warren Tucker.
+pretty*color1:	black
+pretty*color2:	firebrick
+pretty*color3:	medium sea green
+pretty*color4:	yellow
+pretty*color5:	gold
+pretty*color6:	deep pink
+pretty*color7:	dark turquoise
+pretty*color8:	gray80
+pretty*color9:	gray50
+pretty*color10:	red
+pretty*color11:	green
+pretty*color12:	yellow
+pretty*color13:	blue
+pretty*color14:	hot pink
+pretty*color15:	cyan
+pretty*color16:	white

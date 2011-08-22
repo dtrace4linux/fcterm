@@ -1,0 +1,23 @@
+/* XPM */
+static char * elev1_xpm[] = {
+"16 16 4 1",
+" 	c gray76",
+".	c black",
+"X	c white",
+"o	c DimGray",
+"               .",
+" XXXXXXXXXXXXXX.",
+" X            o.",
+" X            o.",
+" X            o.",
+" X            o.",
+" X            o.",
+" X            o.",
+" X            o.",
+" X            o.",
+" X            o.",
+" X            o.",
+" X            o.",
+" X            o.",
+" Xooooooooooooo.",
+"................"};

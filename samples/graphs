@@ -1,0 +1,10 @@
+clear=
+color=0xffc040
+for x in 100 200 300 400 500
+do
+	for y in 100 160 220
+	do
+		./samples/graph.pl $clear -x $x -y $y samples/data2
+		clear=-noclear
+	done
+done

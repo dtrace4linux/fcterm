@@ -1,0 +1,662 @@
+	Paul Fox
+	Foxtrot Systems
+	Consultancy Services
+
+	Fyndon Lea, Crawley Ridge
+	Frimley
+	Surry GU15 2ADw
+	Tel: (01276) 670603
+
+	fox%crisp.uucp@demon.co.uk
+
+	The ctw Widget (Version 1.3) March 1992
+	=======================================
+
+This README file describes the 'ctw' (Color Terminal Widget) 
+for X windows (X11R4 or later).
+
+CTW is an emulation of an ANSI terminal compatable with the VTx00
+series of terminals containing much of the same functionality that
+xterm provides. Unfortunately, xterm does not support color and
+is not cleanly written enough to allow any of the code to be reused
+by other applications.
+
+I wrote CTW because I like to use the color of my terminal, and in
+particular I like to have yellow prompts with a green text for the
+rest (so the prompt stands out a little). I also use CTW to run
+my color editor -- CRISP -- within the terminal emulator rather than
+having to spawn a new window.
+
+Acknowledgements
+================
+I would like to thank the following people who have contributed
+code, and or ideas to improve ctw. If I have omitted anyone please
+mail me and I'll put you down here, and my apologies in advance.
+
+Warren Tucker -- thanks for making me thank that allowing the colors
+to be changed would be a good idea. Also other snippets as well.
+
+
+Jim Wight (J.K.Wight@newcastle.ac.uk) -- thanks for making me believe
+that handling of rows/columns and other issues to do with xterm 
+compatability aren't that difficult to do properly, and examples
+of code to improve CTW.
+
+Platforms & Portability
+=======================
+I have only tested ctw on a Sun running SunOS 4.1. I compile
+it under Open windows, and it runs quite happily under X11R5.
+ctw should be pretty much machine independent (although it assumes
+32-bit longs/ints). (It also uses the usleep() system call but you can
+comment that out if you dont have it -- its not very important).
+
+fcterm is an Athena Widgets based terminal emulator.
+fcterm is not as portable. It works on the Sun, but things like 
+finding a pty and spawning the child process does not handle all the
+exceptions which xterm does handle. fcterm is a pretty small program at
+present, so it shouldn't be too difficult to port -- especially if
+you have the xterm sources handy. (fcterm may look daunting at first
+but its just a hackers job. ctw is much cleaner).
+
+fmcterm is a Motif version of the terminal emulator. The user interface
+uses the menu bar to access options rather than a popup window in the
+terminal area.
+
+ctw & fcterm come with a simple makefile. If anybody wants to write
+an Imakefile then please do so.
+
+Distribution
+============
+I hereby place this software in the public domain in the hope that
+it will further mankinds dependence on computers :-). People
+may use this software in any commercial application without the
+need for any further permission, except that I ask that my name
+be acknowledged in your product.
+
+It would be nice if the souls at MIT would like to incorporate ctw
+into the core release, and if so please let me know what I need
+to do to get it in a fit state for the core release. 
+
+I would be grateful for any bug fixes or new features to be somehow
+communicated to me for integration into the master sources.
+I can be contacted on:
+
+	paul@demon.co.uk		Usenet
+
+or on: +44 276 670603 home phone number (evenings + w/ends).
+
+Overview
+========
+The idea behind CTW is to properly encapsulate all the functionality
+of a widget which supports a public function (ctw_add_string) which is
+called to add characters to the display in a similar way to printf().
+One could take a program which is based on printf()/getchar() and with a
+little amount of work, have the program run in its own X window as an
+alternative to running from within an xterm. 
+
+ctw is contained completely within the files:
+
+	ctw.h	-- Public include file
+	ctwP.h	-- Private widget definitions
+	ctw.c	-- The implementation
+
+In addition the following files are supplied:
+
+	fcterm.c -- Athena based terminal emulator
+	fmcterm.c -- Motif based terminal emulator
+
+	fcterm.h &
+	term.c -- Common subroutines for the two terminal emulators.
+
+	[fcterm is 'Foxys Color Terminal emulator']
+	[fmcterm is 'Foxys Motif Color Terminal emulator']
+
+I  like  xterm  a  lot.  fcterm demonstrates how easy it is to
+build   a   terminal   emulator   by   using  'clean'  calling
+conventions.  In  addition fcterm contains the features I most
+often  want  from xterm. (Theres no point in building a subset
+of xterm if users frequently use xterm instead of fcterm).
+
+fcterm and ctw were created in my spare time. This means that the
+code may not be bug free, and certain features are incomplete (see
+below). These will eventually be addressed and any person wishing
+to contribute code, please feel free to do so.
+
+It would be nice at some time in the future to submit ctw & fcterm
+to the X consortium for inclusion in the core part of X11 to get over
+the hurdle of xterm.
+
+The ctw widget is configurable to emulate certain variants of ANSI
+terminal emulators, specifically Interactive Unix console driver,
+SCO Unix console driver, and xterm compatable functionality.
+Many terminal emulators have small discrepancies in the way they 
+handle certain features. For example, if the background color is set
+to RED, and the ESC[K sequence is sent to erase to end of line, some
+emulators erase to end of line using black, whilst others use the
+current background color. Obviously the code to implement these two
+is extremely tiny so having these types of things as attributes which
+can be changed by the user or application is beneficial. The main
+purpose in adding this sort of functionality is that I wanted ONE
+program which could be used for testing software I write to make sure
+it works in these different environments without the need to fire
+up my 386 Unix system.
+
+CTW contains some very useful facilities which I use a lot of the time.
+Two of these are 'literal-mode' and 'slow-mode'. These modes are
+using when I am testing my CRISP editor to see how well it performs
+at slow baud rates. In literal mode, escape sequences, TABs, and \r
+sequences are not interpreted but are printed in a readable fashion so
+the user can see exactly what characters are being printed. In slow mode
+ctw acts somewhat like a 1200-2400 baud terminal. This allows the user
+to see where the cursor is going and detect any performance silliness.
+
+CTW has been specifically optimised. It appears to run under most
+circumstances as fast as xterm or even faster (see bugs section).
+Certain things are pretty awful in terms of performance and these may
+be looked into. For 99% of what you may do it is adequately fast enough.
+
+CTW also supports mouse reporting escape sequences. At present
+this allows the user to track ButtonPress, ButtonRelease, and Motion
+events for the mouse -- selectable with an escape sequence. (ESC[?1962h
+and ESC[?1962l). Please refer to the CTW_APPL_MOUSE attribute described
+below for some useful comments on how this works.
+
+The CTW widget
+==============
+The ctw widget creates a window which represents a character based
+display. Each character is represented by a 4-byte structure to encode
+color and other attribute information.
+
+Data is written to the window using a public method function. This
+function is called ctw_add_string():
+
+	void ctw_add_string(Widget, char *str, int len);
+
+'str' is the sequence of characters. 'len' says how long the
+string is (this allows embedded NULLs -- which are ignored). We
+do things this way because a real terminal emulator may have nulls
+to print.
+
+For example, to print 'hello world' to the screen:
+
+	ctw_add_string(w, "Hello world", 10);
+
+To print 'Hello world' with the 'hello' in one color and the 'world'
+in another, do something like:
+
+	ctw_add_string(w, "\033[32mHello \033[34mworld", 19);
+
+In addition, there are other public functions which have been
+written so that the fcterm terminal emulator could be written cleanly
+without any real knowledge of how the widget is implemented:
+
+ctw_get_top_line
+================
+The ctw widget is designed so that the application can have a scrollable
+window (a la xterm). Lines which are scrolled off the screen are saved
+so that they can be brought into view. The 'screen' may be thought of
+as an array of lines, most of which are not visible. Normally there
+are 'saveLines' off the top of the screen plus the 'rows' number of
+lines visible. (See description of resources).
+
+
+This function returns the line number at the top of the screen.
+Given this number and the saveLines + rows resources, the application can
+figure out how to draw the thumb part of a scrollbar.
+
+ctw_set_top_line
+================
+This function would typically be called because the user is using
+the scrollbar to look at the lines which have scrolled off the screen.
+
+ctw_get_attributes & ctw_set_attributes
+=======================================
+Attributes are things like the current state of the autowrap flag, or
+the ability to interpret certain escape sequences. Attributes are
+represented as an array of integers. This function retrieves a
+POINTER to the internal attributes associated with the widget. This
+array should then be copied, modified locally and then set using the
+ctw_set_attributes.
+
+DO NOT MODIFY THE ARRAY OF ATTRIBUTES POINTED TO DIRECTLY.
+
+ctw_get_selection
+=================
+This function is provided to allow the ctw widget to ask the X server
+for the current copy of the Primary selection buffer. It is used
+to implement the 'paste' semantic in the terminal emulator.
+
+ctw_get_geometry
+================
+This function is used to retrieve the current dimensions of the
+terminal window in rows & columns.
+
+ctw_get_line
+============
+This function returns a pointer to an internal line structure
+(an array of vbyte_t elements) representing the characters and attributes
+on that line. This allows the application to read whats on the screen and
+is used by fcterm/fmcterm to implement the Snap History option to dump the
+possibly scrolled off screen contents to a file.
+
+	----------------------------------
+CTW Attributes
+==============
+The attributes provided by ctw_get_attributes() and set via
+ctw_set_attributes() are integer valued. Attributes are defined
+in the ctw.h include file as a set of enums of the form: CTW_xyz.
+
+Some attributes are designed to be read-only. Most of the attributes are
+effected by the standard escape sequences. (See top of ctw.c for a list
+of sequences supported. This list should be up to date).
+
+CTW_AUTOWRAP	Says whether cursor wraps around after right margin is hit.
+
+CTW_AUTOLINEFEED
+		Not used currently.
+
+CTW_APPL_KEYPAD	
+		Indicates whether keypad generates 'normal' keys or
+		application escape sequences. Set via the ESC=/ESC>
+		escapes sequences.
+
+CTW_APPL_MOUSE	This attribute is turned on/off by the ESC[?1962h and
+		ESC[?1962l escape sequence (or by the user from the
+		terminal attributes popup dialog box). If mouse 
+		reporting is enabled then mouse events cause escape sequences
+		to be sent to the application (for input to the pty)
+		reporting the current state and position of the mouse.
+
+		At present there is a conflict between the user wanting
+		to use the mouse for popups etc and the underlying
+		application getting them. Its up to the application writer
+		to decide how to arbitrate this.
+
+		Please note that with the default translations, button
+		1 will NOT be reported -- since it is mapped to the 
+		hilighted selection action procedure. You will have
+		to change the translation table in your code or in
+		ctw.c to gain access to this.
+
+		Refer to comment at the top of ctw.c for a description
+		of the information reported to the application.
+
+CTW_CURSOR_KEYPAD
+		Specifies whether cursor keys generate ESC[x or ESCOx.
+		Affected by the ESC[?1h and ESC[?1l escape sequences.
+
+CTW_COLOR_RESET
+		Specifies whether ESC[0m (reset attributes) resets
+		the foreground/background colors or just leaves them alone.
+		(SCO Unix and ISC Unix differ on this).
+
+CTW_CURRATTR	Returns current attribute settings as follows:
+
+		1111110000000000
+		5432109876543210
+		|--||--|    FBRU   flash,bold,reverse,underline
+ 		fg  bg            color numbers
+
+		(It is not possible at present to set the attributes this
+		way).
+
+CTW_CUT_NEWLINES
+		When hilighting text, specifies whether newlines should
+		be inserted at newline boundaries. This attribute shouldn't
+		really exist.
+
+CTW_DESTRUCTIVE_TABS
+		Says whether tabs generate spaces clearing any text they
+		move over, or whether the cursor is simply moved to the next
+		tab stop without destroying the intermediate characters.
+
+
+CTW_ERASE_BLACK	Not currently used. Specifies whether things like
+		ESC[K erase using white on a black background or using the
+		current color settings.
+
+CTW_ESC_LITERAL	Says whether ESC ESC should print an ESC character.
+		(The ESC character is a >= in the fixed fonts). Needed
+		for compatability with ISC/SCO console drivers.
+
+CTW_FONT_SIZE	This is a READ-ONLY attribute. The high 16 bits are
+		the font width. The low 16-bits are the font height.
+
+CTW_LITERAL_MODE
+		Turns on mode where escape sequences are not actioned but
+		are printed literally. Useful for debugging applications.
+
+CTW_LOGGING	If set to true then all data sent to the widget is logged
+		in a log file (set by the 'logFile' resource). The log file
+		name can be changed with the ESC]46;log-file<BEL>
+		escape sequence.
+
+CTW_NEWLINE_GLITCH
+		Specifies whether the DEC/xterm 'feature' of causing the
+		cursor to hang around in the right hand column to be 
+		emulated. In this mode, the cursor sticks to the right hand
+		column until the next printable character is received and
+		avoids scrolling until absolutely necessary. 
+
+CTW_PC_CHARSET	Used to emulate the PC character set. At present only the
+		line drawing characters are remapped.
+
+CTW_RESET	A single shot attribute. Setting this attribute is similar
+		to sending the ESCc escape sequence and is used to reset
+		all the screen attributes. It is set back to zero immediately
+		it is set.
+
+CTW_SCROLLING_REGION
+		This is a read-only flag. It is set to TRUE whilst a
+		scrolling region is in effect (ESC[x;yr). Used internally
+		but also useful in fcterm to tell whether an application has
+		accidentally left the screen in scrolling region mode.
+		(Can be very difficult to tell otherwise).
+
+CTW_SIZE	This is a read-only attribute. The top 16 bits contains
+		the number of columns, and the bottom 16 contains the number
+		of rows. Useful for informtional purposes only. (These
+		values can be gotton from the resources as well).
+
+CTW_SPEED	This attribute controls how fast the display is updated.
+		It is a value which is a percentage and is normally set to
+		100% (full-speed). Lower values will slow down the display.
+		This is designed for watching fast screen updates on a fast
+		machine.
+
+CTW_SMOOTH_SCROLL
+		Same as xterm feature. If set then scrolling occurs one
+		line at a time. If false, then ctw looks ahead and tries to
+		scroll up to a whole screens worth for maximum performance.
+
+CTW_SUN_FUNCTION_KEYS
+		Says whether function keys generate Sun compatable
+		escape sequences or VT100 sequences. This attribute
+		is synonymous with the 'sunFunctionKeys' resource.
+
+CTW_ISC_DRIVER	This flag acts as a macro. When set, then other attributes
+		are set so that ctw emulates an Interactive Unix console
+		driver.
+
+CTW_SCO_DRIVER	This flag acts as a macro. When set, then other attributes
+		are set so that ctw emulates an SCO Unix console driver.
+
+Action Event Functions
+======================
+focus_change(n)
+		'n' should be 0 or 1. This function can be placed in the
+		translation table to allow the cursor flashing to stop when
+		the appropriate event happens. '0' is used to stop flashing.
+		'1' is used to cause flashing. This procedure would normally
+		be called on an <EnterWindow>/<LeaveWindow> or 
+		<FocusIn>/<FocusOut> event transition.
+
+Callbacks
+=========
+The ctw widget supports various callbacks, all accessible as resources.
+All callbacks pass the following structure to the callback routine:
+
+typedef struct ctw_callback_t {
+	enum ctw_reasons	reason;
+	char			*ptr;
+	int			len;
+	int			top_line;
+	XEvent			*event;
+	} ctw_callback_t;
+
+Not all fields are valid for all callbacks.
+
+applCallback	Callback called when certain escape sequences are parsed
+		to do with the application. Typically this is to iconise
+		the application or change its size. These sequences cannot
+		be handled solely by the widget because some of them affect
+		the application shell widget or any underlying pty.
+
+		reason = CTW_OPEN_WINDOW
+			Uniconise the application shell widget.
+
+		reason = CTW_CLOSE_WINDOW
+			Iconise the application shell widget.
+
+		reason = CTW_MOVE_WINDOW
+		x = pixel co-ordinate of left margin
+		y = pixel co-ordinate of top margin
+			Move window to specified co-ordinates
+
+		reason = CTW_SIZE_WINDOW_PIXELS
+		width = width in pixels of new window size.
+		height = height in pixels of new window size.
+			Resize application shell.
+
+		reason = CTW_FRONT_WINDOW
+			Raise window to top of stack.
+
+		reason = CTW_BACK_WINDOW
+			Lower window to bottom of stack.
+
+		reason = CTW_SIZE_WINDOW_CHARS
+		width = new width in characters
+		height = new height in characters
+			Resize window specifying size in characters.
+
+color1
+color2
+ ...
+color16		By default the CTW widget uses 16 colors corresponding
+		to the definitions specified by the ANSI/ISO standard.
+		On a monochrome screen gray scales are used which may not
+		be appropriate. These attributes allow the user or
+		appliaction to change the definition of colors, where
+		color1..color8 are the foreground colors, and color9..
+		color16 are the background colors. Standard X color
+		names should be used.
+
+kbdCallback	Called for keyboard input.
+
+		reason = CTW_INPUT
+		ptr = pointer to buffer containing characters typed
+		len = number of bytes in buffer.
+
+resizeCallback	Called when widget is resized
+
+		reason = CTW_RESIZE
+
+topCallback	Called when the line at the top of the screen changes.
+		This callback is used so that a scrollbar can place the thumb
+		at a proportional point to where the 'top-line' is in terms
+		of the lines scrolled off the screen.
+
+		reason = CTW_TOP_LINE
+		top_line = new line number
+
+mouseCallabck	Called when button activity is detected.
+
+		reason = CTW_SELECTION
+			called when the select-start action routine is
+			invoked. This happens when user normally hits
+			button1 to start hilighting a region.
+
+		reason = CTW_BUTTON_DOWN
+		event = X event
+			called when a button down event is detected.
+
+		reason = CTW_BUTTON_MOTION
+		event = X event
+			called when a motion event is detected whilst a
+			mouse button is held down.
+
+		reason = CTW_BUTTON_UP
+		event = X event
+			called when a button up event is detected.
+
+Resources
+=========
+Many of the widget resources are compatable with those in xterm. ctw
+doesnt implement all of the xterm ones. Maybe it should.
+
+In the table below, the resource name only is listed. Names follow standard
+conventions. To use these resources in your code, just prepend
+resource names with XtN or XtC for class names (capitalize first letter).
+For example, XtNfont or XtCFont, etc.
+
+font		Font used within window.
+
+cursorColor	Color of cursor. Any X color can be used. (Colors used in
+		the widget window are limited to the 16 standard colors
+		of a color terminal).
+
+rows		Define number of visible rows in the window.
+columns		Define width of window in characters.
+
+kbdCallback	Callback used to handle keyboard input.
+
+sunFunctionKeys	Xterm compatible resource specifying what escape sequences
+		should be generated by default for function keys.
+		(Translation tables may be used to override this).
+
+saveLines	Number of lines saved when they scroll off the top of the
+		window.
+
+topCallback	Callback used for handling scrollbars.
+
+mouseCallback	Callback for button events and selection handling.
+
+geometry	Not really sure! Should be used so that we can interpret
+		command line geometry requests using characters sizes
+		(not pixel sizes), but doesnt currently work.
+
+flashrate	Time (in mSec) between cursor flashes. Cursor only
+		flashes while we have the input focus.
+
+font1, font2, font3, font4, font5, font6
+		Not used by the ctw widget, but used by fcterm. Names
+		are chosen to be xterm compliant. These fonts define
+		the entries in the Change Fonts menu.
+
+hiliteBackground
+hiliteForeground
+		Colors to use when hilighting text for the Primary selection.
+
+multiClickTime	Time (in mSec) used for detecting double/triple mouse clicks.
+
+internalHeight	Specifies the amount of room to leave at the top and bottom
+		of the window.
+internalWidth	Specifies the amount of room to leave at the sides of the
+		window.
+
+logFile		Name of log file to send output. (Default CtwLog.XXXXXX).
+logging		When set to TRUE all output to the window is sent to the
+		logfile.
+
+The fcterm Terminal emulator
+============================
+fcterm is designed to be a plug-in replacement for xterm. It
+accepts many of the same resource and class definitions as xterm.
+The user interface is somewhat different, but it implements most of the
+features of xterm that I use. (There is NO Tektronix support. Use
+xterm if you need access to this facility).
+
+In normal use, fcterm and xterm operate almost identically. The main
+difference is in the button bindings.
+
+Button1 is used for hilighting text (same as xterm although only
+single and triple clicking are currently supported).
+
+Button2 is used for the popup menu at present. Its functionality
+will change at a later date. It may be used in future to be compatable
+with the xterm 'extend-selection' functionality or it may be used for
+some other use.
+
+Button3 pops up a menu. The menu structure is not the same as xterm.
+Currently, button3 has the following entries in the menu:
+
+Toggle scrollbar 	turn on/off scrollbar. Something I do
+			very frequently.
+Reset character set	Used when terminal is in line-drawing character
+			set but it shouldnt be!
+Paste			Paste Primary selection. Hopefully avoids the
+			accidental and infuriating feature of xterm where
+			you accidentally hit the 'stuff' mouse button.
+Terminal attributes...	Pops up a dialog box to allow the CTW widget
+			attributes to be changed/examined.
+Status monitor...	Pops up a little window showing the number of
+			characters received, number chars/sec processed.
+			Useful for performance monitoring.
+Change font...		Used to make a font selection
+
+Bugs & Missing Features
+=======================
+ctw:
+----
+Internal width & height are not processed properly.
+
+Selecting text ready for copying to the Primary selection currently
+only implements single clicking and tripe clicking. Single clicking
+is used to hilight a region. Triple clicking hilights a region to
+copy entire lines. Double clicking is NOT implemented yet. (Double 
+clicking is used to hilight words).
+
+ctw doesnt process GraphicsExpose events properly. It works faster
+due to this bug, so I may/may not add an attribute to allow this attribute
+to be controlled. This means that occasionally (not every time) when
+a scroll occurs, if the window is partially obscured, then a ghost
+rectangle of black is left behind.
+
+ctw doesnt support programmable tab stops. They are currently
+hardcoded at 8 column boundaries.
+
+There may be bugs concerning autowrapping. ctw & fcterm work fine for
+my applications -- other users may generate pathological escape
+sequences which could cause glitches. No known problems yet detected.
+
+At present, when the ctw window is resized, the ctw widget allocates a
+new screen buffer -- copies in the old screen buffer and then frees
+the old screen buffer. For the default parameters of 512 saveLines. This
+means that ctw can potentially need twice as much memory as it really wants.
+It would be nice on a resize to avoid allocating a new screen buffer and
+only allocate the difference. (I believe xterm works similarly, but I
+want ctw to use as little resources as possible -- especially as each
+character uses 4 bytes of memory, rather than the 2 which xterm needs).
+
+The support for the ESC(x and ESC)x sequences is definitely wrong
+but for the applications I run it appears to work (i.e. line
+drawing characters work but the distinction between US, UK and ISO
+character sets is not).
+
+The current implementation of application mouse escape sequences could 
+probably do with some form of granularity of what the application can take
+over. For example, it might be useful to avoid the mouse escape
+sequence from stopping the hilighting action from occurring or vice
+versa.
+
+fcterm:
+-------
+It would be nice to change the number of rows/columns using a dialog
+box. If you want a window say of size 40x16, you have to keep
+changing size and doing an 'stty -a' hoping you have got the
+correct size. (Under the Motif window manager you get this functionality
+for free; under olwm you do not).
+
+When hilighting text using the mouse, updates to the screen are
+not 'frozen', so the hilight on the screen may be out of step if the
+screen scrolls whilst marking a selection.
+
+The dialog boxes are pretty awful. They should look nicer and make
+more of a distinction between boolean valued attributes and other types.
+Clicking on the APPLY button gives no positive feedback. (See the motif
+version for a better implementation).
+
+Dialog boxes should be popped up at a reasonable position on the screen.
+At present they pop up completely arbitrarily.
+
+Dialog boxes should have a title relating to which window they apply
+to. (If you have multiple dialog boxes from different windows on the
+screen, it can be difficult to figure out which ones apply to which window).
+
+Popups and dialog boxes maybe ought to be created during the work
+procedure. Maybe not. Under X11R5 popups are created so fast its
+not a problem.
+
+If the user wants to use the application mouse escape sequences then
+someone needs to figure out how the command popup window is going to be
+accessed.

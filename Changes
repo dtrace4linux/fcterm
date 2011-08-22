@@ -1,0 +1,493 @@
+Wed Aug 10 18:15:55 2011  fox
+
+     135* ctw.c: Dont core dump when drawing graphical label and no font
+          specified.
+
+     134* term.c: Add CTW_TERM=1 to the environment so children know
+          we are running inside fcterm.
+
+Mon Aug  1 21:15:53 2011  fox
+
+     133* ctw.c: Display NUL bytes however.
+
+     132* term.c: Dont interpret NUL special when not using ptysrv.
+
+Mon Jul 25 20:02:11 2011  fox
+
+     131* ctw.c: Fix initial 'e' vs 'E'. Add 'fatal' to the mix.
+
+Sun Jul 24 16:52:47 2011  fox
+
+     130* ctw.c: Add support for matching error/warning on a line.
+
+Wed Jul 20 21:32:28 2011  fox
+
+     129* term.c: Add dynamic redisplay of the minimap.
+
+     128* ctw.c: Make sure we record the fast-scrolled history lines.
+
+Tue Jul 19 22:46:40 2011  fox
+
+     127* ctw.c: Add assertion detection of lcache overflow.
+
+Tue May  3 21:32:06 2011  fox
+
+     126* ctw.c: Make clipboard pasting an 'OR' operation and not an 'AND' one
+          to avoid multiple pastes from rdesktop.
+
+Thu Mar 24 09:17:47 2011  fox
+
+     125* build.h: 129
+
+     124* Add Alt-[ and Alt-] keystrokes.
+
+Wed Feb  2 07:27:05 2011  fox
+
+     123* build.h: 4.29
+
+     122* ctw.c: Fix ESC]46 logfilename code.
+
+Tue Nov 23 23:27:45 2010  fox
+
+     121* ctw.c: down_line(): Fix infinite scroll losing sync.
+
+Sat Nov 20 20:53:22 2010  fox
+
+     120* term.c: Add -dump command line switch for dumping the screens
+          to files on a timer, so you can watch another session in live
+	  mode.
+
+Sat Oct 16 17:44:45 2010  fox
+
+     119* term.c: Add color icon.
+
+Mon Mar  8 21:07:06 2010  fox
+
+     118* Fixes to display.pl; add NFS to collect.pl.
+
+Sun Mar  7 11:12:07 2010  fox
+
+     117* ctw.c: Avoid memleak when switching fonts in graphics drawing.
+
+Sat Mar  6 14:10:11 2010  fox
+
+     116* Archive: 1.0023
+
+     115* ctw.c: Optimise cursor flashing redrawing graphics chain.
+
+Fri Mar  5 20:47:06 2010  fox
+
+     114* ctw.c: Redo the graphic chains so we can optimise exposure
+
+     113* Archive: 1.0022
+
+     112* ctw.c: Implement MotionNotify for hotspots.
+
+Thu Mar  4 21:02:59 2010  fox
+
+     111* ctw.c: Fix RGB visual masks for graph drawing.
+
+     110* ctw.c: Fix redraw when optimising big buffers of output for graphs.
+
+     109* ctw.c: Clear graphs on a reset.
+
+     108* graph.pl: Lots of improvements. FCGraph.pm: Perl module to encapsulate
+	 the escape sequences.
+
+Tue Mar  2 20:07:05 2010  fox
+
+     107* samples/smaps.pl, samples/collect.pl: More graph drawing tools.
+
+     106* ctw.c: Add support for ESC[1925, ESC[1926, ESC[1927
+
+Mon Mar  1 14:51:15 2010  fox
+
+     105* Various: Remove stupid glibc sscanf name remapping.
+
+     104* Add ESC 1924 / 1925; Add code + esc commands
+
+     103* Add ESC 1920 .. 1923 to draw rectangles and lines.
+
+Fri Feb 26 23:18:44 2010  fox
+
+     102* ctw.c: Fix error in ESC[J
+
+Thu Feb 18 21:27:26 2010  fox
+
+     101* ctw.c: Make fg and bg colors 8-bit wide so we can have 256 color
+          gamut.
+
+Sun Feb 14 15:54:27 2010  fox
+
+     100* ctw.c: Add support for Vostro 1720 keypad keys.
+
+Fri Nov 27 18:51:23 2009  fox
+
+      99* Archive: 1.0019
+
+      98* ctw.c: Fix problem with log file saving during wraparound.
+
+Tue Oct  6 22:14:47 2009  fox
+
+      97* ctw.c: Add inertial scrollbar.
+
+Sat Oct  3 21:16:23 2009  fox
+
+      96* include/build.h: Version 4.026
+
+      95* ctw.c: Fix ESC[%dg in non-tabs mode so we can see the chars.
+
+Sat Aug  1 10:23:29 2009  fox
+
+      94* ctw.c: Fix problem with scrolling regions causing screen
+          redraw issues.
+
+Tue Jun 16 21:22:55 2009  fox
+
+      93* ctw.c: Default to ESC[J using background color and not black.
+
+Fri Apr 10 16:47:52 2009  fox
+
+      92* ctw.c: Fix Xft drawing issues.
+
+      91* ctw.c: Add support for ESC[6n.
+
+Sun Apr  5 19:43:28 2009  fox
+
+      90* ctw.c: Fix the bold coloring.
+
+Thu Mar 26 21:50:45 2009  fox
+
+      89* ctw.c: Make normal colors 80% of brightness, so bold can be
+          fully bright without overdrawing.
+
+Tue Feb 24 23:11:45 2009  fox
+
+      88* ctw.c: Fix possible core dump in hist_save_line.
+
+Sun Jan 25 09:36:17 2009  fox
+
+      87* ctw.c: Fix problem of UTF-8 not redrawing properly on a scroll.
+
+Fri Jan 23 22:43:05 2009  fox
+
+      86* ctw.c: Fix core dump on linewrap with UTF-8.
+          Make non-valid UTF-8 show up properly.
+
+Tue Jan  6 23:15:46 2009  fox
+
+      85* ctw.c: Default to UTF-8.
+
+Sat Dec 27 00:03:30 2008  fox
+
+      84* term.c: Add support for XK_ISO_Left_Tab.
+
+Wed Nov 19 20:46:18 2008  fox
+
+      83* ctw.c: Restore more than the current visible screen.
+
+      82* ctw.c: Fix (x,y) position state restoring.
+
+Mon Nov 17 10:10:18 2008  fox
+
+      81* ctw.c: Fix hilite for scrolled off area flashing and not displaying.
+
+      80* fcterm.c: Dont move scrollbar if not our window.
+
+      79* ctw.c: Set log file rollover to 25MB by default.
+
+      78* ctw.c: Refix the interim scrollup.
+
+Sun Nov 16 09:47:26 2008  fox
+
+      77* build.h: 4.025
+
+      76* ctw.c: Save scrolled off lines to history early, so we can see them
+          in the spill file.
+
+Fri Nov  7 23:16:52 2008  fox
+
+      75* build.h: 4.024
+
+      74* ctw.c: Fix bad performance problem when lots of spill history
+          and we unselect.
+
+Sun Nov  2 15:48:25 2008  fox
+
+      73* ctw.c: Fix double free in scroll_down.
+
+      72* ctw.c: Fix potential issues with clear screen.
+
+Tue Oct 28 20:56:29 2008  fox
+
+      71* ctw.c: Fix cut/paste to honor line wrapping properly.
+
+      70* ctw.c: Add support for CTW_DO_CONT to see the line endings
+
+      69* build.h: v4.023
+
+      68* term.c, fcterm.c: Restore the label.
+
+Sat Oct 11 23:00:23 2008  fox
+
+      67* term.c: Avoid EIO/EOF infinite cascade of messages.
+
+Mon Oct  6 21:40:56 2008  fox
+
+      66* term.c, fcterm.c: Save window size/position for the restart.
+          Buggy: not honoring window management.
+
+Sun Oct  5 17:33:13 2008  fox
+
+      65* ctw.c, fcterm.c: Add state restoration in case of X server crash.
+
+Sat Oct  4 19:18:00 2008  fox
+
+      64* ctw.c: Fix selected hilite redraw after max scroll.
+
+Thu Oct  2 23:01:17 2008  fox
+
+      63* version: 4.019
+
+      62* term.c: Send SIGWINCH to underlying child so shell knows
+          window resized.
+
+Wed Sep 24 22:49:38 2008  fox
+
+      61* ctw.c: Fix scrolled hilite not being unhilit.
+
+      60* ctw.c: Fix line-click not hiliting properly.
+
+Tue Sep 23 23:29:47 2008  fox
+
+      59* ctw.c: Fix click-select hilite issue.
+
+Sun Sep 21 09:30:51 2008  fox
+
+      58* ctw.c: Add searching facility.
+
+Thu Sep 18 23:41:46 2008  fox
+
+      57* ctw.c: Make command line stick to the bottom. Add better command line editing.
+
+Wed Sep 17 21:50:58 2008  fox
+
+      56* ctw.c: Make hilite persistent at the character level if we have
+          it in memory.
+
+Tue Sep 16 23:07:40 2008  fox
+
+      55* ctw.c: Add watch-drawing for line drawing chars.
+
+Sun Sep 14 10:59:09 2008  fox
+
+      54* ctw.c: Fix core dump on resize smaller/larger. Fix issue
+          with sporadic fast scroll getting sync wrong.
+
+Wed Sep 10 22:43:39 2008  fox
+
+      53* ctw.c: Fix core dump on resize-wider; fix scroll pollution on 
+          resize-taller.
+
+Tue Sep  9 20:59:23 2008  fox
+
+      52* ctw.c: Fix CTW clipboard environment variables settings.
+
+Mon Sep  8 22:36:25 2008  fox
+
+      51* ctw.c: Fix resize issue core dumping.
+
+      50* ctw.c: Fix clipboard issue.
+
+Thu Sep  4 23:15:45 2008  fox
+
+      49* Archive: 1.0011 (selection display not correct yet).
+
+Sun Aug 31 09:26:15 2008  fox
+
+      48* ctw.c: 4.00: Got the log file spilling to work.
+
+Mon Aug 25 19:42:50 2008  fox
+
+      47* ctw.c: Fix selection issue with Solaris 10 x86.
+
+Sat Aug 23 23:34:03 2008  fox
+
+      46* term.c: Avoid file descriptor leakage to the child. Dont
+          understand why F_SETFD/CLOEXEC isnt working....bizarre
+
+Fri Aug 22 20:35:41 2008  fox
+
+      45* ctw.c: Fix LA_CONTINUED bug causing copy to not include line boundaries.
+
+Tue Aug 19 21:34:28 2008  fox
+
+      44* ctw.c, term.c: Optimisations: old code would redraw huge blocks
+          of screen unnecessarily. New one will use either algorithm depending
+	  how much work we have to do.
+
+Sat Aug 16 23:29:54 2008  fox
+
+      43* ctw.c: Use roving line pointer to avoid heavy cpu use when
+          saveLines is very large. Now constant access speed and
+	  2x or better compared to multi-gnome-terminal.
+
+Fri Aug 15 23:10:19 2008  fox
+
+      42* fcterm.c, ctw.c: 3.10: Speedups to beat multi-gnome-terminal.
+
+Thu Aug 14 23:03:04 2008  fox
+
+      41* term.c: Optimisations to compete with multi-gnome-terminal
+
+Thu Aug  7 23:57:16 2008  fox
+
+      40* ctw.c: Add support for num-lock detection/num-lock fixing.
+
+Sat Jul  7 18:58:00 2007  fox
+
+      39* fcterm.c: Apply win resizes to all sub-terminals.
+
+Wed Apr 25 22:45:21 2007  fox
+
+      38* term.c: Werent resetting signals (SIGINT) for subsequent children,
+          so pty#2 couldnt ^C.
+
+Thu Apr 19 15:23:04 2007  pfox
+
+      37* ctw.c: Allow us to override the word chars.
+
+Fri Mar 23 23:05:21 2007  fox
+
+      36* term.c: Avoid leaking ttyfd to child and causing ^C/job control issues.
+
+Sun Feb 25 19:59:58 2007  fox
+
+      35* term.c, ptysrv.c: Fix STREAMS compilation issues for FC6.
+
+Tue Feb 13 20:52:46 2007  fox
+
+      34* ctw.c: ESC[Z support (backtab) for make menuconfig FC 6.
+
+Sat Jan 27 10:26:43 2007  fox
+
+      33* ctw.c: When doing ESC[XXm, set the old color so we can revert properly.
+
+Tue Jan 23 20:54:19 2007  fox
+
+      32* When we turn on cursor, display immediately.
+
+      31* ctw.c: Discard ESC [ > c
+
+Sun Jan 21 21:30:52 2007  fox
+
+      30* ctw.c: ESC[?12h - raise window -- not sure if this is correct.
+
+Wed Jun 28 11:55:04 2006  pfox
+
+      29* ctw.c: Dont copy the line drawing chars to the selection.
+
+Sun Jun 25 19:04:38 2006  fox
+
+      28* term.c: Dont get fooled by a runaway null.
+
+Sun May 28 09:59:24 2006  fox
+
+      27* fcterm.c, ptysrv.c, pty.c, ctw.c: Support chat mode.
+
+Sun May 21 16:56:20 2006  fox
+
+      26* ctw.c: Handle primary/secondary/clipboard for KDE.
+
+Sun Apr 23 20:34:49 2006  fox
+
+      25* ctw.c: Fix handling of ESC[nd
+
+Mon Mar 27 22:13:46 2006  fox
+
+      24* ctw.c: Handle ESC[=1C
+
+Tue Mar  7 07:42:02 2006  pfox
+
+      23* ctw.c: Add line labelling option.
+
+Sat Mar  4 18:01:03 2006  fox
+
+      22* term.c: Dont let children inherit the ptys we own.
+
+      21* ptysrv.c: Dont let children inherit the ptys we own.
+
+Wed Mar  1 11:13:06 2006  fox
+
+      20* ctw.c: Add Button4/5 for mouse wheel support.
+
+Tue Jan  3 21:10:25 2006  fox
+
+      19* ctw.c: Add ESC[?1001s and ESC[?1001r for w3m support.
+
+Thu Dec 22 20:20:18 2005  fox
+
+      18* ctw.c: Fix core dump if we get esc sequence to change window size.
+
+Sat Nov 12 23:55:50 2005  fox
+
+      17* ptysrv.c: Fix large pastes being truncated.
+
+Sun Jul 31 17:00:08 2005  fox
+
+      16* ptysrv.c, pty.c, fcterm: Add pty server support.
+
+Thu Jul 21 19:05:43 2005  fox
+
+      15* ctw.c: ctw_get_selection: Didnt work if we didnt have focus
+          (CurrentTime).
+
+Mon Jan 24 17:22:44 2005  pfox
+
+      14* ctw.c: Avoid core dump of <PrtSc> running off end of table.
+
+Sat Nov  6 22:25:08 2004  fox
+
+      13* ctw.c: Handle flashing properly when num of screens flashing is even.
+
+Wed Sep 29 15:21:19 2004  pfox
+
+      12* ctw.c: When copying to clipboard, include \n if in app keypad mode.
+
+Tue Aug 31 22:22:15 2004  fox
+
+      11* fcterm.c: 2.005 September 2004
+
+      10* ctw.c: Trim trailing space in the text selection.
+
+Sat Aug 28 17:10:00 2004  fox
+
+       9* fcterm.c: Re-enable XSetInputFocus code but dont do it if we are not
+          IsViewable.
+
+Thu Aug 12 09:21:46 2004  pfox
+
+       8* fcterm.c: v2.03
+
+       7* ctw.c: Werent clearing the line wrap flag properly so cut'n'paste 
+          would join lines.
+
+Mon Aug  9 08:12:52 2004  pfox
+
+       6* Version: 2.02
+
+       5* keyboard.c: Handle [aeiou]cute for Exceed.
+
+       4* ctw.c: LA_CONTINUED being set on wrong line.
+
+Thu Aug  5 07:22:31 2004  pfox
+
+       3* ctw.c: When pasting lines, handle linewrapping properly.
+
+       2* Added minimap functionality. Its slow (thanks X windows) but it 
+          works.
+
+Fri Jul 30 12:28:46 2004  pfox
+
+    1* keyboard.c: Make everything builtin - no more xcrisp.
+

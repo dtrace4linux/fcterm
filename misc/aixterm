@@ -1,0 +1,1489 @@
+  ^aixterm Command
+  aixterm Command
+  
+  
+  
+  Purpose
+  
+  Initializes an Enhanced X-Windows terminal emulator.
+  
+   Syntax
+  
+  aixterm [ -ah] [ -ar] [ -b NumberPixels] [ -bd Color] [ -bg
+  Color] [ -bw NumberPixels] [ -ccCharRange:Value[,...]] [ -cr
+  Color] [ -cu] [ -display Name:Number] [ -dw] [ -e Command] [ -f0
+  Font] [ -f1 Font] [ -f2 Font] [ -f3 Font] [ -f4 Font] [ -f5 Font]
+  [ -f6 Font] [ -f7 Font] [ --f0 FontSet] [ --f1 FontSet] [ --f2
+  FontSet] [ --f3 FontSet] [ --f4 FontSet] [ --f5 FontSet] [ --f6
+  FontSet] [ --f7 FontSet] [ -fb Font] [ -fg Color] [ -fi FontSet]
+  [ -fn Font] [ -fs Font] [ -fullcursor] [ -geometry Geometry] [
+  #geometryGeometry] [ -help] [ -i] [ -ib File] [ -im InputMethod]
+  [ -j] [ -keywords] [ -lang Language] [ -l] [ -leftscroll] [ -lf
+  File] [ -ls] [ -mb] [ -mc Number] [ -ms Color] [ -n IconName] [
+  -name Application] [ -nb Number] [ -outline Color] [ -po Number]
+  [ -ps] [ -rv] [ -rw] [ -s] [ -sb] [ -sf] [ -si] [ -sk] [ -sl
+  NumberLines] [ -sn] [ -st] [ -suppress] [ -T Title] [ -ti] [ -tm
+  String] [ -tn TerminalName] [ -ut] [ -v] [ -vb] [ -W] [ -xrm
+  String] [ -132]
+  
+  Description
+  
+  The aixterm command provides a standard terminal type for pro-
+  grams that do not  interact  directly  with  Enhanced  X-Windows.
+  This command provides emulation for either a VT102 terminal or an
+  high function terminal (HFT).  The default is  HFT emulation.
+  The VT102 mode is activated by the -v flag.
+  
+  The aixterm command supports the display for up to 16 colors at a
+  time.
+  
+  The aixterm terminal supports escape sequences that perform ter-
+  minal  functions  such  as  cursor  control,  moving and deleting
+  lines, and aixterm private functions.
+  
+  Many of the special aixterm features (like the scroll bar) can be
+  modified under program control through a set of private aixterm
+  escape sequences.  You can also use escape  sequences  to  change
+  the title in the title bar.
+  
+  There are three different areas in the aixterm window:
+  
+  *	Scroll bar
+  
+  *	Status line
+  
+  *	Terminal window.
+  
+  By default, only the terminal window is initially displayed.
+  
+  The terminal window is the area provided for the terminal emula-
+  tion.  When you  create  a window, a pseudo terminal is allocated
+  and a command (usually a shell) is started.
+  
+  The aixterm command automatically highlights the window border
+  and  the text cursor when the  mouse  cursor  enters  the  window
+  (selected) and unhighlights them when the mouse cursor leaves the
+  window (unselected).  If the window is the focus window, the win-
+  dow is highlighted  regardless  of the location of the mouse cur-
+  sor.  Any window manager (as in the case of the mwm window
+  manager) can cover the aixterm border, and the highlight and
+  border color will not show.
+  
+  The WINDOWID environment variable is set to the resource ID
+  number of the aixterm window.
+  
+  When running in an aixterm window, the TERM environment variable
+  should be TERM=aixterm.
+  
+  Whatever the TERM environment variable is on your HOME machine is
+  what the TERM environment variable should be on the remote
+  machine (unless it is overridden by your .profile).
+  
+  When you use the rlogin, tn, or rsh commands to login to a dif-
+  ferent machine, the TERM environment variable should be set to
+  aixterm.  If this does not happen, you can perform the following
+  two command line operations:
+  
+  1.	TERM=aixterm
+  
+  2.	export TERM
+  
+  If commands (like vi) do not recognize the term type aixterm when
+  going from a RISC System/6000 system to some  other machine, per-
+  form the following one-time operation on the remote machine:
+  
+  1.	su
+  
+  2.	cd/tmp
+  
+  3.	mkdir Xxxxx
+  
+  4.	cd Xxxxx
+  
+  5.	ftp RISC System/6000MachineName
+  
+  6.	cd /usr/share/lib/terminfo
+  
+  7.	get ibm.ti
+  
+  8.	quit
+  
+  9.	TERMINFO=/tmp/Xxxxx
+  
+  10.	export TERMINFO
+  
+  11.	tic ibm.ti
+  
+  12.	ls
+  
+  13.	ls a
+  
+  14.	mkdir /usr/share/lib/terminfo/a
+  
+  15.	cp a/aixterm* /usr/share/lib/terminfo/a
+  
+  16.	cd /tmp
+  
+  17.	rm -r /tmp/Xxxxx
+  
+  18.	exit
+  
+  19.	On the remote machine, enter the following:
+  
+  a.	TERM=aixterm
+  
+  b.	export TERM
+  
+  HFT Display Characteristics
+  
+  VTLs are supported with the following characteristics:
+  
+  *	Locator reports are given for the following mouse events:
+  
+  -	ButtonPress
+  
+  -	ButtonRelease
+  
+  -	MotionNotify (with any button down)
+  
+  -	LeftDownMotion
+  
+  -	MiddleDownMotion
+  
+  *	Locator reports are given in absolute coordinates.
+  
+  *	Locator motion is processed in compressed mode.
+  
+  *	Applications need not display a locator cursor.
+  
+  ----------------------------------------------------------
+  |Function                         |HFT     |aixterm      |
+  ----------------------------------------------------------
+  |TERMINAL CONTROL                 |        |             |
+  ----------------------------------------------------------
+  |Query I/O Error                  |ioctl   |no support   |
+  ----------------------------------------------------------
+  |Query Device                     |ioctl   |no support   |
+  ----------------------------------------------------------
+  |Reconfigure                      |ioctl   |no support   |
+  ----------------------------------------------------------
+  |Set Echo and Break Map           |ioctl   |no support   |
+  ----------------------------------------------------------
+  |Set Keyboard Map                 |ioctl   |hftctl       |
+  ----------------------------------------------------------
+  |Get Virtual Terminal ID          |ioctl   |no support   |
+  ----------------------------------------------------------
+  |Query Device ID                  |ioctl   |no support   |
+  ----------------------------------------------------------
+  |Query Physical Device (ID=0)     |ioctl   |no support   |
+  ----------------------------------------------------------
+  |Query HFT device                 |ioctl   |hftctl       |
+  ----------------------------------------------------------
+  |Query Mouse/Tablet               |ioctl   |hftctl       |
+  ----------------------------------------------------------
+  |Query LPFKs                      |ioctl   |no support   |
+  ----------------------------------------------------------
+  |Query Dials                      |ioctl   |no support   |
+  ----------------------------------------------------------
+  |Query PS                         |ioctl   |hftctl       |
+  ----------------------------------------------------------
+  |Enable / Disable Sound           |ioctl   |no support   |
+  ----------------------------------------------------------
+  |Enter / Exit Monitor Md          |ioctl   |no support   |
+  ----------------------------------------------------------
+  |Query Screen Manager             |ioctl   |no support   |
+  ----------------------------------------------------------
+  |Control Screen Manager           |ioctl   |no support   |
+  ----------------------------------------------------------
+  |KSR Protocol                     |VTD     |VTD          |
+  ----------------------------------------------------------
+  |Set KSR Color Palette            |VTD     |no support   |
+  ----------------------------------------------------------
+  |Change Fonts                     |VTD     |no support   |
+  ----------------------------------------------------------
+  |Cursor Representation            |VTD     |VTD          |
+  ----------------------------------------------------------
+  |INPUT                            |        |             |
+  ----------------------------------------------------------
+  |Dead Key Support                 |read    |supported    |
+  ----------------------------------------------------------
+  |Untranslated Key                 |read    |supported    |
+  ----------------------------------------------------------
+  |Input Device Report              |read    |supported    |
+  ----------------------------------------------------------
+  |mouse                            |VTL     |no support   |
+  ----------------------------------------------------------
+  |tablet                           |VTL     |supported    |
+  ----------------------------------------------------------
+  |dials                            |VTL     |no support   |
+  ----------------------------------------------------------
+  |Lighted Program Function Keys    |VTL     |no support   |
+  ----------------------------------------------------------
+  |Sound Complete                   |signal  |no support   |
+  ----------------------------------------------------------
+  |OUTPUT                           |        |             |
+  ----------------------------------------------------------
+  |Write ASCII (Code Page 850)      |write   |supported    |
+  ----------------------------------------------------------
+  |Set LEDs                         |VTD     |no support   |
+  ----------------------------------------------------------
+  |Set LPFKs                        |VTD     |no support   |
+  ----------------------------------------------------------
+  |Set Dials                        |VTD     |no support   |
+  ----------------------------------------------------------
+  |Sound output                     |VTD     |no support   |
+  ----------------------------------------------------------
+  |Cancel Sound                     |VTD     |no support   |
+  ----------------------------------------------------------
+  |Change Physical Display          |VTD     |no support   |
+  ----------------------------------------------------------
+  
+  Using the aixterm Command Data-Stream Support
+  
+  The following is a list of the escape sequences supported by the 
+  aixterm command.
+  
+  Some escape sequences activate and deactivate an alternate screen
+  buffer that is the same size as the display area  of  the window.
+  This capability allows the contents of the screen to be saved and
+  restored.  When the alternate  screen  is  activated, the current
+  screen is saved and replaced with the alternate screen.  The sav-
+  ing of lines scrolled off of the window is disabled until the or-
+  iginal screen is restored.
+  
+  This table uses these abbreviations in the righthand column:
+  
+  Xv	Supported by the aixterm command running in VT100 mode.
+  
+  Xh	Supported by the aixterm command running in HFT mode.
+  
+  H	Found in the HFT data stream.
+  
+  V	Found in the VT100 data stream.
+  
+  -----------------------------------------------------------------------------------
+  |Name    |Function                          |Data Stream            |Support      |
+  -----------------------------------------------------------------------------------
+  |        |SINGLE-BYTE CONTROLS              |                       |             |
+  -----------------------------------------------------------------------------------
+  |BEL     |Bell                              |0x07                   |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |BS      |Backspace                         |0x08                   |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |HT      |Horizontal tab                    |0x09                   |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |LF      |Linefeed                          |0x0A                   |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |VT      |Vertical tab                      |0x0B                   |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |FF      |Form feed                         |0x0C                   |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |CR      |Carriage return                   |0x0D                   |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |SO      |Shift out                         |0x0E                   |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |SI      |Shift in                          |0x0F                   |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |DC1     |Device control 1                  |0x11                   |H, V         |
+  -----------------------------------------------------------------------------------
+  |DC3     |Device control 3                  |0x13                   |H, V         |
+  -----------------------------------------------------------------------------------
+  |CAN     |Cancel                            |0x18                   |H, V         |
+  -----------------------------------------------------------------------------------
+  |SUB     |Substitute (also cancels)         |0x1A                   |H, V         |
+  -----------------------------------------------------------------------------------
+  |ESC     |Escape                            |0x1B                   |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |SS4     |Single Shift 4                    |0x1C                   |H            |
+  -----------------------------------------------------------------------------------
+  |SS3     |Single Shift 3                    |0x1D                   |H            |
+  -----------------------------------------------------------------------------------
+  |SS2     |Single Shift 2                    |0x1E                   |H            |
+  -----------------------------------------------------------------------------------
+  |SS1     |Single Shift 1                    |0x1F                   |H            |
+  -----------------------------------------------------------------------------------
+  |cbt     |cursor back tab                   |ESC [ Pn Z             |Xv, Xh, H    |
+  -----------------------------------------------------------------------------------
+  |cha     |cursor horizontal absolute        |ESC [ Pn G             |Xv, Xh, H    |
+  -----------------------------------------------------------------------------------
+  |cht     |cursor horizontal tab             |ESC [ Pn I             |H            |
+  -----------------------------------------------------------------------------------
+  |ctc     |cursor tab stop control           |ESC [ Pn W             |H            |
+  -----------------------------------------------------------------------------------
+  |cnl     |cursor next line                  |ESC [ Pn E             |H            |
+  -----------------------------------------------------------------------------------
+  |cpl     |cursor preceding line             |ESC [ Pn F             |Xv, Xh, H    |
+  -----------------------------------------------------------------------------------
+  |cpr     |cursor position report            |ESC [ Pl; Pc R         |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |cub     |cursor backward                   |ESC [ Pn D             |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |cud     |cursor down                       |ESC [ Pn B             |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |cuf     |cursor forward                    |ESC [ Pn C             |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |cup     |cursor position                   |ESC [ Pl; Pc H         |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |cuu     |cursor up                         |ESC [ Pn A             |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |cvt     |cursor vertical tab               |ESC [ Pn Y             |H            |
+  -----------------------------------------------------------------------------------
+  |da1     |DEVICE ATTRIBUTES                 |                       |             |
+  |        |request (host to vt100)           |ESC [ c                |Xv, Xh, V    |
+  |        |request (host to vt100)           |ESC [ 0 c              |Xv, Xh, V    |
+  |        |response (vt100 to host)          |ESC [ ? 1 ; 2 c        |Xv, Xh, V    |
+  -----------------------------------------------------------------------------------
+  |dch     |delete character                  |ESC [ Pn P             |Xv, Xh, H    |
+  -----------------------------------------------------------------------------------
+  |decaln  |screen alignment display          |ESC # 8                |Xv, Xh, V    |
+  -----------------------------------------------------------------------------------
+  |deckpam |keypad application mode           |ESC =                  |Xv, V        |
+  -----------------------------------------------------------------------------------
+  |deckpnm |keypad numeric mode               |ESC >                  |Xv, V        |
+  -----------------------------------------------------------------------------------
+  |decrc   |restore cursor & attributes       |ESC 8                  |Xv, Xh, V    |
+  -----------------------------------------------------------------------------------
+  |decsc   |save cursor & attributes          |ESC 7                  |Xv, Xh, V    |
+  -----------------------------------------------------------------------------------
+  |decstbm |set top & bottom margins          |ESC [ Pt; Pb r         |Xv, Xh, V    |
+  -----------------------------------------------------------------------------------
+  |dl      |delete line                       |ESC [ Pn M             |Xv, Xh, H    |
+  -----------------------------------------------------------------------------------
+  |dsr     |device status report              |ESC [ Ps n             |             |
+  |        | 0 response from vt100: ready     |                       |Xv, Xh, V    |
+  |        | 5 command from host: please      |                       |Xv, Xh, V    |
+  |        | report status                    |                       |             |
+  |        | 6 command from host: report      |                       |Xv, Xh, H, V |
+  |        | active position                  |                       |             |
+  |        |13 error report sent from         |                       |H            |
+  |        | virtual terminal to host         |                       |             |
+  -----------------------------------------------------------------------------------
+  |dmi     |disable manual input              |ESC ` (back quote)     |H            |
+  -----------------------------------------------------------------------------------
+  |emi     |enable manual input               |ESC b                  |H            |
+  -----------------------------------------------------------------------------------
+  |ea      |erase area                        |ESC [ Ps O             |             |
+  |        |  0 erase to end of area          |                       |Xv, Xh, H    |
+  |        |  1 erase from area start         |                       |Xv, Xh, H    |
+  |        |  2 erase all of area             |                       |Xv, Xh, H    |
+  -----------------------------------------------------------------------------------
+  |ed      |erase display                     |ESC [ Ps J             |             |
+  |        |  0 erase to end of display       |                       |Xv, Xh, H, V |
+  |        |  1 erase from display star       |                       |Xv, Xh, H, V |
+  |        |  2 erase all of display          |                       |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |ef      |erase field-e,s,all               |ESC [ Ps N             |             |
+  |        |  0 erase to end of field         |                       |Xv, Xh, H    |
+  |        |  1 erase from field start        |                       |Xv, Xh, H    |
+  |        |  2 erase all of field            |                       |Xv, Xh, H    |
+  -----------------------------------------------------------------------------------
+  |el      |erase line                        |ESC [ Ps K             |             |
+  |        |  0 erase to end of line          |                       |Xv, Xh, H, V |
+  |        |  1 erase from start of line      |                       |Xv, Xh, H, V |
+  |        |  2 erase all of line             |                       |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |ech     |erase character                   |ESC [ Pn X             |Xv, Xh, H    |
+  -----------------------------------------------------------------------------------
+  |hts     |horizontal tab stop               |ESC H                  |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |hvp     |horizontal and vertical position  |ESC [ Pl; Pc f         |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |ich     |insert character                  |ESC [ Pn @             |Xv, Xh, H    |
+  -----------------------------------------------------------------------------------
+  |il      |insert line                       |ESC [ Pn L             |Xv, Xh, H    |
+  -----------------------------------------------------------------------------------
+  |ind     |index                             |ESC D                  |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |ls2     |lock shift G2                     |ESC n                  |Xv           |
+  -----------------------------------------------------------------------------------
+  |ls3     |lock shift G3                     |ESC o                  |Xv           |
+  -----------------------------------------------------------------------------------
+  |nel     |next line                         |ESC E                  |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |ksi     |keyboard status information       |ESC [ Ps p             |H            |
+  -----------------------------------------------------------------------------------
+  |pfk     |PF key report                     |ESC [ Pn q             |Xh, H        |
+  -----------------------------------------------------------------------------------
+  |rcp     |restore cursor position           |ESC [ u                |Xv, Xh, H    |
+  -----------------------------------------------------------------------------------
+  |ri      |reverse index                     |ESC M                  |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |ris     |reset to initial state            |ESC c                  |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |rm      |reset mode, ANSI specified modes: |ESC [ Ps;...;Ps        |             |
+  |        |See "set mode" below in this      |                       |             |
+  |        |column.                           |                       |             |
+  -----------------------------------------------------------------------------------
+  |        |reset mode, other private modes   |ESC [ ? Ps;...;Ps l    |             |
+  |        |and XTERM private modes: See "set |                       |             |
+  |        |mode" below in this column.       |                       |             |
+  -----------------------------------------------------------------------------------
+  |        |restore mode, other private modes |ESC [ ? P;...;Ps r     |             |
+  |        |and XTERM private modes: See "set |                       |             |
+  |        |mode" below in this column.       |                       |             |
+  -----------------------------------------------------------------------------------
+  |        |save mode, other private modes    |ESC [ ? Ps;...;Ps s    |             |
+  |        |and XTERM private modes: See "set |                       |             |
+  |        |mode". below in this column.      |                       |             |
+  -----------------------------------------------------------------------------------
+  |scp     |save cursor postion               |ESC [ s                |Xv, Xh, H    |
+  -----------------------------------------------------------------------------------
+  |scs     |select character set              |                       |             |
+  -----------------------------------------------------------------------------------
+  |        |United Kingdom Set                |ESC ( A    (GO)        |Xv, V        |
+  |        |                                  |ESC ) A    (G1)        |Xv, V        |
+  |        |                                  |ESC * A    (G2)        |Xv, V        |
+  |        |                                  |ESC + A    (G3)        |Xv, V        |
+  -----------------------------------------------------------------------------------
+  |        |ASCII Set (USASCII)               |ESC ( B    (G0)        |Xv, V        |
+  |        |                                  |ESC ) B    (G1)        |Xv, V        |
+  |        |                                  |ESC * B    (G2)        |Xv, V        |
+  |        |                                  |ESC + B    (G3)        |Xv, V        |
+  -----------------------------------------------------------------------------------
+  |        |special graphics                  |ESC ( 0    (G0)        |Xv, V        |
+  |        |                                  |ESC ) 0    (G1)        |Xv, V        |
+  |        |                                  |ESC * 0    (G2)        |Xv, V        |
+  |        |                                  |ESC + 0    (G3)        |Xv, V        |
+  -----------------------------------------------------------------------------------
+  |sd      |scroll down                       |ESC [ Pn T             |H            |
+  -----------------------------------------------------------------------------------
+  |sl      |scroll left                       |ESC [ Pn Sp @          |H            |
+  -----------------------------------------------------------------------------------
+  |sr      |scroll right                      |ESC [ Pn Sp A          |H            |
+  -----------------------------------------------------------------------------------
+  |ss2     |single shift G2                   |ESC N                  |Xv           |
+  -----------------------------------------------------------------------------------
+  |ss3     |single shift G3                   |ESC O                  |Xv           |
+  -----------------------------------------------------------------------------------
+  |su      |scroll up                         |ESC [ Pn S             |Xv, Xh, H    |
+  -----------------------------------------------------------------------------------
+  |sgr     |set graphic rendition             |ESC [ Ps m             |             |
+  |        |  0 normal                        |                       |Xv, Xh, H, V |
+  |        |  1 bold                          |                       |Xv, Xh, H, V |
+  |        |  4 underscore                    |                       |Xv, Xh, H, V |
+  |        |  5 blink (appears as bold)       |                       |Xv, Xh, H, V |
+  |        |  7 reverse                       |                       |Xv, Xh, H, V |
+  |        |  8 invisible                     |                       |Xh, H        |
+  |        |  10..17 fonts                    |                       |Xh, H        |
+  |        |  30..37 foreground colors        |                       |Xh, H        |
+  |        |  40..47 background colors        |                       |Xh, H        |
+  |        |  90..97 foreground colors        |                       |Xh, H        |
+  |        | 100..107 background colors       |                       |Xh, H        |
+  -----------------------------------------------------------------------------------
+  |sg0a    |set GO character set              |ESC ( <                |Xh, H        |
+  -----------------------------------------------------------------------------------
+  |sg1a    |set G1 character set              |ESC ) <                |Xh, H        |
+  -----------------------------------------------------------------------------------
+  |sm      |set mode                          |                       |             |
+  -----------------------------------------------------------------------------------
+  |        |ANSI specified modes              |ESC [ Ps;...;Ps h      |             |
+  |        |  4 IRM  insert mode              |                       |Xv, Xh, H    |
+  |        | 12 SRM  send/rec mode            |                       |H            |
+  |        | 18 TSM  tab stop mode            |                       |H            |
+  |        | 20 LNM  linefeed/newline         |                       |Xv, Xh, H, V |
+  -----------------------------------------------------------------------------------
+  |.       |Other private modes               |ESC [ ? Ps;...;Ps h    |             |
+  |        | 1 normal/application cursor      |                       |Xv, V        |
+  |        | 3 80/132 columns                 |                       |Xv, Xh, V    |
+  |        | 4 smooth/jump scroll             |                       |Xv, Xh, V    |
+  |        | 5  reverse/normal video          |                       |Xv, Xh, V    |
+  |        | 6 origin/normal                  |                       |Xv, Xh, V    |
+  |        | 7 on/off autowrap                |                       |Xv, Xh, H, V |
+  |        | 8 on/off autorept                |                       |Xv, Xh, V    |
+  |        | 21 CNM     CR-NL                 |                       |H            |
+  -----------------------------------------------------------------------------------
+  |        |XTERM private modes               |                       |             |
+  |        | 40 132/80 column mode            |                       |Xv, Xh       |
+  |        | 41 curses(5) fix                 |                       |Xv, Xh       |
+  |        | 42 hide/show scrollbar           |                       |Xv, Xh       |
+  |        | 43 on/off save scroll text       |                       |Xv, Xh       |
+  |        | 44 on/off margin bell            |                       |Xv, Xh       |
+  |        | 45 on/off reverse wraparound     |                       |Xv, Xh       |
+  |        | 47 alternate/normal screen buffe |                       |Xv, Xh       |
+  |        |                                  |                       |Xv, Xh       |
+  |        | 48 reverse/normal status line    |                       |Xv, Xh       |
+  |        | 49 page/normal scroll mode       |                       |             |
+  -----------------------------------------------------------------------------------
+  |tbc     |tabulation clear                  |ESC [ Ps g (default Ps |             |
+  |        | 0 clear horizontal tab stop at   |=0)                    |Xv, Xh, H, V |
+  |        | active position                  |                       |             |
+  |        | 1 vertical tab at line indicated |                       |H            |
+  |        | by cursor                        |                       |             |
+  |        | 2 horizontal tabs on line        |                       |H            |
+  |        | 3 all horizontal tabs            |                       |Xv, Xh, H, V |
+  |        | 4 all vertical tabs              |                       |H            |
+  -----------------------------------------------------------------------------------
+  |VTD     |virtual terminal data             |ESC [ x                |Xv, Xh, H    |
+  -----------------------------------------------------------------------------------
+  |VTL     |virtual terminal device input     |ESC [ y                |Xh, H        |
+  -----------------------------------------------------------------------------------
+  |VTR     |vt raw keyboard input             |ESC [ w                |Xh, H        |
+  -----------------------------------------------------------------------------------
+  |vts     |vertical tab stop                 |ESC I                  |H            |
+  -----------------------------------------------------------------------------------
+  |xes     |erase status line                 |ESC [ ? E              |Xv, Xh       |
+  -----------------------------------------------------------------------------------
+  |xrs     |return from status line           |ESC [ ? F              |Xv, Xh       |
+  -----------------------------------------------------------------------------------
+  |xhs     |hide status line                  |ESC [ ? H              |Xv, Xh       |
+  -----------------------------------------------------------------------------------
+  |xss     |show status line                  |ESC [ ? S              |Xv, Xh       |
+  -----------------------------------------------------------------------------------
+  |xgs     |go to column of status line       |ESC [ ? Ps T           |Xv, Xh       |
+  -----------------------------------------------------------------------------------
+  |xst     |set text parameters               |ESC ] Ps ; Pt \007     |Xv, Xh       |
+  |        | 0 change window name and         |                       |Xv, Xh       |
+  |        |     title to Pt                  |                       |             |
+  |        | 1  sets only the icon name       |                       |Xv, Xh       |
+  |        | 2  sets only the title name      |                       |Xv, Xh       |
+  -----------------------------------------------------------------------------------
+  |        |everything between ESC-P and ESC\ |ESC-P...ESC\           |Xv, Xh       |
+  |        |will be ignored. aixterm will     |                       |             |
+  |        |work as usual after the ESC\.     |                       |             |
+  -----------------------------------------------------------------------------------
+  
+  Copy, Paste, and Re-execute Functions
+  
+  When you create a terminal window, the aixterm command allows you
+  to  select  text  and copy it within the same or other windows by
+  using  copy,  paste, and re-execute button functions.  These text
+  functions  are  available  in  both HFT and VT102 emulation.  The
+  selected text is highlighted while the button is pressed.
+  
+  The copy, paste, and re-execute button functions perform as fol-
+  lows:
+  
+  Copy	The left button is used to save text into the cut buffer.
+  The aixterm command does a text cut, not a box cut.  Move the
+  cursor  to beginning of the text, hold the button down while mov-
+  ing  the  cursor to the end of the region and release the button.
+  The  selected  text  is  highlighted  and saved in the global cut
+  buffer and made the PRIMARY selection when the button is
+  released.
+  
+  *	Double clicking selects by words.
+  
+  *	Triple clicking selects by lines.
+  
+  *	Quadruple clicking goes back to characters and so on.
+  
+  Multiple clicking is determined from the time that the button is
+  released  to  the  time  the  button is pressed again, so you can
+  change the selection unit in the middle of a selection.
+  
+  The right button extends the current selection.  If pressed while
+  closer  to  the right edge of the selection than the left, it ex-
+  tends  or contracts the right edge of the selection.  If you con-
+  tract  the  selection  past  the  left edge of the selection, the
+  aixterm command assumes you really meant the left edge, restores
+  the  original  selection, then extends or contracts the left edge
+  of  the  selection.   Extension starts in the selection unit mode
+  that  the  last  selection or extension was performed in; you can
+  multiple click to cycle through them.
+  
+  Paste	Pressing both buttons at once (or the middle button on a
+  three button mouse) types (pastes) the text from the PRIMARY
+  selection, if any, otherwise from the cut buffer, into the termi-
+  nal  window  that contains the mouse cursor, inserting it as key-
+  board input.
+  
+  Re-execute	Pressing the Shift key and the left mouse button takes
+  the  text  from the cursor (at button release) through the end of
+  the  line  (including  the  new line), saves it in the global cut
+  buffer and immediately retypes the line, inserting it as keyboard
+  input.   The selected text is highlighted.  Moving the mouse cur-
+  sor  off  of the initial line cancels the selection.  If there is
+  no text beyond the initial cursor point, the aixterm command
+  sounds the bell, indicating an error.
+  
+  By cutting and pasting pieces of text without trailing new lines,
+  you  can  take  text from several places in different windows and
+  form  a  command to the shell, for example, or take output from a
+  program  and  insert it into your favorite editor.  Since the cut
+  buffer  is  globally  shared  among  different  applications, you
+  should regard it as a file whose contents you know.  The terminal
+  emulator  and other text programs should treat it as if it were a
+  text file, that is, the text is delimited by new lines.
+  
+  Menu Usage
+  
+  The aixterm command has two different menus:
+  
+  *	Options
+  
+  *	Modes
+  
+  Each menu pops up under the correct combinations of key and but-
+  ton  presses.   Most menus are divided into two sections that are
+  separated by a horizontal line.  The top portion contains various
+  modes  that  can be altered.  A check mark appears next to a mode
+  that  is  currently active.  Selecting one of these modes toggles
+  its  state.   The bottom portion of the menu provides the command
+  entries; selecting one of these performs the indicated function.
+  
+  The Options menu pops up when the Ctrl key and the left mouse
+  button  are pressed simultaneously while the mouse cursor is in a
+  window.    The  menu  contains  items that apply to all emulation
+  modes.
+  
+  The Modes menu sets various modes for each emulation mode.  The
+  menu is activated by pressing the Ctrl key and the middle mouse
+  button at the same time, while the mouse cursor is in the window.
+  In  the command section of this menu, the soft reset entry resets
+  the scroll regions.  This is convenient when a program leaves the
+  scroll  regions set incorrectly.  The full reset entry clears the
+  screen, resets tabs to every eight columns, and resets the termi-
+  nal  modes  (such  as  wrap  and  smooth scroll) to their initial
+  states after the aixterm command finishes processing the command
+  line options.  When the Auto Linefeed option is turned on, a car-
+  riage  return  is  added when a carriage return, vertical tab, or
+  form  feed  is  received.    The shells generally do this for the
+  linefeed, but not for the vertical tab or form feed.
+  
+  The Scrollbar menu pops up when both mouse buttons are pressed at
+  once  (or  the  middle  button on a three-button mouse) while the
+  mouse cursor is on the scroll bar.  This menu allows options par-
+  ticular to the scroll bar to be set.
+  
+  Scroll Bar
+  
+  The aixterm command supports an optional scroll bar composed of a
+  scroll  button  that  displays at the top of the scroll bar and a
+  scroll  region  that  displays  at the bottom.  The scroll bar is
+  hidden until you request it to display.
+  
+  The scroll region displays the position and amount of text
+  currently  showing  in  the  window (highlighted) relative to the
+  amount  of  text actually saved in the scrolling buffer.  As more
+  text  is  saved  in the scrolling buffer (up to the maximum), the
+  size of the highlighted area decreases.
+  
+  The scroll button causes the window to scroll up and down within
+  the saved text.  Clicking the right button moves the window posi-
+  tion  up  (the  text  scrolls downward); clicking the left button
+  moves  the  window  position down (the text scrolls upward).  The
+  amount of scrolling is modified by the Shift and Ctrl keys.  If
+  neither  key  is  pressed,  the window scrolls a single line at a
+  time.    Pressing  the Shift key causes the text to scroll a full
+  window  at  a time, minus one line.  Pressing the Ctrl key causes
+  the  text  to  be  positioned at the extreme top or bottom of the
+  file.
+  
+  Character Classes
+  
+  Clicking the left mouse button (the copy function) twice in rapid
+  succession  causes  all  characters  of  the same class (that is,
+  letters,  white  space,  punctuation,  and so on) to be selected.
+  Because  people  have  different  preferences  for what should be
+  selected  (for  example, should file names be selected as a whole
+  or only the separate subnames), you can override the default map-
+  ping by using the charClass (class CharClass) resource.
+  
+  The charClass resource is a list of CharRange:Value pairs where
+  the  range  is  either a single number or a low-to-high number in
+  the  range  of  0 to 127, corresponding to the ASCII code for the
+  character  or  characters  to  be  set.   The value is arbitrary,
+  although the default table uses the character number of the first
+  character occurring in the set.
+  
+  The default table is as follows:
+  
+  static int charClass[128] = {
+  
+  /* NUL  SOH  STX  ETX  EOT  ENQ  ACK  BEL */
+  
+     32,   1,   1,   1,   1,   1,   1,   1,
+  
+  /*  BS   HT   NL   VT   NP   CR   SO   SI */
+  
+      1,  32,   1,   1,   1,   1,   1,   1,
+  
+  /* DLE  DC1  DC2  DC3  DC4  NAK  SYN  ETB */
+  
+      1,   1,   1,   1,   1,   1,   1,   1,
+  
+  /* CAN   EM  SUB  ESC   FS   GS   RS   US */
+  
+      1,   1,   1,   1,   1,   1,   1,   1,
+  
+  /*  SP   !    "    #    $    %    &    ' */
+  
+     32,  33,  34,  35,  36,  37,  38,  39,
+  
+  /*  (    )    *    +    ,    -    .    / */
+  
+     40,  41,  42,  43,  44,  45,  46,  47,
+  
+  /*  0    1    2    3    4    5    6    7 */
+  
+     48,  48,  48,  48,  48,  48,  48,  48,
+  
+  /*  8    9    :    ;    <    =    >    ? */
+  
+     48,  48,  58,  59,  60,  61,  62,  63,
+  
+  /*  @    A    B    C    D    E    F    G */
+  
+     64,  48,  48,  48,  48,  48,  48,  48,
+  
+  /*  H    I    J    K    L    M    N    O */
+  
+     48,  48,  48,  48,  48,  48,  48,  48,
+  
+  /*  P    Q    R    S    T    U    V    W */
+  
+     48,  48,  48,  48,  48,  48,  48,  48,
+  
+  /*  X    Y    Z    [    \    ]    \^    _ */
+  
+     48,  48,  48,  91,  92,  93,  94,  48,
+  
+  /*  `    a    b    c    d    e    f    g */
+  
+     96,  48,  48,  48,  48,  48,  48,  48,
+  
+  /*  h    i    j    k    l    m    n    o */
+  
+     48,  48,  48,  48,  48,  48,  48,  48,
+  
+  /*  p    q    r    s    t    u    v    w */
+  
+     48,  48,  48,  48,  48,  48,  48,  48,
+  
+  /*  x    y    z    {    |    }    \~   DEL */
+  
+     48,  48,  48, 123, 124, 125, 126,   1};
+  
+  For example, the string "33:48,37:48,45-47:48,64:48" indicates
+  that  the  !  (exclamation  mark),  % (percent sign), - (dash), .
+  (period),  /  (slash),  and  &  (ampersand)  characters should be
+  treated  the  same  way  as characters and numbers.  This is very
+  useful  for  cutting and pasting electronic mailing addresses and
+  UNIX file names.
+  
+  Key Translations
+  
+  It is possible to rebind keys (or sequences of keys) to arbitrary
+  strings  for  input.   Changing the translations for events other
+  than key and button events is not expected, and causes unpredict-
+  able behavior.
+  
+  The actions available for key translations are as follows:
+  
+  insert()	Processes the key in the normal way (that is, inserts
+  the ASCII character code corresponding to the keysym found in the
+  keyboard mapping table into the input stream).
+  
+  string(String)	Rebinds the key or key sequence to the string
+  value;  that  is,  inserts  the  string  argument  into the input
+  stream.    Quotation  marks  are necessary if the string contains
+  white  space  or nonalphanumeric characters.  If the string argu-
+  ment  begins  with  the characters ``0x,'' it is interpreted as a
+  hex character constant and the corresponding character is sent in
+  the normal way.
+  
+  keymap(Name)	Takes a single string argument naming a resource to
+  be  used  to dynamically define a new translation table; the name
+  of the resource is obtained by appending the string ``Keymap'' to
+  Name.  The keymap name None restores the original translation
+  table (the very first one; a stack is not maintained).  Uppercase
+  and lowercase is significant.
+  
+  insert-selection(Name[,Name]...)	Retrieves the value of the first
+  (leftmost) named selection that exists and inserts the value into
+  the input stream.  The Name parameter is the name of any selec-
+  tion, for example, PRIMARY or SECONDARY.  Uppercase and lowercase
+  is significant.
+  
+  For example, a debugging session might benefit from the following
+  bindings:
+  
+  *aixterm.Translations: #override <Key>F13: keymap(dbx)
+  
+  *aixterm.dbxKeymap.translations:\
+  
+  <Key>F14: keymap(None) \n\
+  
+  <Key>F17: string("next") string(0x0d) \n\
+  
+  <Key>F18: string("step") string(0x0d) \n\
+  
+  <Key>F19: string("continue") string(0x0d) \n\
+  
+  <Key>F20: string("print") insert-selection(PRIMARY)
+  
+  Key and Button Bindings
+  
+  The key and button bindings for selecting text, pasting text, and
+  activating the menus are controlled  by the translation bindings.
+  In addition  to  the  actions listed in the Key Translations sec-
+  tion, the following actions are available:
+  
+  mode-menu()	Posts one of the two mode menus, depending on which
+  button is pressed.
+  
+  select-start()	Deselects any previously selected text and begins
+  selecting new text.
+  
+  select-extend()	Continues selecting text from the previous start-
+  ing position.
+  
+  start-extend()	Begins extending the selection from the farthest
+  (left or right) edge.
+  
+  select-end(Name[,Name]...)	Ends the text selection.  The Name
+  parameter is the name of a selection into which the text is to be
+  copied.  The aixterm command asserts ownership of all the selec-
+  tions named.  Uppercase and lowercase is significant.
+  
+  ignore()	Quietly discards the key or button event.
+  
+  bell([Volume])	Rings the bell at the specified volume increment
+  above or below the base volume.
+  
+  The default bindings are:
+  
+  static char defaultTranslations[] =
+  "                    <KeyPress>:   insert() \n\
+  \~Shift Ctrl   \~Meta  <Btn1Down>:   mode-menu(options) \n\
+  \~Shift Ctrl   \~Meta  <Btn2Down>:   mode-menu() \n\
+  \~Shift Ctrl   \~Meta  <Btn3Down>:   mode-menu(modes) \n\
+  \~Shift \~Ctrl  \~Meta  <Btn1Down>:   select-start() \n\
+  \~Shift \~Ctrl  \~Meta  <Btn1Motion>: select-extend() \n\
+  \~Shift \~Ctrl  \~Meta  <Btn1Up>:     select-end(PRIMARY)\n\
+  \~Shift \~Ctrl  \~Meta  <Btn2Down>:   ignore() \n\
+  \~Shift \~Ctrl  \~Meta  <Btn2Up>:     insert-selection(PRIMARY)\n\
+  \~Shift \~Ctrl  \~Meta  <Btn3Down>:   start-extend() \n\
+  \~Shift \~Ctrl  \~Meta  <Btn3Motion>: select-extend() \n\
+  \~Shift \~Ctrl  \~Meta  <Btn3Up>:     select-end(PRIMARY)\n\
+  Shift \~Ctrl   \~Meta  <Btn1Down>:   reexecute() \n\
+  Shift \~Ctrl   \~Meta  <Btn1Motion>: select-extend() \n\
+  Shift \~Ctrl   \~Meta  <Btn1Up>:     select-end(PRIMARY)\n\
+  Shift \~Ctrl   \~Meta  <Btn2Down>:   select-start() \n\
+  Shift \~Ctrl   \~Meta  <Btn2Motion>: select-extend() \n\
+  Shift \~Ctrl   \~Meta  <Btn2Up>:     select-end(PRIMARY)\n\
+  Shift \~Ctrl   \~Meta  <Btn3Down>:   ignore() \n\
+  Shift \~Ctrl   \~Meta  <Btn3Up>:     insert-selection(PRIMARY)\n\
+  Shift Ctrl    \~Meta  <BtnDown>:    size(toggle) \n\
+  Shift Ctrl    \~Meta  <BtnUp>:      ignore() \n\
+                       <BtnDown>:    bell(0) \n\
+                       <BtnUp>:      bell(0) \n\
+  ";
+  
+  Flags
+  
+  A flag takes on the opposite value if the - (minus sign) is
+  changed to a + (plus sign).  The following options override those
+  set in the .Xdefaults file:
+  
+  -ah	Highlights the cursor at all times.
+  
+  -ar	Turns on the autoraise mode of aixterm, which automatically
+  raises the window (after a delay determined by the .Xdefaults
+  keyword autoRaiseDelay) when the mouse cursor enters the window.
+  The default is off.
+  
+  This flag can be turned on and off from the Options menu.
+  
+  -b NumberPixels	Specifies the width in pixels of an inner border.
+  The  inner  border  is the distance between the outer edge of the
+  characters and the window border.  The default is 2.
+  
+  -bd Color	Specifies the color of the highlighted border on color
+  displays.  The default is black.
+  
+  -bg Color	Specifies the color of the window background on color
+  displays.  The default is white.
+  
+  -bw NumberPixels	Specifies the width of the window border in pix-
+  els.  The default is 2 pixels.  Some window managers can override
+  this option.
+  
+  -ccCharRange:Value,...	Changes the types of characters that are
+  part of a word.  For example, the string -cc 48-52:3 would make
+  the characters 01234 one word and 56789 a different word.  The :3
+  defines  a  word group number 3. By default, numbers are in class
+  48.  The  character classes are used by cut and paste.
+  
+  -cr Color	Determines the color of the text cursor on color
+  displays.  The default is the foreground color.
+  
+  -cu	Causes certain curses applications to display leading tabs
+  correctly.  The default is off.
+  
+  This flag can be turned on and off from the Modes menu.
+  
+  -display Name:Number	Identifies the host name and X Server
+  display number where the aixterm command is to run.  By default,
+  aixterm gets the host name and display number from the DISPLAY
+  environment variable.
+  
+  -dw	Causes the mouse cursor to move (warp) automatically to the
+  center of the aixterm window when the aixterm icon window is
+  deiconified.  The default is off.
+  
+  -e Command	Specifies a command to be executed in the window.
+  This  flag  executes  the command; it does not start a shell.  If
+  this flag is  used,  the  command and its arguments (if any) must
+  appear last on the aixterm command line.
+  
+  When the command exits, the aixterm command exits.
+  
+  -f0 Font	Specifies the name of the font placed in position 0 in
+  the font table.  This flag is similar to the -fn flag.
+  
+  -f1 Font	Specifies the name of the font placed in position 1 in
+  the font table.  This flag is similar to the -fb flag.
+  
+  -f2 Font	Specifies the name of the font placed in position 2 of
+  the font table.  This flag is similar to the -fi flag.
+  
+  -f3 Font	Specifies the name of the font placed in position 3 of
+  the font table.
+  
+  -f4 Font	Specifies the name of the font placed in position 4 of
+  the font table.
+  
+  -f5 Font	Specifies the name of the font placed in position 5 of
+  the font table.
+  
+  -f6 Font	Specifies the name of the font placed in position 6 of
+  the font table.
+  
+  -f7 Font	Specifies the name of the font for position 7 in the
+  font table.
+  
+  --f0 FontSet	Specifies the name of the font set for position 0 in
+  the font table.  This flag is similar to the -fn flag.
+  
+  --f1 FontSet	Specifies the name of the font set for position 1 in
+  the font table.  This flag is similar to the -fb flag.
+  
+  --f2 FontSet	Specifies the name of the font set for position 2 in
+  the font table.  This flag is similar to the -fi flag.
+  
+  --f3 FontSet	Specifies the name of the font set for position 3 in
+  the font table.
+  
+  --f4 FontSet	Specifies the name of the font set for position 4 in
+  the font table.
+  
+  --f5 FontSet	Specifies the name of the font set for position 5 in
+  the font table.
+  
+  --f6 FontSet	Specifies the name of the font set for position 6 in
+  the font table.
+  
+  --f7 FontSet	Specifies the name of the font set for position 7 in
+  the font table.
+  
+  -fb Font	Specifies the name of the bold font.  This font must be
+  the same height and width as the normal font.
+  
+  -fi FontSet	Specifies the name of the italic font set.
+  
+  -fg Color	Determines the foreground color of the text on color
+  displays.  The default is black.
+  
+  -fn Font	Specifies the name of the normal text font.  Any fixed-
+  width font can be used.  In HFT emulation, the default is
+  Rom14.500 for a large display or Rom10.500 for a small display.
+  In VT102 emulation, the default is vtsingle.
+  
+  -fs Font	Specifies the name of the special graphics font.
+  
+  -fullcursor	Uses a full block cursor instead of the default un-
+  derscore cursor.
+  
+  -geometry Geometry	Specifies the location and dimensions of a
+  window.  The default is 80x25+0+0.  Some window managers (such as
+  the mwm command) can override these defaults.
+  
+  #geometryGeometry	Specifies the location of an icon window.  If
+  specified,  width  and  height are ignored.  Width and height are
+  taken  from  the  size of the bitmap and the length of the title.
+  The window manager can override the location of the icon.
+  
+  Note:	When using one of these values as part of an sh (shell)
+  command,  enclose the value in double quotation marks.  Normally,
+  # indicates a comment in a shell script.
+  
+  -help	Lists the available option flags.
+  
+  -i	Displays the icon window rather than the normal window when
+  the window is opened.  The default is false.
+  
+  Note:	This flag does not work unless the window manager has
+  started.
+  
+  -ib File	Specifies name of the bitmap file to read for use as the
+  icon bitmap file instead of the default bitmap file.  You can ac-
+  cess a /usr/include/X11/bitmaps file from an AIX shell to see a
+  sample bitmap file.
+  
+  -im InputMethod	Specifies a modifier string that identifies the
+  input method to be used by the aixterm command.
+  
+  -j	Causes the aixterm command to move multiple lines up at once
+  (jump  scroll) if many lines are queued for display.  The default
+  is false.
+  
+  This flag can be turned on and off from the Modes menu.
+  
+  -keywords	Lists the  .Xdefaults keywords.
+  
+  -lang Language	Specifies the language to be used under the
+  aixterm command.  The language should follow the format for the
+  locale, as used by the setlocale subroutine.
+  
+  -l	Causes the aixterm command to append output from the window to
+  the end of the logfile file.  The default is false.
+  
+  This flag can be turned on and off from the Options menu.
+  
+  This does not override LogInhibit in the .Xdefaults file.
+  
+  -leftscroll	Places the scroll bar on the left when it is
+  displayed.  The default is on the right side of the text window.
+  
+  -lf File	Specifies the file where the output is saved, instead of
+  the default Xterm.logXxxxx file, where Xxxxx is the process ID of
+  the aixterm command.  The file is created in the directory where
+  the aixterm command is started, or in the home directory for a
+  login aixterm command.  If the file name begins with a | (pipe
+  symbol), the rest of the string is interpreted as a command to be
+  executed by the shell, and a pipe is opened to the process.
+  
+  This flag must be used in conjunction with the -l flag to work
+  effectively.
+  
+  -ls	Causes the shell run under the aixterm command to be a login
+  shell.  The user's .login or .profile file is read, and the ini-
+  tial  directory  is  usually  the home directory.  The default is
+  false.
+  
+  -mb	Turns on the right margin bell.  The default is false.
+  
+  This flag can be turned on and off from the Modes menu.
+  
+  -mc Number	Determines the multiple-click time.  This is used by
+  the cut and paste button functions.
+  
+  -ms Color	Determines the color of the mouse cursor on color
+  displays.  The default is the foreground color.
+  
+  -n IconName	Specifies the icon name for use by the aixterm com-
+  mand.
+  
+  -name Application	Specifies the application name to use for the
+  .Xdefaults file.
+  
+  -nb Number	Specifies the right margin distance at which the mar-
+  gin  bell rings.  The default is 10 spaces from the right edge of
+  the window.
+  
+  -outline Color	Determines the color of the outline attribute
+  (Keisen) on color displays.  The default is the foreground color.
+  
+  The outline attribute for a character is similar to other charac-
+  ter attributes such as bold or reverse video.  The outline attri-
+  bute  is displayed as a box drawn to enclose a character or group
+  of characters.
+  
+  -po Number	Specifies the number of lines from the previous screen
+  that display on the screen when the window scrolls one page.  The
+  default is 1 line.
+  
+  -ps	Turns on the page scroll mode.
+  
+  After a page of lines is displayed, the aixterm command stops
+  displaying  new  lines  and the text cursor disappears.  Pressing
+  the Enter key displays one new line.  Pressing the Spacebar key
+  or a character key displays a new page.  The default is false.
+  
+  -rv	Reverses the foreground and background colors.  This becomes
+  the normal video mode.
+  
+  This flag can be turned on and off from the Modes menu.
+  
+  -rw	Turns on the reverse-wraparound mode.  The default is false.
+  
+  This mode allows the cursor to wraparound from the leftmost
+  column to the rightmost column of the previous line.  This can be
+  useful in the shell to allow erasing characters backwards  across
+  the previous line.
+  
+  This flag can be turned on and off from the Modes menu.
+  
+  -s	Turns off synchronous scrolling on the display.  The default
+  is true.
+  
+  When this flag is specified, the aixterm command no longer at-
+  tempts  to keep the screen current while scrolling  and  can  run
+  faster when network latencies are very high.
+  
+  -sb	Causes the scroll bar to display.  This flag can be turned on
+  and off from the Modes menu.  The default is off.
+  
+  -sf	Generates the Sun function keycodes for programmed function
+  (PF) keys in VT102 mode.
+  
+  -si	Specifies that while using the scroll bar to review previous
+  lines of text, the window is normally  repositioned automatically
+  at the bottom of the scroll region before output to the screen is
+  processed.  The default is true.
+  
+  This flag disables window repositioning on output.
+  
+  -sk	Causes the window to be repositioned automatically in the
+  normal  position at the bottom of the scroll region when a key is
+  pressed.  The default is false.
+  
+  This flag is intended for use with the scroll bar to review pre-
+  vious lines of text.
+  
+  Pressing a key also creates output, which is affected by the -si
+  flag.
+  
+  This flag can be turned on and off from the Scrollbar menu.
+  
+  -sl NumberLines	Specifies the maximum number of lines to save
+  that scroll off of the top of the window.  The default is 64.
+  
+  -sn	Displays the status line to be displayed in normal video (the
+  status line is still enclosed in  a box).  By default, the status
+  line appears in reverse-video relative to the rest of the window.
+  This flag can be turned on and off from the Modes menu.
+  
+  -st	Displays the status line on startup.  The default is false.
+  
+  -suppress	Specifies that the preediting function in the input
+  method  IMIoctl call is suppressed.
+  
+  -T Title	Sets the title bar name, but not the icon name.  If the
+  -n option is not specified, or the icon name is not a specified
+  keyword in the .Xdefaults file, the title is used as the icon
+  name.
+  
+  -ti	Displays the title to the right of the bitmap in the icon
+  window.  By default,  the  title appears under the bitmap (if the
+  window manager allows it).
+  
+  -tm String	Specifies the stty settings.
+  
+  -tn TerminalName	Specifies the terminal environment variable.
+  Use the -tn flag to change the terminal environment variable
+  only.  The terminal environment variable should not be changed to
+  match the terminal in which the X Server is running.  The aixterm
+  command  has  no direct access to the terminal where the X Server
+  is running.
+  
+  -ut	Disables the addition of the login ID to /etc/utmp.
+  
+  -v	Enables VT102 emulation.  By default, HFT is emulated.
+  
+  Note:	The keyboard map is needed for this mode.
+  
+  -vb	Enables the visual bell mode.  The visual bell flashes the
+  window on receipt of the Ctrl-G key combination  instead of ring-
+  ing the bell.  The default is false.
+  
+  -W	Causes the mouse cursor to move (warp) to the middle of the
+  aixterm window when the window is created.  The default is false.
+  
+  -xrm String	Sets the resource string.  For example,
+  aixterm.foreground: blue
+  
+  -132	Causes the sm/rm escape sequences to be recognized and the
+  aixterm window to be resized as specified.  Normally, the sm/rm
+  escape sequences that switch between the 80-column and 132-column
+  modes are ignored.  The default is false.
+  
+  This flag can be turned on and off from the Modes menu.
+  
+  .Xdefaults Keywords
+  
+  Use the following keywords to set the defaults for the aixterm
+  command.
+  
+  alwaysHighlight	If true, always highlights the cursor, even when
+  the mouse pointer is outside the window.
+  
+  autoRaise	If true, raises the aixterm window automatically (after
+  a delay of autoRaiseDelay) when the mouse cursor enters the win-
+  dow.  The default is false.    Window  managers can override this
+  option.
+  
+  autoRaiseDelay	If autoRaise is true, specifies the number of
+  seconds to delay before automatically  raising a window.  The de-
+  fault is 2 seconds.  Window managers can override this option.
+  
+  background	Specifies the color of the window background on color
+  displays.  The default is a white background.
+  
+  boldFontSet	Specifies the name of a bold font.  This font must
+  have the same height and width as the normal sized font.
+  
+  borderColor	Specifies the color of the window border.  Window
+  managers can override this option.
+  
+  borderWidth	Specifies the width of the window border in pixels.
+  The default is 2 pixels.
+  
+  c132	If true, specifies that the sm/rm escape sequences to resize
+  the aixterm window between 80 and 132 columns be recognized.  The
+  default is false.
+  
+  charClass	Specifies the character class.
+  
+  curses	If true, causes certain curses applications to display
+  leading tabs correctly.  The default is false.
+  
+  cursorColor	Specifies the color of the text cursor on color
+  displays.  The default is the foreground color.
+  
+  deiconifyWarp	If true, moves or warps the mouse to the center of
+  the window when replacing the aixterm icon window with the aix-
+  term window.  The default is false.
+  
+  font0	Specifies the name of the font placed in position 0 in the
+  font table.  This flag is similar to the -fn flag.
+  
+  font1	Specifies the name of the font placed in position 1 in the
+  font table.  This flag is similar to the -fb flag.
+  
+  font2	Specifies the name of the font placed in position 2 of the
+  font table.  This flag is similar to the -fi flag.
+  
+  font3	Specifies the name of the font placed in position 3 of the
+  font table.
+  
+  font4	Specifies the name of the font placed in position 4 of the
+  font table.
+  
+  font5	Specifies the name of the font placed in position 5 of the
+  font table.
+  
+  font6	Specifies the name of the font placed in position 6 of the
+  font table.
+  
+  font7	Specifies the name of the font for position 7 in the font
+  table.
+  
+  fontSet	Specifies the name of the normal sized text font used in
+  the body of the aixterm window.
+  
+  fontSet0	Specifies the name of the font set for position 0 in the
+  font table.  This flag is similar to the -fn flag.
+  
+  fontSet1	Specifies the name of the font set for position 1 in the
+  font table.  This flag is similar to the -fb flag.
+  
+  fontSet2	Specifies the name of the font set for position 2 in the
+  font table.  This flag is similar to the -fi flag.
+  
+  fontSet3	Specifies the name of the font set for position 3 in the
+  font table.
+  
+  fontSet4	Specifies the name of the font set for position 4 in the
+  font table.
+  
+  fontSet5	Specifies the name of the font set for position 5 in the
+  font table.
+  
+  fontSet6	Specifies the name of the font set for position 6 in the
+  font table.
+  
+  fontSet7	Specifies the name of the font set for position 7 in the
+  font table.
+  
+  foreground	Specifies the color for the text displayed inside the
+  body of the window on color displays.  The default is black.
+  
+  fullCursor	Displays the full cursor.  The default is an under-
+  score cursor.
+  
+  geometry	Specifies the location or dimensions of the window.
+  
+  iconBitmap	Reads the bitmap file name and uses the resulting bit-
+  map as the icon.
+  
+  iconGeometry	Specifies the location of the icon window.
+  
+  iconName	Specifies the icon name.
+  
+  iconStartup	If true, causes the aixterm command to start by
+  displaying an icon window rather than the normal window.
+  
+  inputMethod	Specifies the input method to be used by the aixterm
+  command.
+  
+  internalBorder	Specifies the number of pixels between the text
+  characters and the window border.  The default is 2 pixels.
+  
+  italicFontSet	Specifies the name of the italic font set.
+  
+  jumpScroll	If true, enables jump scroll.  The default is false.
+  
+  language	Specifies the language to be used under the aixterm com-
+  mand.  The  language  should follow the format for the locale, as
+  used by the setlocale subroutine.
+  
+  logFile	If logging is true, specifies the file in which the log
+  is written.  The default is Xterm.logXxxxx, where Xxxxx is a
+  unique ID of the aixterm command.
+  
+  logging	If true, appends all input from the pseudo tty to the
+  logfile.  The default is false.
+  
+  logInhibit	If true, prevents a user or an application program
+  from enabling  logging.    This  overrides  any  values  set  for
+  logging.
+  
+  loginShell	If true, indicates that the aixterm command should
+  start as a login shell.  The default is false.
+  
+  marginBell	If true, enables the right margin bell.  The default
+  is false.
+  
+  nMarginBell	Specifies the distance from the right edge of the
+  window  where  the  margin  bell rings.  The default is 10 spaces
+  from the right edge of the window.
+  
+  multiClickTime	Specifies the number of milliseconds between but-
+  ton clicks when cutting and  pasting.    The  default is 250 mil-
+  liseconds.
+  
+  multiScroll	If true, allows asynchronous scrolling.
+  
+  outline	Determines the color of the outline attribute (Keisen) on
+  color displays.  The default is the foreground color.
+  
+  The outline attribute for a character is similar to other charac-
+  ter attributes such as bold or reverse video.  The outline attri-
+  bute is displayed as a box drawn to enclose  a character or group
+  of characters.
+  
+  pageOverlap	Specifies the number of lines from the previous
+  screen  that  remain on the screen when the terminal scrolls  one
+  page.  In page scroll mode, a page is the number of  lines in the
+  scrolling region minus the page overlap.  The default is 1 line.
+  
+  pageScroll	If true, enables the page scroll mode.  The default is
+  false.
+  
+  After a page of lines displays, aixterm stops displaying new
+  lines and the text cursor disappears.  Pressing the Enter key
+  displays one new line.  Pressing the Spacebar  key or a character
+  key displays a new page.
+  
+  pointerColor	Specifies the color of the mouse cursor on color
+  displays.  The default is the foreground color.
+  
+  pointerShape	Specifies the shape of the mouse cursor to be used
+  in an aixterm window.  The default is XC_xterm.  The cursors are
+  listed in the /usr/include/X11/cursorfont.h file.
+  
+  reverseVideo	If true, reverses the foreground and background
+  color.  The default is false.
+  
+  reverseWrap	If true, sets reverse-wraparound mode, which allows
+  the  cursor to wrap from the leftmost  column  to  the  rightmost
+  column of the previous line.  The default is false.
+  
+  saveLines	Specifies the maximum number of lines to save when
+  lines scroll off the top of a window.  The default is 64 lines.
+  
+  scrollBar	If true, displays the scroll bar during startup.
+  
+  scrollInput	Specifies whether output to the terminal automatical-
+  ly causes the scroll bar to go to the bottom of the scrolling re-
+  gion.  The default is true.
+  
+  scrollKey	If true, repositions the window at the bottom of the
+  scroll region (normal position) when a key is pressed while using
+  the scroll bar to review previous  lines of text.  The default is
+  false.
+  
+  Pressing a key also creates input, which is affected by the
+  scrollInput keyword.
+  
+  scrollPosition	If left, positions the scroll bar to the left side
+  of the screen.  The default is right.
+  
+  signalInhibit	If true, specifies that the signals should not be
+  listed.  The default is false.
+  
+  specialFont	Specifies the name of the special graphics font.
+  
+  statusLine	If true, displays the status line on startup.  The de-
+  fault is false.
+  
+  statusNormal	If true, displays the status line in normal video
+  (the  status  line  is still enclosed in a box).  By default, the
+  status line is in reverse-video relative to the rest of the  win-
+  dow.
+  
+  sunFunctionKeys	If true, the PF keys generate Sun function key-
+  codes when in the VT102 mode.  The default is false.
+  
+  suppress	If true, specifies that the preediting function in the
+  input method IMIoctl call is suppressed.
+  
+  termName	Specifies the terminal environment variable, $TERM.  Use
+  the termName keyword to change the terminal environment variable
+  only.  The terminal environment variable should not be changed to
+  match the terminal in which the X Server is running.  The aixterm
+  command  has no direct access to the terminal where the X  Server
+  is running.
+  
+  textUnderIcon	If false, displays the title of the icon window at
+  the right  of the bitmap in the icon window.  By default, the ti-
+  tle is displayed under the bitmap.
+  
+  title	Specifies the title to show in the title bar.  The default
+  is aixterm.
+  
+  ttyModes	Specifies the tty settings.
+  
+  translations	Specifies the key and button translations to be sup-
+  plied.
+  
+  utmpInhibit	If false, adds the login ID to the /etc/utmp file.
+  The default is false.
+  
+  visualBell	If true, enables the visual bell mode which flashes
+  the window on receipt of a Ctrl-G key sequence.    The default is
+  false.
+  
+  vt102	If true, enables VT102 mode.  The default is HFT emulation.
+  
+  warp	If true, automatically warps (moves) the mouse cursor to the
+  center of a newly created aixterm window.  The default is false.
+  
+  Example
+  
+  The following example can be used to create an aixterm, specify-
+  ing the  size and location of the window, using a font other than
+  the default, and also  specifying the foreground color to be used
+  for the text.  It then runs a command in that window.
+  
+  aixterm -geometry 20x10+0+175 -fn Bld14.500 -fg DarkTurquoise -e 
+  /tmp/banner_cmd &
+  
+  Implementation Specifics
+  
+  This command is part of AIXwindows Run Time Environment in
+  AIXwindows Environment/6000.
+  
+  Suggested Reading
+  
+  
+  
+  Prerequisite Information
+  
+   Enhanced X-Windows Overview.
+  
+  Related Information
+  
+   Enhanced X-Windows Commands Overview.
