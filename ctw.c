@@ -7,7 +7,7 @@
 /*  Copyright (c) 1990-2011 Paul Fox                                  */
 /*                All Rights Reserved.                                */
 /*                                                                    */
-/*   $Header: Last edited: 10-Aug-2011 1.55 $ 			      */
+/*   $Header: Last edited: 23-Aug-2011 1.58 $ 			      */
 /*--------------------------------------------------------------------*/
 /*  Description:  Color terminal widget.                              */
 /*                                                                    */
@@ -3995,6 +3995,7 @@ graph_draw(CtwWidget ctw, graph_t *g)
 		break;
 	  case DRAW_SET_FONT: {
 		static hash_t *hash_fonts;
+		static int err;
 
 	  	if (g->g_str == NULL)
 			break;
@@ -4004,6 +4005,13 @@ graph_draw(CtwWidget ctw, graph_t *g)
 		if ((graph_fontp = hash_lookup(hash_fonts, g->g_str)) == NULL) {
 			graph_fontp = XLoadQueryFont(XtDisplay(ctw), g->g_str);
 			hash_insert(hash_fonts, chk_strdup(g->g_str), graph_fontp);
+			}
+		if (graph_fontp == NULL) {
+			if (err++ < 10) {
+				printf("ctw: pid=%d cannot load font '%s' for DRAW_SET_FONT\n",
+					getpid(), g->g_str);
+				}
+			return;
 			}
 		XSetFont(XtDisplay(ctw), gc, graph_fontp->fid);
 	  	break;
@@ -4113,6 +4121,23 @@ handle_escape(CtwWidget w, char *str, char *str_end)
 	char	*cpend = &w->ctw.escbuf[MAX_ESCBUF - 1];
 	int	in_str = FALSE;
 	int	seen_str = FALSE;
+
+	/***********************************************/
+	/*   If    doing    continuation,   recompute  */
+	/*   in_str/seen_str.			       */
+	/***********************************************/
+	if (w->ctw.escbuf[0] == '[') {
+		char *cp1;
+		for (cp1 = w->ctw.escbuf; cp1 < w->ctw.escp; cp1++) {
+			if (*cp1 == BEL) {
+				in_str = TRUE;
+				seen_str = TRUE;
+				}
+			else if (*cp1 == ESC) {
+				in_str = FALSE;
+				}
+			}
+		}
 
 	while (str < str_end) {
 		/***********************************************/
@@ -4802,7 +4827,7 @@ static struct match_t {
 	{"fatal", 	34, 45, LA_MATCH},
 	{"error", 	34, 45, LA_MATCH},
 	{"warning", 	35, 46, LA_MATCH2},
-	{0, 0, 0},
+	{0, 0, 0, 0},
 	};
 
 static int

@@ -1,3 +1,14 @@
+Tue Aug 23 21:15:02 2011  fox
+
+     138* ctw.c: Continuing fix for dangling esc sequences.
+
+Mon Aug 22 20:26:05 2011  fox
+
+     137* ctw.c: Fix problem with continued escape sequences with
+          text fields.
+
+     136* ctw.c: Avoid core dump when we cannot find a font.
+
 Wed Aug 10 18:15:55 2011  fox
 
      135* ctw.c: Dont core dump when drawing graphical label and no font

@@ -63,6 +63,7 @@ newf:
 	tar cvf - `find . -type f -newer TIMESTAMP ! -name tags ! -name y.tab.c ! -name config.def | grep -v /bin ` | gzip -9 > $(HOME)/tmp/src.ctw.tar.gz
 
 release:
+	git commit . || exit 1
 	strip bin/fcterm
 	elfrewrite bin/fcterm
 	build=b`grep build_no include/build.h | sed -e 's/^.* \([0-9][0-9]*\).*$$/\1/'` ; \
@@ -72,3 +73,6 @@ release:
 	scp /tmp/fcterm-$$build.tar.gz minny:release/website/tools ; \
 	ssh minny rm -f release/website/tools/fcterm-current.tar.gz ; \
 	ssh minny ln -s fcterm-$$build.tar.gz release/website/tools/fcterm-current.tar.gz
+release2:
+	mkrelease.pl bin/fcterm samples fccat
+
