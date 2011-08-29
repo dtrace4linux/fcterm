@@ -7,7 +7,7 @@
 /*  Copyright (c) 1990-2011 Paul Fox                                  */
 /*                All Rights Reserved.                                */
 /*                                                                    */
-/*   $Header: Last edited: 23-Aug-2011 1.58 $ 			      */
+/*   $Header: Last edited: 27-Aug-2011 1.59 $ 			      */
 /*--------------------------------------------------------------------*/
 /*  Description:  Color terminal widget.                              */
 /*                                                                    */
@@ -105,6 +105,8 @@
 /*   ESC [1931 ; rrggbb; m Set foreground color			      */
 /*   ESC [1932 ; fontname; m Set font for drawing.		      */
 /*   ESC [1933 ; x; y; str; m Draw image string			      */
+/*   ESC [1934 m    Query winsize in pixels (WxH<Enter>).             */
+/*   ESC [1935 m    Dump status to /tmp/fcterm/fcterm.$CTW_PID	      */
 /*   ESC [n;m r	Set scrolling region to lines n..m.     	      */
 /*   ESC [n;m r	Set scrolling region.			      	      */
 /*   ESC [s	Saved cursor position.                  	      */
@@ -314,6 +316,7 @@ int	enable_secondary = FALSE;
 int	enable_clipboard = FALSE; /* XView ? */
 int	enable_cut_buffer0 = FALSE;
 static int	fill_to_black = 0;
+extern int	version_build_no;
 
 /**********************************************************************/
 /*   Get bitmaps for visuals.					      */
@@ -1125,7 +1128,7 @@ initialize(Widget treq, Widget tnew)
 	new->ctw.flags[CTW_SCROLLING_REGION_ENABLE] = TRUE;
 	new->ctw.flags[CTW_SPEED] = 100;
 	new->ctw.flags[CTW_UTF8] = TRUE;
-	new->ctw.blink_state= 0;
+	new->ctw.blink_state = 0;
 
 	new->ctw.curr_cset = 0;
 	memset(new->ctw.char_sets, 0, sizeof new->ctw.char_sets);
@@ -1211,6 +1214,9 @@ initialize(Widget treq, Widget tnew)
 	new->ctw.sel_cur_y = 0;
 	new->ctw.num_clicks = 0;
 	new->ctw.old_color_avail = FALSE;
+	new->ctw.c_graph_fg = 0x7fffffff;
+	new->ctw.c_graph_bg = 0x7fffffff;
+
 	/***********************************************/
 	/*   Look  for  focus  related  events on the  */
 	/*   parent     widget.     We     want    to  */
@@ -3834,6 +3840,20 @@ graph_add(CtwWidget ctw, int *args, char **sargs)
 {	graph_t	*g, *g1;
 	int	i;
 
+	switch (args[0]) {
+	  case DRAW_SET_BACKGROUND:
+	  	if (ctw->ctw.c_graph_bg == args[1])
+			return NULL;
+		ctw->ctw.c_graph_bg = args[1];
+		break;
+
+	  case DRAW_SET_FOREGROUND:
+	  	if (ctw->ctw.c_graph_fg == args[1])
+			return NULL;
+		ctw->ctw.c_graph_fg = args[1];
+		break;
+	  }
+
 	g = chk_zalloc(sizeof *g);
 	g->g_code = *args++;
 	sargs++;
@@ -3931,8 +3951,7 @@ graph_click(CtwWidget ctw, int x, int y, int execute)
 }
 static void
 graph_destroy(CtwWidget ctw)
-{
-  	graph_t *g, *g1;
+{  	graph_t *g, *g1;
 
 	if (ctw->ctw.c_chain_mouse) {
 		ctw->ctw.c_chain_mouse = NULL;
@@ -3945,6 +3964,8 @@ graph_destroy(CtwWidget ctw)
 		chk_free(g);
 		}
 	ctw->ctw.c_chain = NULL;
+	ctw->ctw.c_graph_fg = 0x7fffffff;
+	ctw->ctw.c_graph_bg = 0x7fffffff;
 }
 static void
 graph_draw(CtwWidget ctw, graph_t *g)
@@ -5903,6 +5924,41 @@ check_cursor:
 			  	snprintf(buf, sizeof buf,
 					"%dx%d\n", ctw->core.width, ctw->core.height);
 				send_input(ctw, buf, strlen(buf));
+			  	break;
+				}
+			  case DRAW_DUMP_STATUS: { /* 1935 */
+			  	char buf[BUFSIZ];
+			  	char buf2[BUFSIZ];
+				graph_t *g;
+				int	n;
+
+				/***********************************************/
+				/*   Avoid  security  hole  with people being  */
+				/*   allowed to write to someone elses files.  */
+				/***********************************************/
+				mkdir("/tmp/fcterm", 0777);
+			  	snprintf(buf, sizeof buf, "/tmp/fcterm/fcterm.%d.tmp", getpid());
+			  	snprintf(buf2, sizeof buf2, "/tmp/fcterm/fcterm.%d", getpid());
+				remove(buf);
+				FILE *fp = fopen(buf, "w");
+				if (fp == NULL) {
+					printf("fcterm: [%d] Cannot create '%s'\n", getpid(), buf);
+					break;
+					}
+				chmod(buf, 0666);
+				fprintf(fp, "rows=%d\n", ctw->ctw.rows);
+				fprintf(fp, "cols=%d\n", ctw->ctw.columns);
+				fprintf(fp, "width=%d\n", ctw->core.width);
+				fprintf(fp, "height=%d\n", ctw->core.height);
+				fprintf(fp, "font_width=%d\n", ctw->ctw.font_width);
+				fprintf(fp, "font_height=%d\n", ctw->ctw.font_height);
+				fprintf(fp, "pid=%d\n", getpid());
+				fprintf(fp, "build=%d\n", version_build_no);
+			  	for (n = 0, g = ctw->ctw.c_chain; g; g = g->g_next)
+					n++;
+				fprintf(fp, "graph_chain_length=%d\n", n);
+				fclose(fp);
+				rename(buf, buf2);
 			  	break;
 				}
 			  }

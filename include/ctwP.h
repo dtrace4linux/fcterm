@@ -104,6 +104,7 @@ struct font_stack {
 # define	DRAW_SET_FONT		1932
 # define	DRAW_IMAGE_STRING	1933
 # define	DRAW_QUERY_WINSIZE	1934
+# define	DRAW_DUMP_STATUS  	1935
 
 typedef struct graph_t {
 	struct graph_t *g_next;
@@ -173,6 +174,11 @@ typedef struct ctw_part {
 	int		blink_state;	/* Used for blinking so we know whether */
 					/* to draw or flash.			*/
 	char		*ttyname;
+	/***********************************************/
+	/*   Graph list.			       */
+	/***********************************************/
+	unsigned	c_graph_fg;
+	unsigned	c_graph_bg;
 	graph_t		*c_chain;
 	graph_t		*c_chain_mouse;
 /* private: */

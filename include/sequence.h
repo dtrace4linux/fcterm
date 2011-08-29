@@ -92,6 +92,7 @@
 "   ESC [1932 ; name ; m                  Set font   \r\n"
 "   ESC [1933 ; x; y; str; m              Draw image string  		\r\n"
 "   ESC [1934 m                           Query winsize in pixels (wxh<Enter>)\r\n"
+"   ESC [1935 m                           Dump internal status to a /tmp/fcterm/fcterm.\r\n"
 "   ESC [n;m r	Set scrolling region to lines n..m.\r\n"
 "   ESC [n;m r	Set scrolling region.\r\n"
 "   ESC [s	Saved cursor position.\r\n"

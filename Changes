@@ -1,3 +1,13 @@
+Sat Aug 27 15:24:26 2011  fox
+
+     140* ctw.c: Optimise DRAW_SET_FOREGROUND and DRAW_SET_BACKGROUND.
+
+Fri Aug 26 22:18:50 2011  fox
+
+     139* ctw.c, mkseq.sh, term.c: Add CTW_PID env var. Add ESC[1935m to
+          dump a status file so we can read the widnow size and font info
+	  without playing with stdin of an app.
+
 Tue Aug 23 21:15:02 2011  fox
 
      138* ctw.c: Continuing fix for dangling esc sequences.

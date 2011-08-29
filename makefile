@@ -63,6 +63,9 @@ newf:
 	tar cvf - `find . -type f -newer TIMESTAMP ! -name tags ! -name y.tab.c ! -name config.def | grep -v /bin ` | gzip -9 > $(HOME)/tmp/src.ctw.tar.gz
 
 release:
+	mkrelease.pl bin/fcterm samples fccat
+
+release2:
 	git commit . || exit 1
 	strip bin/fcterm
 	elfrewrite bin/fcterm
@@ -73,6 +76,4 @@ release:
 	scp /tmp/fcterm-$$build.tar.gz minny:release/website/tools ; \
 	ssh minny rm -f release/website/tools/fcterm-current.tar.gz ; \
 	ssh minny ln -s fcterm-$$build.tar.gz release/website/tools/fcterm-current.tar.gz
-release2:
-	mkrelease.pl bin/fcterm samples fccat
 

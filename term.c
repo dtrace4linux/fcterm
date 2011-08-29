@@ -1280,6 +1280,7 @@ steal_switches(int argc, char **argv)
 int
 spawn_child(fcterm_t *cur_ctw)
 {	char	buf[4096];
+static char	ctw_pid[32];
 	char	tty[BUFSIZ];
 	char	tty_name[BUFSIZ];
 	int	one = 1;
@@ -1294,6 +1295,8 @@ spawn_child(fcterm_t *cur_ctw)
 		open_max = sysconf (_SC_OPEN_MAX);
 
 	putenv("CTW_TERM=1");
+	snprintf(ctw_pid, sizeof ctw_pid, "CTW_PID=%d", getpid());
+	putenv(ctw_pid);
 
 	cur_ctw->f_pty_fd = -1;
 
