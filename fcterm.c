@@ -970,7 +970,17 @@ menu_callback(Widget widget, enum menu_items val, caddr_t call_data)
 		int	i;
 		for (i = ' '; i < 0x7f; i++)
 			buf[i - ' '] = i;
-		strcpy(buf + i - ' ', "\nps -aef\r\nps ax | sed -e 's/^/kill -9 /'\r\nkill -9\r\nkill\r\nyes\r\ncont\r\nquit\r\nyes\r\nquit\r\nyes\r\n");
+		strcpy(buf + i - ' ', "\nps -aef\r\n"
+			"ps ax | sed -e 's/^/kill -9 /'\r\n" 
+			"kill -9\r\n"
+			"kill\r\n"
+			"yes\r\n"
+			"cont\r\n"
+			"quit\r\n"
+			"yes\r\n"
+			"quit\r\n"
+			"yes\r\n"
+			"zap \r\n");
 		ctw_add_string((CtwWidget) cur_ctw->f_ctw, buf, strlen(buf));
 	  	break;
 		}

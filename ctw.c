@@ -7,7 +7,7 @@
 /*  Copyright (c) 1990-2011 Paul Fox                                  */
 /*                All Rights Reserved.                                */
 /*                                                                    */
-/*   $Header: Last edited: 27-Aug-2011 1.59 $ 			      */
+/*   $Header: Last edited: 13-Sep-2011 1.60 $ 			      */
 /*--------------------------------------------------------------------*/
 /*  Description:  Color terminal widget.                              */
 /*                                                                    */
@@ -2141,7 +2141,7 @@ CtwSelectEnd(CtwWidget w, XEvent *event, String *str, Cardinal *num)
 		/*   Trim trailing white space.		       */
 		/***********************************************/
 		if ((lp->l_attr & LA_CONTINUED) == 0) {
-			while (cp > w->ctw.sel_string && cp[-1] == ' ')
+			while (cp > w->ctw.sel_string + 1 && cp[-1] == ' ')
 				cp--;
 			}
 		if (nl && ((lp->l_attr & LA_CONTINUED) == 0 || 

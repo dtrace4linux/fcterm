@@ -1,3 +1,7 @@
+Tue Sep 13 22:13:12 2011  fox
+
+     141* ctw.c: Allow hilite/select of a single space.
+
 Sat Aug 27 15:24:26 2011  fox
 
      140* ctw.c: Optimise DRAW_SET_FOREGROUND and DRAW_SET_BACKGROUND.
