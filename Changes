@@ -1,3 +1,11 @@
+Sun Oct  2 21:37:24 2011  fox
+
+     143* ctw.c: Add support for 1936/1937 box/unbox drawing.
+
+Mon Sep 26 23:18:40 2011  fox
+
+     142* term.c: Put logs into /tmp/$USER dir.
+
 Tue Sep 13 22:13:12 2011  fox
 
      141* ctw.c: Allow hilite/select of a single space.

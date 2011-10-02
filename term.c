@@ -978,7 +978,7 @@ restart_fcterm()
 	/*   exec, so not a lot we can do if the file  */
 	/*   isnt there.			       */
 	/***********************************************/
-	sprintf(buf, "/tmp/fcterm-state-%s-%d", getenv("USER") ? getenv("USER") : "anon", getpid());
+	sprintf(buf, "/tmp/%s/fcterm-state-%d", getenv("USER") ? getenv("USER") : "fcterm", getpid());
 	if ((fp = fopen(buf, "w")) == NULL) {
 		perror(buf);
 		exit(0);

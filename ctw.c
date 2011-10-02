@@ -7,7 +7,7 @@
 /*  Copyright (c) 1990-2011 Paul Fox                                  */
 /*                All Rights Reserved.                                */
 /*                                                                    */
-/*   $Header: Last edited: 13-Sep-2011 1.60 $ 			      */
+/*   $Header: Last edited: 02-Oct-2011 1.61 $ 			      */
 /*--------------------------------------------------------------------*/
 /*  Description:  Color terminal widget.                              */
 /*                                                                    */
@@ -106,7 +106,9 @@
 /*   ESC [1932 ; fontname; m Set font for drawing.		      */
 /*   ESC [1933 ; x; y; str; m Draw image string			      */
 /*   ESC [1934 m    Query winsize in pixels (WxH<Enter>).             */
-/*   ESC [1935 m    Dump status to /tmp/fcterm/fcterm.$CTW_PID	      */
+/*   ESC [1935 m    Dump status to /tmp/$USER/fcterm.$CTW_PID	      */
+/*   ESC [1936 m    Box each character drawn.                         */
+/*   ESC [1937 m    Unox each character drawn.                        */
 /*   ESC [n;m r	Set scrolling region to lines n..m.     	      */
 /*   ESC [n;m r	Set scrolling region.			      	      */
 /*   ESC [s	Saved cursor position.                  	      */
@@ -3655,6 +3657,14 @@ draw_string(CtwWidget ctw, int row, int col, char *str, int len, Pixel fg, Pixel
 			x, y + 1 - ctw->ctw.font_height / 2,
 			x + len * ctw->ctw.font_width, y + 1 - ctw->ctw.font_height / 2);
 		}
+	if (attr & VB_BOXED) {
+		for (i = 0; i < len; i++) {
+			XDrawRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				x + i * ctw->ctw.font_width, y - ctw->ctw.font_height,
+				ctw->ctw.font_width,
+				ctw->ctw.font_height);
+			}
+		}
 	if (attr & VB_FLASHING)
 		lp->l_attr |= LA_FLASHING;
 }
@@ -4553,8 +4563,9 @@ printf("skip %d:%d\n", ln, ctw->ctw.spill_cnt);
 		int	i;
 
 		for (i = 0; i < 1000; i++) {
-			snprintf(buf, sizeof buf, "%s/fcterm-%s%s-%%Y%%m%%d-%03d.log", 
+			snprintf(buf, sizeof buf, "%s/%s/fcterm-%s%s-%%Y%%m%%d-%03d.log", 
 				ctw->ctw.log_dir,
+				getenv("USER") ? getenv("USER") : "fcterm",
 				isdigit(*name) ? "tty" : "", name, i);
 			strftime(buf2, sizeof buf2, buf, localtime(&t));
 			sprintf(buf3, "%s.gz", buf2);
@@ -4577,8 +4588,9 @@ printf("skip %d:%d\n", ln, ctw->ctw.spill_cnt);
 		/***********************************************/
 		/*   Setup symlink to current file.	       */
 		/***********************************************/
-		snprintf(buf, sizeof buf, "%s/fcterm-%s%s.log",
+		snprintf(buf, sizeof buf, "%s/%s/fcterm-%s%s.log",
 				ctw->ctw.log_dir,
+				getenv("USER") ? getenv("USER") : "fcterm",
 				isdigit(*name) ? "tty" : "", name);
 		remove(buf);
 		if (symlink(ctw->ctw.c_spill_name, buf) < 0) {
@@ -5929,6 +5941,7 @@ check_cursor:
 			  case DRAW_DUMP_STATUS: { /* 1935 */
 			  	char buf[BUFSIZ];
 			  	char buf2[BUFSIZ];
+				char	*user = getenv("USER") ? getenv("USER") : "fcterm";
 				graph_t *g;
 				int	n;
 
@@ -5936,9 +5949,10 @@ check_cursor:
 				/*   Avoid  security  hole  with people being  */
 				/*   allowed to write to someone elses files.  */
 				/***********************************************/
-				mkdir("/tmp/fcterm", 0777);
-			  	snprintf(buf, sizeof buf, "/tmp/fcterm/fcterm.%d.tmp", getpid());
-			  	snprintf(buf2, sizeof buf2, "/tmp/fcterm/fcterm.%d", getpid());
+				snprintf(buf, sizeof buf, "/tmp/%s", user);
+				mkdir(buf, 0777);
+			  	snprintf(buf, sizeof buf, "/tmp/%s/fcterm.%d.tmp", user, getpid());
+			  	snprintf(buf2, sizeof buf2, "/tmp/%s/fcterm.%d", user, getpid());
 				remove(buf);
 				FILE *fp = fopen(buf, "w");
 				if (fp == NULL) {
@@ -5961,6 +5975,12 @@ check_cursor:
 				rename(buf, buf2);
 			  	break;
 				}
+			  case 1936:
+			  	ctw->ctw.attr.vb_attr |= VB_BOXED;
+			  	break;
+			  case 1937:
+			  	ctw->ctw.attr.vb_attr &= ~VB_BOXED;
+			  	break;
 			  }
 			}
 

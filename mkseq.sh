@@ -94,6 +94,8 @@ sed -e 's/^/"/g' -e 's/$/\\r\\n"/g' <<EOF
    ESC [1933 ; x; y; str; m              Draw image string  		
    ESC [1934 m                           Query winsize in pixels (wxh<Enter>)
    ESC [1935 m                           Dump internal status to a /tmp/fcterm/fcterm.$CTW_PID
+   ESC [1936 m    Box each character drawn.
+   ESC [1937 m    Unox each character drawn.
    ESC [n;m r	Set scrolling region to lines n..m.
    ESC [n;m r	Set scrolling region.
    ESC [s	Saved cursor position.

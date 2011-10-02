@@ -250,6 +250,7 @@ extern WidgetClass ctwWidgetClass;
 # define	VB_LINE		0x10
 # define	VB_SELECT	0x20
 # define	VB_STRIKETHRU	0x40
+# define	VB_BOXED	0x80
 /**********************************************************************/
 /*   Define  a  'byte'. A byte represents a character on the screen.  */
 /*   Its  4-bytes  wide containing an 8-bit character, plus a 'font'  */
