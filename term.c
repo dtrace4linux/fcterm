@@ -2167,6 +2167,7 @@ usage()
 	fprintf(stderr, "\n");
 	fprintf(stderr, "Useful resources:\n");
 	fprintf(stderr, "\n");
+	fprintf(stderr, " -xrm *gridLineColor:<color>     Color to use for gridlines escape sequence.\n");
 	fprintf(stderr, " -xrm *spillForeground:<color>   Foreground color of spilled lines.\n");
 	fprintf(stderr, " -xrm *spillBackground:<color>   Background color of spilled lines.\n");
 	fprintf(stderr, " -xrm *logDir:/tmp               Place where overflow lines kept\n");

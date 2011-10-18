@@ -1,5 +1,9 @@
 sed -e 's/^/"/g' -e 's/$/\\r\\n"/g' <<EOF
 
+^N x ^O -- switch char set / line drawing
+   x == 0x01    Mid-char vertical line
+
+Escape sequences:
    ESC ESC x  Print character x literally.
    ESC 7	Save cursor position
    ESC 8	Restore cursor position

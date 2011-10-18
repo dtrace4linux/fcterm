@@ -137,6 +137,7 @@ typedef struct ctw_part {
 	String		table;
 	Pixel		cursor_color;
 	Pixel		save_cursor_color;
+	Pixel		gridLine_color;
 	int		rows;
 	int		columns;
 	XtCallbackList	kbd_callback;

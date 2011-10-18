@@ -226,6 +226,8 @@ ctwWidget:
 #	define	XtCInternalWidth "InternalWidth"
 # endif
 #define	XtCTtyName	"TtyName"
+#define XtNgridLineColor "gridLineColor"
+#define XtCGridLineColor "GridLineColor"
 
 /**********************************************************************/
 /*   declare specific CtwWidget class and instance datatypes	      */

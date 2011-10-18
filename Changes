@@ -1,3 +1,15 @@
+Tue Oct 18 23:09:44 2011  fox
+
+     146* ctw.c: Better outline grid drawing.
+
+Mon Oct 17 22:37:06 2011  fox
+
+     145* ctw.c: Support 0x01 gridlines drawing for CRiSP.
+
+Wed Oct 12 22:10:57 2011  fox
+
+     144* ctw.c: Fix issue in 142 - we didnt create the log dir for the user.
+
 Sun Oct  2 21:37:24 2011  fox
 
      143* ctw.c: Add support for 1936/1937 box/unbox drawing.

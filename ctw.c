@@ -7,7 +7,7 @@
 /*  Copyright (c) 1990-2011 Paul Fox                                  */
 /*                All Rights Reserved.                                */
 /*                                                                    */
-/*   $Header: Last edited: 02-Oct-2011 1.61 $ 			      */
+/*   $Header: Last edited: 17-Oct-2011 1.62 $ 			      */
 /*--------------------------------------------------------------------*/
 /*  Description:  Color terminal widget.                              */
 /*                                                                    */
@@ -339,6 +339,8 @@ static XtResource resources[] = {
 	  offset(ttyname), XtRString, "qq"},
 	{ XtNgeometry, XtCGeometry, XtRString, sizeof(char*),
 	  offset(geometry), XtRString, ""},
+	{ XtNgridLineColor, XtCGridLineColor, XtRPixel, sizeof(unsigned long),
+	  offset(gridLine_color), XtRString, "#303050"},
 	{ XtNcursorColor, XtCCursorColor, XtRPixel, sizeof(unsigned long),
 	  offset(cursor_color), XtRString, "red"},
 	{ XtNhiliteBackground, XtCHiliteBackground, XtRPixel, sizeof(unsigned long),
@@ -2885,6 +2887,24 @@ convert_proc(CtwWidget ctw, Atom *selection, Atom *target, Atom *type, XtPointer
 	return FALSE;
 }
 /**********************************************************************/
+/*   Create the container dir for fcterm.			      */
+/**********************************************************************/
+static void
+create_fcterm_dir(CtwWidget ctw)
+{	char	buf[BUFSIZ];
+	struct stat sbuf;
+
+	snprintf(buf, sizeof buf, "%s/%s", 
+			ctw->ctw.log_dir,
+			getenv("USER") ? getenv("USER") : "fcterm");
+	if (stat(buf, &sbuf) == 0)
+		return;
+	if (mkdir(buf, 0700) < 0) {
+		fprintf(stderr, "fcterm: mkdir(%s) failed\n", buf);
+		perror("error");
+	}
+}
+/**********************************************************************/
 /*   Do a fast delete line.					      */
 /**********************************************************************/
 static void
@@ -4588,6 +4608,8 @@ printf("skip %d:%d\n", ln, ctw->ctw.spill_cnt);
 		/***********************************************/
 		/*   Setup symlink to current file.	       */
 		/***********************************************/
+		create_fcterm_dir(ctw);
+
 		snprintf(buf, sizeof buf, "%s/%s/fcterm-%s%s.log",
 				ctw->ctw.log_dir,
 				getenv("USER") ? getenv("USER") : "fcterm",
@@ -5052,6 +5074,105 @@ static int	scol;
 		/*   ourselves.				       */
 		/***********************************************/
 		if (attr.vb_attr & VB_LINE) {
+//printf("%d,%d char=%02x len=%d\n", row, c, bp[-1], len);
+
+			/***********************************************/
+			/*   BUG  ALERT.  We  are  only handling last  */
+			/*   char  of  a  sequence,  but  sequence is  */
+			/*   typically only 1 byte long.	       */
+			/***********************************************/
+			switch (bp[-1]) {
+			  case '|':
+			  case '}':
+				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+				XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1),
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+					ctw->ctw.font_width, 
+					ctw->ctw.font_height + 1);
+				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, ctw->ctw.gridLine_color);
+				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1), Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+					X_PIXEL(ctw, c + len - 1), Y_PIXEL(ctw, row + 1) - ctw->ctw.font_ascent);
+				c += len;
+				continue;
+			  case 0x01:
+				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+				XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1),
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+					ctw->ctw.font_width, 
+					ctw->ctw.font_height + 1);
+				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+				XDrawRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1),
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + 1,
+					ctw->ctw.font_width - 1, 
+					ctw->ctw.font_height - 2);
+				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, 
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + 3,
+					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, 
+					Y_PIXEL(ctw, row + 1) - ctw->ctw.font_ascent - 4);
+				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1) + 2,
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2,
+					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width - 3, 
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2);
+				c += len;
+				continue;
+			  case 0x02:
+				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+				XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1),
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+					ctw->ctw.font_width, 
+					ctw->ctw.font_height + 1);
+				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row + 1) - ctw->ctw.font_ascent);
+				c += len;
+				continue;
+			  case 0x03:
+				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+				XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1),
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+					ctw->ctw.font_width, 
+					ctw->ctw.font_height + 1);
+				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row + 1) - ctw->ctw.font_ascent);
+				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 1, 
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2,
+					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 1, 
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2 + 4);
+				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 2, 
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2 + 1,
+					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 2, 
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2 + 3);
+				XDrawPoint(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 3, 
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2 + 2);
+				c += len;
+				continue;
+			  case ' ':
+				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+				XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1),
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+					ctw->ctw.font_width, 
+					ctw->ctw.font_height + 1);
+				c += len;
+				continue;
+			  }
+			/***********************************************/
+			/*   Normal line drawing.		       */
+			/***********************************************/
 			for (bp--; bp >= buf; bp--) {
 				if (*bp >= 0x5f && *bp <= 0x7e)
 					*bp = *bp == 0x5f ? 0x7f : (*bp - 0x5f);
@@ -5066,27 +5187,30 @@ static int	scol;
 					ctw->ctw.x11_colors[7],
 					attr.vb_attr);
 			draw_line(ctw, row, c, buf, len, fg, bg, attr.vb_attr);
+			c += len;
+			continue;
 			}
-		else {
-			if (draw_watch || ctw->ctw.flags[CTW_WATCH_DRAWING])
-				draw_string(ctw, row, c, buf, len, 
-					ctw->ctw.x11_colors[0],
-					ctw->ctw.x11_colors[7],
-					attr.vb_attr);
-			if (lp->l_attr & LA_SPILT) {
-				bg = ctw->ctw.spill_bg;
-				fg = ctw->ctw.spill_fg;
-				}
-			if (hstate || attr.vb_attr & VB_SELECT) {
-				fg = ctw->ctw.hilite_fg;
-				bg = ctw->ctw.hilite_bg;
-				}
-			if (continued_color && crwin_do_cont) {
-				bg = ctw->ctw.cont_bg;
-				fg = ctw->ctw.cont_fg;
-				}
-			draw_string(ctw, row, c, buf, len, fg, bg, attr.vb_attr);
+		/***********************************************/
+		/*   Normal text.			       */
+		/***********************************************/
+		if (draw_watch || ctw->ctw.flags[CTW_WATCH_DRAWING])
+			draw_string(ctw, row, c, buf, len, 
+				ctw->ctw.x11_colors[0],
+				ctw->ctw.x11_colors[7],
+				attr.vb_attr);
+		if (lp->l_attr & LA_SPILT) {
+			bg = ctw->ctw.spill_bg;
+			fg = ctw->ctw.spill_fg;
 			}
+		if (hstate || attr.vb_attr & VB_SELECT) {
+			fg = ctw->ctw.hilite_fg;
+			bg = ctw->ctw.hilite_bg;
+			}
+		if (continued_color && crwin_do_cont) {
+			bg = ctw->ctw.cont_bg;
+			fg = ctw->ctw.cont_fg;
+			}
+		draw_string(ctw, row, c, buf, len, fg, bg, attr.vb_attr);
 		c += len;
 		}
 }
