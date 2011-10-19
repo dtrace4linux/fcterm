@@ -1,3 +1,7 @@
+Wed Oct 19 21:11:00 2011  fox
+
+     147* ctw.c: Fix shifted/line drawing problem.
+
 Tue Oct 18 23:09:44 2011  fox
 
      146* ctw.c: Better outline grid drawing.

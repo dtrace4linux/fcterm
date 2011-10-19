@@ -7,7 +7,7 @@
 /*  Copyright (c) 1990-2011 Paul Fox                                  */
 /*                All Rights Reserved.                                */
 /*                                                                    */
-/*   $Header: Last edited: 17-Oct-2011 1.62 $ 			      */
+/*   $Header: Last edited: 19-Oct-2011 1.63 $ 			      */
 /*--------------------------------------------------------------------*/
 /*  Description:  Color terminal widget.                              */
 /*                                                                    */
@@ -3573,6 +3573,134 @@ draw_line(CtwWidget w, int row, int col, char *str, int len, Pixel fg, Pixel bg,
 		str, len);
 }
 /**********************************************************************/
+/*   Draw line-drawing or the special outline/grid charset.	      */
+/**********************************************************************/
+static void
+draw_special_line_chars(CtwWidget ctw, int row, int c, char *buf, int len, 
+	Pixel fg, Pixel bg, int attr, int hstate)
+{	char	*bp;
+	char	*bufend = buf + len;
+
+	while (buf < bufend) {
+		len = bufend - buf;
+		switch (*buf) {
+		  case '|':
+		  case '}':
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, ctw->ctw.gridLine_color);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1), Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				X_PIXEL(ctw, c + len - 1), Y_PIXEL(ctw, row + 1) - ctw->ctw.font_ascent);
+			buf++;
+			continue;
+
+		  case 0x01:
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+			XDrawRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + 1,
+				ctw->ctw.font_width - 1, 
+				ctw->ctw.font_height - 2);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, 
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + 3,
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, 
+				Y_PIXEL(ctw, row + 1) - ctw->ctw.font_ascent - 4);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1) + 2,
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width - 3, 
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2);
+			buf++;
+			continue;
+
+		  case 0x02:
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row + 1) - ctw->ctw.font_ascent);
+			buf++;
+			continue;
+
+		  case 0x03:
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row + 1) - ctw->ctw.font_ascent);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 1, 
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 1, 
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2 + 4);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 2, 
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2 + 1,
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 2, 
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2 + 3);
+			XDrawPoint(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 3, 
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2 + 2);
+			buf++;
+			continue;
+
+		  case ' ':
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+			buf++;
+			continue;
+		  }
+		/***********************************************/
+		/*   Normal line drawing.		       */
+		/***********************************************/
+		for (bp = buf; bp < bufend; bp++) {
+			if (*bp == 0x01 || *bp == 0x02 || *bp == 0x03 ||
+			    *bp == '|' || *bp == '}' || *bp == ' ')
+				break;
+			if (*bp >= 0x5f && *bp <= 0x7e)
+				*bp = *bp == 0x5f ? 0x7f : (*bp - 0x5f);
+			}
+		if (hstate || attr & VB_SELECT) {
+			fg = ctw->ctw.hilite_fg;
+			bg = ctw->ctw.hilite_bg;
+			}
+		if (draw_watch || ctw->ctw.flags[CTW_WATCH_DRAWING])
+			draw_line(ctw, row, c, buf, len, 
+				ctw->ctw.x11_colors[0],
+				ctw->ctw.x11_colors[7],
+				attr);
+		draw_line(ctw, row, c, buf, bp - buf, fg, bg, attr);
+		c += bp - buf;
+		buf = bp;
+		}
+}
+/**********************************************************************/
 /*   Public  function  to  draw  a  string  at the specified row/col  */
 /*   with the specified foreground and background colors.	      */
 /**********************************************************************/
@@ -3872,13 +4000,13 @@ graph_add(CtwWidget ctw, int *args, char **sargs)
 
 	switch (args[0]) {
 	  case DRAW_SET_BACKGROUND:
-	  	if (ctw->ctw.c_graph_bg == args[1])
+	  	if (ctw->ctw.c_graph_bg == (Pixel) args[1])
 			return NULL;
 		ctw->ctw.c_graph_bg = args[1];
 		break;
 
 	  case DRAW_SET_FOREGROUND:
-	  	if (ctw->ctw.c_graph_fg == args[1])
+	  	if (ctw->ctw.c_graph_fg == (Pixel) args[1])
 			return NULL;
 		ctw->ctw.c_graph_fg = args[1];
 		break;
@@ -5074,122 +5202,12 @@ static int	scol;
 		/*   ourselves.				       */
 		/***********************************************/
 		if (attr.vb_attr & VB_LINE) {
-//printf("%d,%d char=%02x len=%d\n", row, c, bp[-1], len);
-
-			/***********************************************/
-			/*   BUG  ALERT.  We  are  only handling last  */
-			/*   char  of  a  sequence,  but  sequence is  */
-			/*   typically only 1 byte long.	       */
-			/***********************************************/
-			switch (bp[-1]) {
-			  case '|':
-			  case '}':
-				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
-				XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-					X_PIXEL(ctw, c + len - 1),
-					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
-					ctw->ctw.font_width, 
-					ctw->ctw.font_height + 1);
-				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, ctw->ctw.gridLine_color);
-				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-					X_PIXEL(ctw, c + len - 1), Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
-					X_PIXEL(ctw, c + len - 1), Y_PIXEL(ctw, row + 1) - ctw->ctw.font_ascent);
-				c += len;
-				continue;
-			  case 0x01:
-				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
-				XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-					X_PIXEL(ctw, c + len - 1),
-					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
-					ctw->ctw.font_width, 
-					ctw->ctw.font_height + 1);
-				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
-				XDrawRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-					X_PIXEL(ctw, c + len - 1),
-					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + 1,
-					ctw->ctw.font_width - 1, 
-					ctw->ctw.font_height - 2);
-				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, 
-					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + 3,
-					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, 
-					Y_PIXEL(ctw, row + 1) - ctw->ctw.font_ascent - 4);
-				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-					X_PIXEL(ctw, c + len - 1) + 2,
-					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2,
-					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width - 3, 
-					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2);
-				c += len;
-				continue;
-			  case 0x02:
-				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
-				XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-					X_PIXEL(ctw, c + len - 1),
-					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
-					ctw->ctw.font_width, 
-					ctw->ctw.font_height + 1);
-				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
-				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
-					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row + 1) - ctw->ctw.font_ascent);
-				c += len;
-				continue;
-			  case 0x03:
-				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
-				XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-					X_PIXEL(ctw, c + len - 1),
-					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
-					ctw->ctw.font_width, 
-					ctw->ctw.font_height + 1);
-				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
-				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
-					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row + 1) - ctw->ctw.font_ascent);
-				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 1, 
-					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2,
-					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 1, 
-					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2 + 4);
-				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 2, 
-					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2 + 1,
-					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 2, 
-					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2 + 3);
-				XDrawPoint(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2 + 3, 
-					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2 + 2);
-				c += len;
-				continue;
-			  case ' ':
-				XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
-				XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-					X_PIXEL(ctw, c + len - 1),
-					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
-					ctw->ctw.font_width, 
-					ctw->ctw.font_height + 1);
-				c += len;
-				continue;
-			  }
-			/***********************************************/
-			/*   Normal line drawing.		       */
-			/***********************************************/
-			for (bp--; bp >= buf; bp--) {
-				if (*bp >= 0x5f && *bp <= 0x7e)
-					*bp = *bp == 0x5f ? 0x7f : (*bp - 0x5f);
-				}
-			if (hstate || attr.vb_attr & VB_SELECT) {
-				fg = ctw->ctw.hilite_fg;
-				bg = ctw->ctw.hilite_bg;
-				}
-			if (draw_watch || ctw->ctw.flags[CTW_WATCH_DRAWING])
-				draw_line(ctw, row, c, buf, len, 
-					ctw->ctw.x11_colors[0],
-					ctw->ctw.x11_colors[7],
-					attr.vb_attr);
-			draw_line(ctw, row, c, buf, len, fg, bg, attr.vb_attr);
+			draw_special_line_chars(ctw, row, c, buf, len, 
+				fg, bg, attr.vb_attr, hstate);
 			c += len;
 			continue;
 			}
+
 		/***********************************************/
 		/*   Normal text.			       */
 		/***********************************************/
