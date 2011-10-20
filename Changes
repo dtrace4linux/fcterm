@@ -1,3 +1,7 @@
+Thu Oct 20 22:48:18 2011  fox
+
+     148* ctw.c: Add support for collapse/open graphic.
+
 Wed Oct 19 21:11:00 2011  fox
 
      147* ctw.c: Fix shifted/line drawing problem.

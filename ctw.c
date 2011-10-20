@@ -7,7 +7,7 @@
 /*  Copyright (c) 1990-2011 Paul Fox                                  */
 /*                All Rights Reserved.                                */
 /*                                                                    */
-/*   $Header: Last edited: 19-Oct-2011 1.63 $ 			      */
+/*   $Header: Last edited: 20-Oct-2011 1.64 $ 			      */
 /*--------------------------------------------------------------------*/
 /*  Description:  Color terminal widget.                              */
 /*                                                                    */
@@ -3600,6 +3600,7 @@ draw_special_line_chars(CtwWidget ctw, int row, int c, char *buf, int len,
 			continue;
 
 		  case 0x01:
+		  case 0x04:
 			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
 			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
 				X_PIXEL(ctw, c + len - 1),
@@ -3612,11 +3613,12 @@ draw_special_line_chars(CtwWidget ctw, int row, int c, char *buf, int len,
 				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + 1,
 				ctw->ctw.font_width - 1, 
 				ctw->ctw.font_height - 2);
-			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, 
-				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + 3,
-				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, 
-				Y_PIXEL(ctw, row + 1) - ctw->ctw.font_ascent - 4);
+			if (*buf == 0x04)
+				XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, 
+					Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + 3,
+					X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, 
+					Y_PIXEL(ctw, row + 1) - ctw->ctw.font_ascent - 4);
 			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
 				X_PIXEL(ctw, c + len - 1) + 2,
 				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2,
