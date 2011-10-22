@@ -1117,6 +1117,7 @@ initialize(Widget treq, Widget tnew)
 	new->ctw.have_focus = TRUE;
 	new->ctw.timestamp = 0;
 	new->ctw.nest_level = 0;
+	new->ctw.prompting = 0;
 	new->ctw.old_rows = 0;
 	new->ctw.c_spill_bytes = 0;
 	new->ctw.old_columns = 0;
@@ -7414,6 +7415,25 @@ ctw_get_xy(CtwWidget ctw, int *row, int *col, int x, int y)
 		c = 0;
 	*row = r;
 	*col = c;
+}
+int
+ctw_is_prompting(CtwWidget ctw)
+{
+	line_t	*lp = dsp_get_row(ctw, dsp_get_top(ctw) + ctw->ctw.y);
+	int	i;
+	int	last_ch = '\0';
+	vbyte_t	*vp = lp->l_text;
+
+	for (i = 0; i < ctw->ctw.x; vp++, i++) {
+		if (vp->vb_byte == ' ')
+			break;
+/*printf("%c", vp->vb_byte);*/
+		last_ch = vp->vb_byte;
+		}
+/*printf("  y=%d,%d last_ch=%02x i=%d\n", ctw->ctw.y, ctw->ctw.x, last_ch, i);*/
+	if (last_ch && strchr("$:#>", last_ch))
+		return TRUE;
+	return FALSE;
 }
 /**********************************************************************/
 /*   Allow user to set the timestamp/line number on output.	      */

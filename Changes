@@ -1,3 +1,7 @@
+Sat Oct 22 20:40:18 2011  fox
+
+     149* ctw.c, fcterm.c: Add shell status "LED" to the status panel.
+
 Thu Oct 20 22:48:18 2011  fox
 
      148* ctw.c: Add support for collapse/open graphic.

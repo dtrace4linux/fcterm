@@ -175,6 +175,7 @@ typedef struct ctw_part {
 	int		blink_state;	/* Used for blinking so we know whether */
 					/* to draw or flash.			*/
 	char		*ttyname;
+	int		prompting;	/* For detecting shell prompts. */
 	/***********************************************/
 	/*   Graph list.			       */
 	/***********************************************/

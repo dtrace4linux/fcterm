@@ -134,6 +134,7 @@ Widget		w_status[4];
 Widget		w_fonts[16];
 
 XtIntervalId	timer_id;
+XtIntervalId	spanel_timer_id;
 
 char	*font_names[8];
 XFontStruct	*fs_5x8;
@@ -212,6 +213,7 @@ void	toggle_callback();
 void	ok_status();
 void	clear_status();
 void	set_font();
+void	status_timer_proc();
 void	timeout_proc();
 void	ok_font();
 void	cancel_font();
@@ -390,6 +392,11 @@ main(int argc, char **argv)
 		/*printf("setting x, y = %d, %d\n", main_x, main_y);*/
 		/*XtMoveWidget(top_level, main_x, main_y);*/
 		}
+
+	/***********************************************/
+	/*   Timer to handle status panel updates.     */
+	/***********************************************/
+	spanel_timer_id = XtAppAddTimeOut(app_con, 1000L, status_timer_proc, NULL);
 
 	XtAppMainLoop(app_con);
 	exit(0);
@@ -1622,21 +1629,17 @@ cancel_dialog(Widget w, XtPointer client_data, XtPointer call_data)
 	dialog = (Widget) NULL;
 }
 void
-status_expose_callback(Widget widget, XtPointer client_data, XtPointer call_data)
-{	int	i, num;
+redraw_status_panel(int n)
+{	Widget	widget = status;
+	int	i, num;
 	fcterm_t	*ctwp;
 	Dimension	w;
 	int	swidth;
 	char	*cp;
 	char	buf[64];
 
-	UNUSED_PARAMETER(client_data);
-	UNUSED_PARAMETER(call_data);
-
-	if (widget == NULL)
-		widget = status;
-
-	XClearWindow(XtDisplay(widget), XtWindow(widget));
+	if (n < 0)
+		XClearWindow(XtDisplay(widget), XtWindow(widget));
 	for (num = 0, ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next)
 		num++;
 	XtVaGetValues(widget, XtNwidth, &w, NULL);
@@ -1647,6 +1650,9 @@ status_expose_callback(Widget widget, XtPointer client_data, XtPointer call_data
 		XSetFont(XtDisplay(widget), gc, fs_5x8->fid);
 
 	for (i = 0; i < MAX_SCREENS; i++) {
+		if (n >= 0 && i != n)
+			continue;
+
 		XSetForeground(XtDisplay(pane), gc, obj_pixels[WHITE_PIXEL]);
 		XDrawLine(XtDisplay(widget), XtWindow(widget), gc,
 			swidth * i, 0,
@@ -1673,10 +1679,29 @@ status_expose_callback(Widget widget, XtPointer client_data, XtPointer call_data
 		XSetForeground(XtDisplay(pane), gc, 
 			obj_pixels[BLACK_PIXEL]);
 		XDrawString(XtDisplay(widget), XtWindow(widget), gc,
-			swidth * i + 3, 7,
+			swidth * i + 3 + 3, 7,
 			cp, strlen(cp));
+
+		if (ctwp == NULL)
+			continue;
+
+/*printf("%p: %d\n", ctwp->f_ctw, ctw_is_prompting(ctwp->f_ctw));*/
+		XSetForeground(XtDisplay(pane), gc,  
+			ctw_is_prompting(ctwp->f_ctw) ? 0x0080ff : 0xff0000);
+		XFillRectangle(XtDisplay(widget), XtWindow(widget), gc,
+			i * swidth + 2, 1,
+			4, STATUS_HEIGHT - 2);
 		}
 
+}
+void
+status_expose_callback(Widget widget, XtPointer client_data, XtPointer call_data)
+{
+	UNUSED_PARAMETER(widget);
+	UNUSED_PARAMETER(client_data);
+	UNUSED_PARAMETER(call_data);
+
+	redraw_status_panel(-1);
 }
 void
 status_input_callback(Widget widget, XtPointer client_data, DrawingAreaCallbackStruct *cbs)
@@ -1696,6 +1721,16 @@ status_input_callback(Widget widget, XtPointer client_data, DrawingAreaCallbackS
 		status_expose_callback(status, 0, 0);
 	  	break;
 	  }
+}
+/**********************************************************************/
+/*   Handle updating the flashing buttons in the status panel area.   */
+/**********************************************************************/
+void
+status_timer_proc(XtPointer client_data, XtIntervalId *timer)
+{
+	redraw_status_panel(-1);
+
+	spanel_timer_id = XtAppAddTimeOut(app_con, 1000L, status_timer_proc, NULL);
 }
 /**********************************************************************/
 /*   Function  called  when  user toggles an attribute in the dialog  */
@@ -2025,6 +2060,8 @@ x11_error_handler(Display *dpy, XErrorEvent *event)
 static int
 x11_io_error_handler(Display *dpy)
 {
+	UNUSED_PARAMETER(dpy);
+
 	/***********************************************/
 	/*   Relaunch  fcterm  if  the  server  comes  */
 	/*   back.				       */
