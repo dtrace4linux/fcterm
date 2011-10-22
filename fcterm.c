@@ -1727,8 +1727,24 @@ status_input_callback(Widget widget, XtPointer client_data, DrawingAreaCallbackS
 /**********************************************************************/
 void
 status_timer_proc(XtPointer client_data, XtIntervalId *timer)
-{
-	redraw_status_panel(-1);
+{	int	i, p;
+	fcterm_t	*ctwp;
+
+	for (i = 0; i < MAX_SCREENS; i++) {
+		for (ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next) {
+			if (i == ctwp->f_id)
+				break;
+			}
+		if (ctwp == NULL)
+			continue;
+		p = ctw_is_prompting(ctwp->f_ctw);
+		if (p == ctwp->f_prompting)
+			continue;
+
+		ctwp->f_prompting = p;
+		redraw_status_panel(i);
+		}
+
 
 	spanel_timer_id = XtAppAddTimeOut(app_con, 1000L, status_timer_proc, NULL);
 }

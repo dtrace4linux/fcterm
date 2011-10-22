@@ -140,7 +140,7 @@ typedef struct fcterm_t {
 	struct fcterm_t	*f_prev;
 	int		f_pid;
 	int		f_active;
-	int		f_pulse_id;
+	int		f_prompting;
 	Widget		f_ctw;
 	int		f_mark;
 	int		f_rows;
