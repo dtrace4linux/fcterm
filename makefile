@@ -5,7 +5,7 @@
 #
 # Specify where to get include files.
 CRISP=../../crisp
-BIN=bin.linux-x86_32
+BIN=bin.linux-x86_64
 XPM_LIB=$(CRISP)/$(BIN)/libXpm.a $(CRISP)/$(BIN)/foxlib.a $(CRISP)/$(BIN)/x11.obj/w_draw.o
 XPM_INCLUDE=$(CRISP)/x11/xpm
 INC=-I. -Iinclude -I$(XPM_INCLUDE) -I$(CRISP)/foxlib -I$(CRISP)/include -I$(CRISP)/x11/widgets
@@ -55,7 +55,7 @@ $(OBJDIR)/scrbar.o:	scrbar.c include/scrbar.h include/scrbarP.h
 	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/scrbar.o scrbar.c
 
 $(OBJDIR)/pty: pty.c ptysrv.h
-	$(CC) $(INC) -I$(CRISP)/include $(CFLAGS) -o $(OBJDIR)/pty pty.c $(CRISP)/$(BIN)/foxlib.a
+	$(CC) $(INC) -I$(CRISP)/include $(CFLAGS) -o $(OBJDIR)/pty pty.c $(CRISP)/$(BIN)/foxlib.a -ldl
 $(OBJDIR)/ptysrv: ptysrv.c ptysrv.h
 	$(CC) -g -fno-inline $(INC) -I$(CRISP)/include $(CFLAGS) -o $(OBJDIR)/ptysrv ptysrv.c $(CRISP)/$(BIN)/foxlib.a -ldl
 

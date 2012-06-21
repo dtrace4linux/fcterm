@@ -4,10 +4,10 @@
 /*  Author:        P. D. Fox                                          */
 /*  Created:       25 Nov 1991                     		      */
 /*                                                                    */
-/*  Copyright (c) 1990-2011 Paul Fox                                  */
+/*  Copyright (c) 1990-2012 Paul Fox                                  */
 /*                All Rights Reserved.                                */
 /*                                                                    */
-/*   $Header: Last edited: 20-Oct-2011 1.64 $ 			      */
+/*   $Header: Last edited: 21-Jun-2012 1.65 $ 			      */
 /*--------------------------------------------------------------------*/
 /*  Description:  Color terminal widget.                              */
 /*                                                                    */
@@ -567,7 +567,7 @@ static void	destroy_pixmap_array PROTO((CtwWidget, Pixmap *));
 static int	hist_save_line(CtwWidget, int);
 static 	void	ctw_add_char PROTO((CtwWidget, char *));
 static 	void	do_logging PROTO((CtwWidget, int));
-static  Atom 	FetchAtom();
+static Atom 	FetchAtom();
 static  Boolean convert_proc();
 static  char	*handle_escape PROTO((CtwWidget, char *, char *));
 static  char	*handle_utf8 PROTO((CtwWidget, char *, char *));
@@ -4588,6 +4588,16 @@ handle_utf8(CtwWidget w, char *str, char *str_end)
 		buf[0] = u;
 		ctw_add_raw_string(w, buf, 1);
 		}
+	else if ((u & 0xff80) == 0x2500 && (u & 0x007f) < 0x20) {
+		static unsigned char line_draw[] = { 
+			0xcd, 0x00, 0xb3, 0x00, 0x00, 0x00, 0x00, 0x00, 
+			0x00, 0x00, 0x00, 0x00, 0xd5, 0x00, 0x00, 0x00,  
+			
+			0xb8, 0x00, 0x00, 0x00, 0xd4, 0x00, 0x00, 0x00,  
+			0xbe, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
+			};
+		ctw_add_raw_string(w, &line_draw[u & 0x1f], 1);
+		}
 	else if (u < 0x10000) {
 		sprintf(buf, "\\U%04x", u);
 		ctw_add_raw_string(w, buf, strlen(buf));
@@ -7453,7 +7463,7 @@ void
 ctw_mouse(CtwWidget ctw, int reason, unsigned long time, int type, int state, int x, int y)
 {	XEvent ev;
 	Cardinal num = 0;
-	String  str[1];
+	String  str[2];
 
 	UNUSED_PARAMETER(reason);
 

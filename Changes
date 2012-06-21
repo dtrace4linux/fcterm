@@ -1,3 +1,11 @@
+Thu Jun 21 22:07:15 2012  fox
+
+     151* ctw.c: Add UTF-8 0x2500 line drawing chars for elinks.
+
+Thu May  3 21:18:02 2012  fox
+
+     150* term.c: Add _NET_WM_ICON support.
+
 Sat Oct 22 20:40:18 2011  fox
 
      149* ctw.c, fcterm.c: Add shell status "LED" to the status panel.

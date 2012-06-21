@@ -10,7 +10,7 @@
 /*   $Header: Last edited: 01-Aug-2011 1.11 $ 			      */
 /**********************************************************************/
 
-#define __STRICT_ANSI__
+//#define __STRICT_ANSI__
 # include	"fcterm.h"
 # include	"pwd.h"
 # include	"scrbar.h"
@@ -40,6 +40,7 @@
 # include	<xpm.h>
 # include	"fcterm.bitmap"
 # include	"fcterm.xpm"
+# include	<X11/Xatom.h>
 
 # undef sscanf
 
@@ -128,6 +129,7 @@ extern int	enable_cut_buffer0;
 /**********************************************************************/
 /*   Prototypes.						      */
 /**********************************************************************/
+char	*find_exec_path PROTO((char *, char *));
 void dump_screens(void);
 void	top_callback();
 void restart_fcterm(void);
@@ -369,6 +371,39 @@ create_icon_pixmap()
 	/***********************************************/
 	XtSetArg(args[1], XtNiconPixmap, pixmap);
 	XtSetValues(top_level, args, 2);
+
+	/***********************************************/
+	/*   Create the _NET_WM_ICON.		       */
+	/***********************************************/
+	{int	sz;
+	int	i, x, y;
+	int	err;
+	Atom	_net_wm_icon;
+	XImage	*xim = NULL;
+typedef unsigned long CARD32;
+static CARD32 *arr;
+
+	err = XpmCreateImageFromData(dpy, fcterm_xpm, &xim, NULL, NULL);
+//printf("xim=%p %dx%d\n", xim, xim->width, xim->height);
+
+	_net_wm_icon = XInternAtom(dpy, "_NET_WM_ICON", FALSE);
+	sz = (xim->width * xim->height) + 2;
+	arr = chk_alloc(sz * sizeof(CARD32));
+	i = 0;
+	arr[i++] = xim->width;
+	arr[i++] = xim->height;
+	for (y = 0; y < xim->height; y++) {
+		for (x = 0; x < xim->width; x++) {
+			Pixel p = XGetPixel(xim, x, y);
+//printf("p=%lx ", p);
+			arr[i++] = 0xff000000 | p;
+			}
+		}
+	XChangeProperty(dpy, XtWindow(top_level), _net_wm_icon, XA_CARDINAL,
+		32, PropModeReplace, arr, sz);
+	chk_free(arr);
+	XDestroyImage(xim);
+	}
 }
 int
 do_switches(int argc, char **argv)
@@ -2224,10 +2259,9 @@ fcterm_t	*cur_ctw;
 int	*fwidth;
 int	*fheight;
 {
-	int	len;
 	int	*flags;
 
-	len = ctw_get_attributes((CtwWidget) cur_ctw->f_ctw, &flags, &attr_names);
+	ctw_get_attributes((CtwWidget) cur_ctw->f_ctw, &flags, &attr_names);
 	*fwidth = flags[CTW_FONT_SIZE] >> 16;
 	*fheight = flags[CTW_FONT_SIZE] & 0xffff;
 }
