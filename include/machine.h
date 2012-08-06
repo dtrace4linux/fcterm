@@ -2,14 +2,14 @@
 /*                                                                    */
 /*        CRiSP - Custom Reduced Instruction Set Programmers Editor   */
 /*                                                                    */
-/*        (C) Paul Fox, 1989-2007                                     */
+/*        (C) Paul Fox, 1989-2010                                     */
 /*                                                                    */ 
 /*  File:  machine.h                                                  */ 
 /*                                                                    */ 
 /*  This file contains the #defines necessary to configure different  */
 /*  machine architectures.                                            */
 /**********************************************************************/
-/*   $Header: Last edited: 27-Jan-2007 1.5 $ 			      */
+/*   $Header: Last edited: 07-Jun-2012 1.9 $ 			      */
 /**********************************************************************/
 
 # if !defined(MACHINE_H_INCLUDED)
@@ -83,12 +83,24 @@
 #	include	"machos/freebsd6.h"
 # endif
 
+# if	CR_FREEBSD8_X86_64
+#	include	"machos/freebsd8_x86_64.h"
+# endif
+
 # if	CR_HPUX
 #	include	"machos/hpux.h"
 # endif 
 
 # if	CR_HPUX10
 #	include	"machos/hpux10.h"
+# endif 
+
+# if	CR_HPUX11_IA64
+#	include	"machos/hpux11-ia64.h"
+# endif 
+
+# if	CR_HPUX11_IA64_64
+#	include	"machos/hpux11-ia64-64.h"
 # endif 
 
 /**********************************************************************/
@@ -120,6 +132,9 @@
 /**********************************************************************/
 /*   Entry for Linux operating system				      */
 /**********************************************************************/
+# if	CR_LINUX_ARMV6L
+#	include	"machos/linux-armv6l.h"
+# endif
 # if	CR_LINUX_LIBC5
 #	include	"machos/linux_libc5.h"
 # endif
@@ -183,12 +198,31 @@
 # if	CR_M88K_V4
 #	include	"machos/m88k_v4.h"
 # endif
+
 # if	CR_APPLE_OSX
 #	include	"machos/apple_osx.h"
 # endif
-# if	CR_APPLE_OSX_PPC_10_4
-#	include	"machos/apple-osx-ppc-10.4.h"
+
+# if	CR_APPLE_OSX_10_4_PPC
+#	include	"machos/apple-osx-10.4-ppc.h"
 # endif
+
+# if	CR_APPLE_OSX_10_4_X86
+#	include	"machos/apple-osx-10.4-x86.h"
+# endif
+
+# if	CR_APPLE_OSX_10_5_X86
+#	include	"machos/apple-osx-10.5-x86.h"
+# endif
+
+# if	CR_APPLE_OSX_10_6_X86
+#	include	"machos/apple-osx-10.6-x86.h"
+# endif
+
+# if	CR_APPLE_OSX_10_7_X86
+#	include	"machos/apple-osx-10.7-x86.h"
+# endif
+
 /**********************************************************************/
 /*   Following  entry  works  for  Mips  4.52  with  2.0  compiler    */
 /**********************************************************************/
@@ -242,6 +276,15 @@
 # if	CR_SOLARIS10_X86
 #	include	"machos/solaris-10-x86.h"
 # endif
+
+# if	CR_SOLARIS10_X86_32
+#	include	"machos/solaris-10-x86_32.h"
+# endif
+
+# if	CR_SOLARIS10_X86_64
+#	include	"machos/solaris-10-x86_64.h"
+# endif
+
 
 # if	CR_SOLARIS10_SPARC32
 #	include	"machos/solaris-10-sparc32.h"
@@ -309,6 +352,28 @@
 # if	CR_WIN32
 #	include	"machos/win32.h"
 # endif
+
+# if	CR_WIN64
+#	include	"machos/win64.h"
+# endif
+/**********************************************************************/
+/*   CR_OS_CLASS enumerations.					      */
+/**********************************************************************/
+# define	CR_OS_UNKNOWN	0
+# define	CR_OS_LINUX	1
+# define	CR_OS_SOLARIS2	2
+# define	CR_OS_MACOSX	3
+# define	CR_OS_HPUX	4
+
+# define	CR_CPU_UNKNOWN  0
+# define	CR_CPU_X86	1
+# define	CR_CPU_SPARC32  2
+# define	CR_CPU_SPARC64  3
+# define	CR_CPU_X86_64	4
+# define	CR_CPU_M68K	5
+# define	CR_CPU_CRAY	6
+# define	CR_CPU_M88K	7
+# define	CR_CPU_PPC 	8
 
 /**********************************************************************/ 
 /*   This section gives some default values to various definitions.   */
@@ -532,6 +597,13 @@ struct timeval {
 /**********************************************************************/
 # if !HAVE_TYPE_UINT64_T && !defined(uint64_t)
 #	define	uint64_t unsigned long long
+# endif
+
+/**********************************************************************/
+/*   Turn off gcc/glibc flipping annoying printf_chk type stuff.      */
+/**********************************************************************/
+# if !defined(_FORTIFY_SOURCE)
+#	define _FORTIFY_SOURCE 0
 # endif
 
 # if !defined(CAST_TO_INT)

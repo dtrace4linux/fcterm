@@ -1,3 +1,5 @@
+#! /bin/make
+#
 # Pretty basic makefile. Please hack to your hearts content.
 #
 # Type 'make' to build an athena widgets version.
@@ -33,31 +35,49 @@ include/code.h: mkcode.sh
 $(OBJDIR)/fcterm:	$(OBJDIR)/fcterm.o $(OBJ) 
 	$(PURIFY) $(CC) -o $(OBJDIR)/fcterm $(OBJDIR)/fcterm.o $(OBJ) $(XPM_LIB) $(XAW_LINK)
 
+make_macos:
+	export PLATFORM=apple-osx-10.7-x86 ; \
+	if [ ! -d ../../crisp/bin.$$PLATFORM ]; then \
+		export PLATFORM=apple-osx-10.6-x86 ; \
+	fi ; \
+	if [ ! -d bin.$PLATFORM ]; then \
+		mkdir bin.$$PLATFORM 2>/dev/null ; \
+	fi ; \
+	OS_TYPE=$$PLATFORM BIN=bin.$$PLATFORM OBJDIR=bin.$$PLATFORM \
+	XPM_LIB="$(CRISP)/bin.$$PLATFORM/libXpm.a $(CRISP)/bin.$$PLATFORM/foxlib.a $(CRISP)/bin.$$PLATFORM/x11.obj/w_draw.o " \
+	XAW_LINK="-L/usr/X11/lib -lXaw -lXmu -lXt -lSM -lX11" \
+	CFLAGS="-DCR_APPLE_OSX_10_7_X86 " \
+	$(MAKE) -e all0
+
 motif:
 	$(MAKE) PROTO="-D_NO_PROTO" LIB="-L/usr/dt/lib -R/usr/dt/lib -L/usr/openwin/lib -R/usr/openwin/lib -L../../lib -lXpm -lXmu -lXm -lXt -lX11" motif1
 
 motif1:	$(OBJDIR)/fmcterm.o $(OBJDIR)/motif.o $(OBJ)
 	$(LINK) $(PROF) -o $(OBJDIR)/fmcterm $(OBJDIR)/fmcterm.o $(OBJDIR)/motif.o $(OBJ) $(LIB)
 
-$(OBJDIR)/ctw.o:		ctw.c include/ctw.h include/ctwP.h include/sequence.h include/code.h keyboard.c
-	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/ctw.o ctw.c
-$(OBJDIR)/fcterm.o:	fcterm.c $(H) fcterm.bitmap include/scrbar.h include/build.h
-	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/fcterm.o fcterm.c
+$(OBJDIR)/ctw.o:		src/ctw.c include/ctw.h include/ctwP.h include/sequence.h include/code.h src/keyboard.c
+	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/ctw.o src/ctw.c
+$(OBJDIR)/fcterm.o:	src/fcterm.c $(H) fcterm.bitmap include/scrbar.h include/build.h
+	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/fcterm.o src/fcterm.c
 $(OBJDIR)/fmcterm.o:	fmcterm.c $(H) fcterm.bitmap include/scrbar.h
 	$(CC) $(INC) -I/usr/dt/include  $(CFLAGS) -c -o $(OBJDIR)/fmcterm.o fmcterm.c
-$(OBJDIR)/term.o:		term.c $(H) fcterm.bitmap
-	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/term.o term.c
+$(OBJDIR)/term.o:		src/term.c $(H) fcterm.bitmap
+	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/term.o src/term.c
 $(OBJDIR)/motif.o:	motif.c motif.h
 	$(CC) $(INC) -I/usr/dt/include $(CFLAGS) -c -o $(OBJDIR)/motif.o motif.c
-$(OBJDIR)/rotate.o:	rotate.c
-	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/rotate.o rotate.c
-$(OBJDIR)/scrbar.o:	scrbar.c include/scrbar.h include/scrbarP.h
-	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/scrbar.o scrbar.c
+$(OBJDIR)/rotate.o:	src/rotate.c
+	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/rotate.o src/rotate.c
+$(OBJDIR)/scrbar.o:	src/scrbar.c include/scrbar.h include/scrbarP.h
+	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/scrbar.o src/scrbar.c
 
-$(OBJDIR)/pty: pty.c ptysrv.h
-	$(CC) $(INC) -I$(CRISP)/include $(CFLAGS) -o $(OBJDIR)/pty pty.c $(CRISP)/$(BIN)/foxlib.a -ldl
-$(OBJDIR)/ptysrv: ptysrv.c ptysrv.h
-	$(CC) -g -fno-inline $(INC) -I$(CRISP)/include $(CFLAGS) -o $(OBJDIR)/ptysrv ptysrv.c $(CRISP)/$(BIN)/foxlib.a -ldl
+$(OBJDIR)/pty: src/pty.c include/ptysrv.h
+	$(CC) $(INC) -I$(CRISP)/include $(CFLAGS) -o $(OBJDIR)/pty src/pty.c $(CRISP)/$(BIN)/foxlib.a -ldl
+$(OBJDIR)/ptysrv: src/ptysrv.c include/ptysrv.h
+	$(CC) -g -fno-inline $(INC) -I$(CRISP)/include $(CFLAGS) -o $(OBJDIR)/ptysrv src/ptysrv.c $(CRISP)/$(BIN)/foxlib.a -ldl
+
+mac: 
+	gcc -DCOCOA -ObjC -Iinclude -I$(CRISP)/include -I$(CRISP)/foxlib \
+		-o main macos/main.m bin/term.o -framework AppKit
 
 newf:
 	tar cvf - `find . -type f -newer TIMESTAMP ! -name tags ! -name y.tab.c ! -name config.def | grep -v /bin ` | gzip -9 > $(HOME)/tmp/src.ctw.tar.gz

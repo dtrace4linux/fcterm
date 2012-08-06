@@ -1,3 +1,7 @@
+Sun Jul  8 18:23:15 2012  fox
+
+     152* term.c, makefile, fcterm.c, ctw.c: Build on MacOS 10.7
+
 Thu Jun 21 22:07:15 2012  fox
 
      151* ctw.c: Add UTF-8 0x2500 line drawing chars for elinks.

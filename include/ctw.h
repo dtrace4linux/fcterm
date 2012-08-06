@@ -236,6 +236,15 @@ ctwWidget:
 typedef struct _CtwClassRec*	CtwWidgetClass;
 typedef struct _CtwRec*		CtwWidget;
 
+# if COCOA
+#	define WidgetClass id
+typedef struct XEvent {
+	int	x;
+	} XEvent;
+#define Cursor XCursor
+#include <xwindows.h>
+# endif
+
 /**********************************************************************/
 /*   declare the class constant					      */
 /**********************************************************************/
@@ -398,24 +407,24 @@ enum ctw_flags {
 /**********************************************************************/
 /*   Add a string to be displayed including ANSI escape sequences.    */
 /**********************************************************************/
-void	ctw_add_string PROTO((CtwWidget, char *, int));
+void	ctw_add_string(CtwWidget, char *, int);
 
 /**********************************************************************/
 /*   Add string to display but dont interpret any control sequences.  */
 /*   Just display raw glyphs.					      */
 /**********************************************************************/
-void	ctw_add_raw_string PROTO((CtwWidget, char *, int));
+void	ctw_add_raw_string(CtwWidget, char *, int);
 
 /**********************************************************************/
 /*   Stop scrolling whilst playing with scrollbars.		      */
 /**********************************************************************/
-int	ctw_freeze_display PROTO((CtwWidget, int));
+int	ctw_freeze_display(CtwWidget, int);
 
 /**********************************************************************/
 /*   Return  line  number  at  top  of screen. Used for implementing  */
 /*   scrollable area.						      */
 /**********************************************************************/
-int	ctw_get_top_line PROTO((CtwWidget));
+int	ctw_get_top_line(CtwWidget);
 
 /**********************************************************************/
 /*   Get total number of scrollable rows.			      */
@@ -426,12 +435,12 @@ int	ctw_get_total_rows(CtwWidget ctw);
 /*   Set  the  line at the top of the display. Used for implementing  */
 /*   scrollable area.						      */
 /**********************************************************************/
-void	ctw_set_top_line PROTO((CtwWidget, int));
+void	ctw_set_top_line(CtwWidget, int);
 
 /**********************************************************************/
 /*   Function to retrieve current state of the various attributes.     */
 /**********************************************************************/
-int	ctw_get_attributes PROTO((CtwWidget, int **, char ***));
+int	ctw_get_attributes(CtwWidget, int **, char ***);
 
 /**********************************************************************/
 /*   Restore state from a file.					      */
@@ -442,7 +451,7 @@ void	ctw_restore_state(CtwWidget ctw, FILE *fp);
 /*   Function  to  set  attributes  current  state  of  the  various  */
 /*   attributes.						      */
 /**********************************************************************/
-void	ctw_set_attributes PROTO((CtwWidget, int *));
+void	ctw_set_attributes(CtwWidget, int *);
 
 /**********************************************************************/
 /*   Allow us to draw to a pixmap.				      */
@@ -452,7 +461,7 @@ void	ctw_set_pixmap_mode(CtwWidget ctw, int flag);
 /**********************************************************************/
 /*   Tell widget to grab the contents of the selection.		      */
 /**********************************************************************/
-void	ctw_get_selection PROTO((CtwWidget));
+void	ctw_get_selection(CtwWidget);
 
 /**********************************************************************/
 /*   Force mouse input.						      */
@@ -462,7 +471,7 @@ void ctw_mouse(CtwWidget ctw, int reason, unsigned long time, int type, int stat
 /**********************************************************************/
 /*   Flush the log file.					      */
 /**********************************************************************/
-void	ctw_flush_log PROTO((CtwWidget));
+void	ctw_flush_log(CtwWidget);
 
 /**********************************************************************/
 /*   Label output.						      */
@@ -472,34 +481,34 @@ void	ctw_label_lines(CtwWidget, int);
 /**********************************************************************/
 /*   Retrieve current font info.				      */
 /**********************************************************************/
-void	ctw_get_font_info PROTO((CtwWidget, int *, int *));
+void	ctw_get_font_info(CtwWidget, int *, int *);
 
 /**********************************************************************/
 /*   Function to retrieve size of screen.			      */
 /**********************************************************************/
-void	ctw_get_geometry PROTO((CtwWidget, int *, int *));
+void	ctw_get_geometry(CtwWidget, int *, int *);
 
 /**********************************************************************/
 /*   Dump  a  copy  of  everything  in  the  history  buffer  to the  */
 /*   specified file.						      */
 /**********************************************************************/
-vbyte_t	*ctw_get_line PROTO((CtwWidget, int));
+vbyte_t	*ctw_get_line(CtwWidget, int);
 
 /**********************************************************************/
 /*   Function to set a single attribute.			      */
 /**********************************************************************/
-int	ctw_set_attribute PROTO((CtwWidget, int, int));
+int	ctw_set_attribute(CtwWidget, int, int);
 
 /**********************************************************************/
 /*   Set the terminal attribute parsing.			      */
 /**********************************************************************/
-int	ctw_set_emulation PROTO((CtwWidget, int));
-char	*ctw_emulation_name PROTO((int));
+int	ctw_set_emulation(CtwWidget, int);
+char	*ctw_emulation_name(int);
 
 /**********************************************************************/
 /*   Function to retrieve current percentage playback speed.	      */
 /**********************************************************************/
-int	ctw_get_speed PROTO((CtwWidget));
+int	ctw_get_speed(CtwWidget);
 
 /**********************************************************************/
 /*   Force screen redraw.					      */
@@ -511,7 +520,7 @@ void	ctw_get_size(CtwWidget, int *, int *);
 /*   Retrieve the GC.						      */
 /**********************************************************************/
 GC	ctw_get_gc(CtwWidget ctw);
-void	ctw_get_xy PROTO((CtwWidget, int *, int *, int, int));
+void	ctw_get_xy(CtwWidget, int *, int *, int, int);
 
 /**********************************************************************/
 /*   Set default rollover filesize.				      */

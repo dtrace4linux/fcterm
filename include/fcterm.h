@@ -8,11 +8,13 @@
 # include	<signal.h>
 # include	<errno.h>
 # include	<ctype.h>
+#if !defined(COCOA)
 # include	<X11/X.h>
 # include	<X11/Intrinsic.h>
 # include 	<X11/IntrinsicP.h>
 # include	<X11/StringDefs.h>
 # include	<X11/Shell.h>
+#endif
 # include	"ctw.h"
 # if defined(HAVE_TERMIOS)
 #	include	<termios.h>
@@ -48,9 +50,11 @@
 # include	<memory.h>
 # include	<chkalloc.h>
 
+/*
 # if defined(STREAMS_PTY)
 #	include	<sys/stropts.h>
 # endif
+*/
 # include	"ptysrv.h"
 
 /*
@@ -102,7 +106,9 @@ enum menu_items {
 #	define	UNUSED_PARAMETER(x)	x = x
 # endif
 
-# define	MIN(a, b)	(a) < (b) ? (a) : (b)
+# if !defined(MIN)
+#	define	MIN(a, b)	(a) < (b) ? (a) : (b)
+# endif
 
 # define	GHOST_ID	-100
 
