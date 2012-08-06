@@ -1,3 +1,7 @@
+Mon Aug  6 12:17:54 2012  fox
+
+     153* ctw.c: Allow KP_0 to be an INS key innon-keypad mode.
+
 Sun Jul  8 18:23:15 2012  fox
 
      152* term.c, makefile, fcterm.c, ctw.c: Build on MacOS 10.7
