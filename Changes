@@ -1,3 +1,13 @@
+Sun Sep  9 09:22:02 2012  fox
+
+     156* build.h: 4.33
+
+     155* ctw.c: read_modifier_keys: Avoid redoing multiple times.
+
+Sat Aug 25 17:37:00 2012  fox
+
+     154* ctw.c: Add support for ESC[9Xm and ESC[10Xm for eastman ball.
+
 Mon Aug  6 12:17:54 2012  fox
 
      153* ctw.c: Allow KP_0 to be an INS key innon-keypad mode.
