@@ -183,4 +183,25 @@ Escape sequences:
    			r == current row (decimal 0..n)
    			c == current col (decimal 0..n)
 
+Linux Console private sequences:
+
+       ESC [ 1 ; n ]       Set color n as the underline color
+       ESC [ 2 ; n ]       Set color n as the dim color
+       ESC [ 8 ]           Make the current color pair the default attributes.
+       ESC [ 9 ; n ]       Set screen blank timeout to n minutes.
+       ESC [ 10 ; n ]      Set bell frequency in Hz.
+       ESC [ 11 ; n ]      Set bell duration in msec.
+       ESC [ 12 ; n ]      Bring specified console to the front.
+       ESC [ 13 ]          Unblank the screen.
+       ESC [ 14 ; n ]      Set the VESA powerdown interval in minutes.
+
+       ESC [ ? p1 ; p2 ; p3 c Set cursor style
+	    p1=	0  Don't change
+		1  No cursor
+		2  Underline
+		3  Lower third of the block
+		4  Lower half of the block
+		5  Two thirds of the block
+		6  Block cursor
+	    p2/p3 = 0xbf = background/foreground color
 EOF

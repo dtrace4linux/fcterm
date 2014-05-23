@@ -160,6 +160,8 @@ typedef struct ctw_part {
 	Pixel		hilite_bg;
 	Pixel		spill_fg;
 	Pixel		spill_bg;
+	Pixel		link_fg;
+	Pixel		link_bg;
 	Pixel		search_fg;
 	Pixel		search_bg;
 	Pixel		cont_fg;
@@ -240,6 +242,14 @@ typedef struct ctw_part {
 	int	saved_x, saved_y;
 	int	cursor_visible;
 	XtIntervalId	cursor_timer;
+	int		cursor_style;	/* 1==no cursor	*/
+					/* 2==underline */
+					/* 3==lower third */
+					/* 4==lower half */
+					/* 5==two thirds */
+					/* 6==block */
+	short		c_cursor_fg;
+	short		c_cursor_bg;
 	enum cursor_type	cursor_state;
 	int	have_focus;	/* Used for cursor flashing.	*/
 

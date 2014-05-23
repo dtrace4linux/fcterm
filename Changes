@@ -1,3 +1,27 @@
+Fri May 23 23:05:11 2014  fox
+
+     162* src/ctw.c
+          Add hyperlink detection/display.
+
+Sat Jan 25 21:20:03 2014  fox
+
+     161* README, makefile, src/fcterm.c, src/scrbar.c:
+        Make the background panel less bright to make it clearer.
+
+Tue Aug 27 22:39:16 2013  fox
+
+     160* armv6l: binary supported
+
+Tue Dec 18 23:01:08 2012  fox
+
+     159* ctw.c: Fix cursor positioning for special line drawing (gridlines).
+
+Mon Oct 29 22:58:58 2012  fox
+
+     158* build.h: 4.34
+
+     157* ctw.c: Add support for ESC[? p1;p2;p3 c Linux cursors.
+
 Sun Sep  9 09:22:02 2012  fox
 
      156* build.h: 4.33

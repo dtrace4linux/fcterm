@@ -48,6 +48,15 @@ make_macos:
 	XAW_LINK="-L/usr/X11/lib -lXaw -lXmu -lXt -lSM -lX11" \
 	CFLAGS="-DCR_APPLE_OSX_10_7_X86 " \
 	$(MAKE) -e all0
+make_rpi:
+	-mkdir bin.linux-armv6l
+	-ln -s bin.linux-armv6l bin
+	$(MAKE) BIN=bin.linux-armv6l \
+		CFLAGS="-DCR_LINUX_ARMV6L" \
+		OS_TYPE=linux-armv6l \
+		OBJDIR=bin.linux-armv6l \
+		XAW_LINK="$(FT) -lXaw -lXmu -lXext -lXt -lSM -lICE -lX11 -ldl" \
+		all0
 
 motif:
 	$(MAKE) PROTO="-D_NO_PROTO" LIB="-L/usr/dt/lib -R/usr/dt/lib -L/usr/openwin/lib -R/usr/openwin/lib -L../../lib -lXpm -lXmu -lXm -lXt -lX11" motif1
@@ -83,6 +92,7 @@ newf:
 	tar cvf - `find . -type f -newer TIMESTAMP ! -name tags ! -name y.tab.c ! -name config.def | grep -v /bin ` | gzip -9 > $(HOME)/tmp/src.ctw.tar.gz
 
 release:
+	echo mkrelease.pl -arch bin/fcterm samples fccat
 	mkrelease.pl bin/fcterm samples fccat
 
 release2:
