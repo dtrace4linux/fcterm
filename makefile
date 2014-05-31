@@ -35,6 +35,11 @@ include/code.h: mkcode.sh
 $(OBJDIR)/fcterm:	$(OBJDIR)/fcterm.o $(OBJ) 
 	$(PURIFY) $(CC) -o $(OBJDIR)/fcterm $(OBJDIR)/fcterm.o $(OBJ) $(XPM_LIB) $(XAW_LINK)
 
+install:
+	rm -f $(HOME)/bin/fcterm
+	cp bin.linux-x86_64/fcterm $(HOME)/bin/fcterm-`bin/fcterm -version`
+	ln -s fcterm-`bin/fcterm -version` $(HOME)/bin/fcterm
+
 make_macos:
 	export PLATFORM=apple-osx-10.7-x86 ; \
 	if [ ! -d ../../crisp/bin.$$PLATFORM ]; then \
