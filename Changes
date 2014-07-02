@@ -1,3 +1,10 @@
+Wed Jul  2 22:33:44 2014  fox
+
+     164* makefile
+          src/term.c
+          Fix the infinite output/Ctrl-C problem by terminating cb_read
+	  if any X11 input.
+
 Sat May 31 13:37:52 2014  fox
 
      163* 
