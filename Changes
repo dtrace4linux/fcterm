@@ -1,3 +1,27 @@
+Tue Aug 12 23:33:45 2014  fox
+
+     167* include/ctw.h
+          include/fcterm.h
+          src/ctw.c
+          src/fcterm.c
+          Add "Search" to the popup menu.
+
+Sun Jul  6 22:10:26 2014  fox
+
+     166* include/ctw.h
+          include/sequence.h
+          mkseq.sh
+          samples/24-bit-color.pl
+          src/ctw.c
+          src/ptysrv.c
+          src/term.c
+          Add ESC[38;2;rr;gg;bb;m and ESC[48;2;rr;gg;bb;m support
+
+Thu Jul  3 21:25:41 2014  fox
+
+     165* src/term.c
+          More aggressive backing off in cb_read to avoid uncontrol ^C.
+
 Wed Jul  2 22:33:44 2014  fox
 
      164* makefile

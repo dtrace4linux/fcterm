@@ -266,6 +266,9 @@ extern WidgetClass ctwWidgetClass;
 # define	VB_SELECT	0x20
 # define	VB_STRIKETHRU	0x40
 # define	VB_BOXED	0x80
+
+# define	VB2_FG_24	0x01
+# define	VB2_BG_24	0x02
 /**********************************************************************/
 /*   Define  a  'byte'. A byte represents a character on the screen.  */
 /*   Its  4-bytes  wide containing an 8-bit character, plus a 'font'  */
@@ -280,13 +283,18 @@ typedef struct vbyte_t {
 	unsigned char	vb_attr;
 	unsigned char	vb_fcolor;
 	unsigned char	vb_bcolor;
+	unsigned char	vb_attr2;
+	unsigned char	vb_fg[3];
+	unsigned char	vb_bg[3];
 	} vbyte_t;
 
 # define vbyte_eq(vp1, vp2) ((vp1)->vb_byte == (vp2)->vb_byte && \
-			     (vp1)->vb_attr ==  (vp2)->vb_byte && \
+			     (vp1)->vb_attr ==  (vp2)->vb_attr && \
+			     (vp1)->vb_attr2 ==  (vp2)->vb_attr2 && \
 			     (vp1)->vb_fcolor == (vp2)->vb_fcolor && \
 			     (vp1)->vb_bcolor == (vp2)->vb_bcolor)
 # define vbyte_clear(vp1) ((vp1)->vb_attr = 0, \
+		(vp1)->vb_attr2 = 0, \
 		(vp1)->vb_byte = ' ', \
 		(vp1)->vb_fcolor = 0, \
 		(vp1)->vb_bcolor = 0 \
@@ -508,6 +516,8 @@ int	ctw_set_attribute(CtwWidget, int, int);
 /**********************************************************************/
 int	ctw_set_emulation(CtwWidget, int);
 char	*ctw_emulation_name(int);
+
+void	ctw_command_mode(CtwWidget ctw);
 
 /**********************************************************************/
 /*   Function to retrieve current percentage playback speed.	      */

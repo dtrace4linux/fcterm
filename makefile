@@ -17,6 +17,7 @@ LINK=$(PURIFY) $(CC) $(PROF)
 #OBJDIR=	obj
 H	= include/code.h include/sequence.h include/fcterm.h include/ctw.h
 OBJ=	\
+	$(OBJDIR)/group.o \
 	$(OBJDIR)/term.o \
 	$(OBJDIR)/ctw.o \
 	$(OBJDIR)/rotate.o \
@@ -75,6 +76,8 @@ $(OBJDIR)/fcterm.o:	src/fcterm.c $(H) fcterm.bitmap include/scrbar.h include/bui
 	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/fcterm.o src/fcterm.c
 $(OBJDIR)/fmcterm.o:	fmcterm.c $(H) fcterm.bitmap include/scrbar.h
 	$(CC) $(INC) -I/usr/dt/include  $(CFLAGS) -c -o $(OBJDIR)/fmcterm.o fmcterm.c
+$(OBJDIR)/group.o:	src/group.c
+	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/group.o src/group.c
 $(OBJDIR)/term.o:		src/term.c $(H) fcterm.bitmap
 	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/term.o src/term.c
 $(OBJDIR)/motif.o:	motif.c motif.h
@@ -99,6 +102,14 @@ newf:
 release:
 	echo mkrelease.pl -arch bin/fcterm samples fccat
 	mkrelease.pl bin/fcterm samples fccat
+noise:
+	v=ctw-`bin/fcterm -version` ; \
+	cd .. ; mv ctw $$v ; \
+	tar cvf - $$v/bin/fcterm $$v/samples $$v/fccat | bzip2 >/tmp/noise2.tar.bz2 ; \
+	mv $$v ctw
+	gfx -o /tmp/noise2.bmp /tmp/noise2.tar.bz2
+	cd /tmp ; (echo cd docroot/images ; echo put noise2.bmp ) | ftp homepages.demon.co.uk
+
 
 release2:
 	git commit . || exit 1

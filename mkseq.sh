@@ -69,9 +69,11 @@ Escape sequences:
    ESC [25m	Reset blink.
    ESC [27m	Reset reverse video.
    ESC [3Xm	Set foreground color.
+   ESC [38 ; 2 ; r ; g ; b m	Set foreground RGB.
    ESC [38 ; 5 ; XX m	Set foreground from 256 palette.
    ESC [39m	Restore foreground default color.
    ESC [4Xm	Set background color.
+   ESC [48 ; 2 ; r ; g ; b m	Set foreground RGB.
    ESC [48 ; 5 ; XX m	Set background from 256 palette.
    ESC [49m	Restore background default color.
    ESC [7Xm	Set cursor color.
@@ -88,18 +90,19 @@ Escape sequences:
    ESC [1923 ; x ; y ; m                 Draw a pixel.
    ESC [1924 m Clear graphics chain.
    ESC [1925 m Clear graphics chain and redraw screen.
-   ESC [1926 ; x; y; w; h; name m        Set name     		
-   ESC [1927 ; x; y; str; m              Draw string  		
-   ESC [1928 ; x; y; w; h; arc1; arc2; m Arc      		
-   ESC [1929 ; x; y; w; h; arc1; arc2; m FillArc      		
+   ESC [1926 ; x; y; w; h; name m        Set name
+   ESC [1927 ; x; y; str; m              Draw string
+   ESC [1928 ; x; y; w; h; arc1; arc2; m Arc
+   ESC [1929 ; x; y; w; h; arc1; arc2; m FillArc
    ESC [1930 ; rgb m                     Set background
    ESC [1931 ; rgb m                     Set foreground
-   ESC [1932 ; name ; m                  Set font   
-   ESC [1933 ; x; y; str; m              Draw image string  		
+   ESC [1932 ; name ; m                  Set font
+   ESC [1933 ; x; y; str; m              Draw image string
    ESC [1934 m                           Query winsize in pixels (wxh<Enter>)
    ESC [1935 m                           Dump internal status to a /tmp/fcterm/fcterm.$CTW_PID
    ESC [1936 m    Box each character drawn.
    ESC [1937 m    Unox each character drawn.
+   ESC [1938 ; n m  Group fcterms (n == 1 - group; == 0 - ungroup)
    ESC [n;m r	Set scrolling region to lines n..m.
    ESC [n;m r	Set scrolling region.
    ESC [s	Saved cursor position.

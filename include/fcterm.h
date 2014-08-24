@@ -95,6 +95,7 @@ enum menu_items {
 	MENU_FORK_OLWM,
 	MENU_PASTE_ALPHABET,
 	MENU_NEW_SCREEN,
+	MENU_SEARCH,
 	MENU_TERMINAL_MAP,
 	MARK_POSITION,
 	LABEL_LINES,
@@ -221,6 +222,9 @@ void fork_wmgr(fcterm_t *cur_ctw, int val);
 void show_map(void);
 void	do_utmp PROTO((fcterm_t *, int));
 void set_font(char *font);
+void restart_fcterm(void);
+int	tcp_get_port_address(char *);
 
+extern char	*log_dir;
 extern GC	gc;
 extern Pixmap map_pixmap;

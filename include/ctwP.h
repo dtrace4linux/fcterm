@@ -105,6 +105,9 @@ struct font_stack {
 # define	DRAW_IMAGE_STRING	1933
 # define	DRAW_QUERY_WINSIZE	1934
 # define	DRAW_DUMP_STATUS  	1935
+# define	DRAW_DRAW_BOXED		1936
+# define	DRAW_DRAW_UNBOXED	1937
+# define	DRAW_GROUP		1938
 
 typedef struct graph_t {
 	struct graph_t *g_next;
