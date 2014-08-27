@@ -119,7 +119,7 @@ release2:
 	cd .. ; mv ctw ctw-$$build ; \
 	tar cvf - ctw-$$build/bin/fcterm ctw-$$build/README* ctw-$$build/Changes ctw-$$build/samples ctw-$$build/fccat | gzip -9 > /tmp/fcterm-$$build.tar.gz ; \
 	mv ctw-$$build ctw ; \
-	scp /tmp/fcterm-$$build.tar.gz minny:release/website/tools ; \
-	ssh minny rm -f release/website/tools/fcterm-current.tar.gz ; \
-	ssh minny ln -s fcterm-$$build.tar.gz release/website/tools/fcterm-current.tar.gz
+	scp /tmp/fcterm-$$build.tar.gz crispgw:release/website/tools ; \
+	ssh crispgw rm -f release/website/tools/fcterm-current.tar.gz ; \
+	ssh crispgw ln -s fcterm-$$build.tar.gz release/website/tools/fcterm-current.tar.gz
 
