@@ -103,6 +103,10 @@ Escape sequences:
    ESC [1936 m    Box each character drawn.
    ESC [1937 m    Unox each character drawn.
    ESC [1938 ; n m  Group fcterms (n == 1 - group; == 0 - ungroup)
+   ESC [1939 m   Show status.
+   ESC [1940 m   Search/command mode.
+   ESC [1941 m   Zoom
+   ESC [1942 m   Minimap
    ESC [n;m r	Set scrolling region to lines n..m.
    ESC [n;m r	Set scrolling region.
    ESC [s	Saved cursor position.

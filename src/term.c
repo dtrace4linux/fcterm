@@ -52,6 +52,7 @@
 #endif
 
 static char **command_to_exec;
+extern char *group_label;
 extern int version_build_no;
 int	direct;
 int	dump_flag;
@@ -1108,7 +1109,8 @@ static char *names[] = {XtNtitle, XtNiconName};
 	if (title == NULL) {
 		title = ctwp->f_title;
 		if (title == NULL) {
-			snprintf(buf, sizeof buf - 1, "(%d) fcterm -- %s -- PID: %d", 
+			snprintf(buf, sizeof buf - 1, "(%s%d) fcterm -- %s -- PID: %d", 
+				group_label,
 				ctwp->f_id + 1, 
 				ctwp->f_ttyname, 
 				ctwp->f_pid);
@@ -1116,7 +1118,7 @@ static char *names[] = {XtNtitle, XtNiconName};
 			}
 		}
 	else if (ctwp->f_id != 1) {
-		snprintf(buf, sizeof buf - 1, "(%d) %s", ctwp->f_id + 1, title);
+		snprintf(buf, sizeof buf - 1, "(%s%d) %s", group_label, ctwp->f_id + 1, title);
 		title = chk_strdup(buf);
 		}
 
@@ -2212,7 +2214,8 @@ do_utmp(fcterm_t *cur_ctw, int remove_flag)
 }
 void
 usage()
-{
+{	char	*argv[2] = {"help", NULL};
+
 	fprintf(stderr, "%s [-isc | -sco] [standard X11 options]\n", prog_name);
 	fprintf(stderr, "	[[+|-]sf] [-ut] [-geometry WxH+X+Y] [-Ce]\n");
 	fprintf(stderr, "	-C		Make terminal the 'console' window.\n");
@@ -2230,6 +2233,19 @@ usage()
 	fprintf(stderr, "	-ut		Inhibit utmp entry.\n");
 	fprintf(stderr, "	-verbose	Verbose debug messages.\n");
 	fprintf(stderr, "	-version	Display version number.\n");
+	fprintf(stderr, "\n");
+	fprintf(stderr, "Description\n");
+	fprintf(stderr, "\n");
+	fprintf(stderr, "  fcterm is a color xterm replacement with many features.\n");
+	fprintf(stderr, "\n");
+	fprintf(stderr, "  * multi terminal support\n");
+	fprintf(stderr, "  * infinite scroll\n");
+	fprintf(stderr, "  * minimap - see what is happening on all screens\n");
+	fprintf(stderr, "  * fast\n");
+	fprintf(stderr, "  * automatic grouping\n");
+	fprintf(stderr, "  * automatic recovery\n");
+	fprintf(stderr, "  * pty server support\n");
+	fprintf(stderr, "  * 8-bit and 24-bit color support\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, "Useful resources:\n");
 	fprintf(stderr, "\n");
@@ -2274,6 +2290,12 @@ usage()
 	fprintf(stderr, "\n");
 	fprintf(stderr, "PTY_LABEL\n");
 	fprintf(stderr, "    Name used to identify this terminal.\n");
+	fprintf(stderr, "\n");
+	fprintf(stderr, "fcterm help commands:\n");
+	fprintf(stderr, "\n");
+	handle_commands(0, 1, argv);
+
+
 	exit(1);
 }
 # if 0

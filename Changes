@@ -1,3 +1,18 @@
+Wed Aug 27 08:48:04 2014  fox
+
+     168* include/ctw.h
+          include/ctwP.h
+          include/fcterm.h
+          include/sequence.h
+          machines/linux-x86_64.sh
+          makefile
+          mkseq.sh
+          src/ctw.c
+          src/fcterm.c
+          src/group.c
+          src/term.c
+          Added group support and the "fcterm <cmd>" subcommands.
+
 Tue Aug 12 23:33:45 2014  fox
 
      167* include/ctw.h

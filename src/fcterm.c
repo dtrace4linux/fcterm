@@ -181,7 +181,7 @@ fcterm_t *restore_state(void);
 void set_font(char *font);
 void switch_screen(fcterm_t *, int id);
 void say_hello(fcterm_t *cur_ctw);
-void map_expose_callback(Widget widget, XtPointer client_data, DrawingAreaCallbackStruct *event);
+void map_expose_callback(Widget widget, XtPointer client_data, XEvent *event);
 void map_input_callback(Widget widget, XtPointer client_data, DrawingAreaCallbackStruct *event);
 char	*basename(char *);
 void	set_autoswitch(int);
@@ -263,6 +263,8 @@ main(int argc, char **argv)
 	fcntl(ConnectionNumber(XtDisplay(top_level)), F_SETFD, FD_CLOEXEC);
 
 	init_term();
+	group_init();
+
 	/***********************************************/
 	/*   In  case  X server crashes, need to free  */
 	/*   the ptys.				       */
@@ -637,8 +639,10 @@ handle_commands(int i, int argc, char **argv)
 "group / ungroup     Enable grouping of fcterm's. Grouping will keep the\n"
 "                    relative positions fixed. Useful when screen size\n"
 "                    changes.\n"
+"minimap             Show minimap.\n"
 "search              Display search prompt.\n"
 "status              Show status.\n"
+"zoom                Show minimap\n"
 		;
 
 	if (i >= argc)
@@ -654,6 +658,10 @@ handle_commands(int i, int argc, char **argv)
 			printf("%s", help);
 			continue;
 			}
+		if (strcmp(cp, "minimap") == 0) {
+			printf("\033[1942m");
+			continue;
+			}
 		if (strcmp(cp, "ungroup") == 0) {
 			printf("\033[1938;0mGrouping disabled.\n");
 			continue;
@@ -666,6 +674,13 @@ handle_commands(int i, int argc, char **argv)
 			printf("\033[1939m");
 			continue;
 			}
+		if (strcmp(cp, "zoom") == 0) {
+			printf("\033[1941m");
+			continue;
+			}
+		printf("Command: '%s' not recognized.\n", cp);
+		printf("%s", help);
+		exit(1);
 		}
 	exit(0);
 }
@@ -757,8 +772,8 @@ top_callback(Widget w, int type, ctw_callback_t *reason)
 /*   Redraw bits of the minimap.				      */
 /**********************************************************************/
 void
-map_expose_callback(Widget widget, XtPointer client_data, DrawingAreaCallbackStruct *cbs)
-{	XExposeEvent *expose = &cbs->event->xexpose;
+map_expose_callback(Widget widget, XtPointer client_data, XEvent *event)
+{	XExposeEvent *expose = &event->xexpose;
 
 	UNUSED_PARAMETER(client_data);
 
@@ -2025,8 +2040,7 @@ structure_notify_callback(Widget w, XtPointer ptr, XEvent *event)
 	  	XConfigureEvent *ep = &event->xconfigure;
 		group_write_config(
 			ep->x - mwm_x_offset, 
-			ep->y - mwm_y_offset,
-			TRUE);
+			ep->y - mwm_y_offset);
 	  	break;
 		}
 
@@ -2176,10 +2190,12 @@ static	Dimension	cheight, cwidth;
 
 	menu_item = find_menu_item(menu_commands, ZOOM_WINDOW);
 
-	if (zooming) {
+	if (menu_item == NULL || zooming) {
 		n = 0;
 		XtSetArg(args[n], XtNlabel, " Unzoom window"); n++;
-		XtSetValues(menu_item, args, n);
+		if (menu_item) {
+			XtSetValues(menu_item, args, n);
+			}
 		/***********************************************/
 		/*   Calculate   size  of  frame  around  our  */
 		/*   widget.				       */

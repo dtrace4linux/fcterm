@@ -17,188 +17,191 @@
 /**********************************************************************/
 
 # include	"fcterm.h"
+# include	<sys/stat.h>
+# include	<sys/mman.h>
+# include	<time.h>
 
+#define	DEBUG	1
+#define MAX_PROCS	26
 /**********************************************************************/
 /*   Save config for this fcterm.				      */
 /**********************************************************************/
 typedef struct config_t {
 	int	c_pid;
-	unsigned long c_time;
+	unsigned long c_ptime;
+	unsigned long c_ttime;
 	int	c_x;
 	int	c_y;
+	int	c_dx;
+	int	c_dy;
 	} config_t;
+
+#define	G_VERSION	2
 typedef struct sh_config_t {
+	int	s_version;
+	int	s_struct_size;
+	int	s_size;
+	int	s_lock;
+	config_t s_array[MAX_PROCS];
+
+	/***********************************************/
+	/*   Following is the payload.		       */
+	/***********************************************/
+	unsigned long s_time;
+	int	s_this;
+	int	s_pid;
 	int	s_x;
 	int	s_y;
-	int	s_pid;
 	int	s_grouping;
 	} sh_config_t;
 static int cx, cy;
-static int sx, sy;
-static int ignore_move;
+sh_config_t	*shp;
+char		*group_label;
+config_t	*cur_cfg;
+int	group_debug;
 
-extern int do_group;
 extern Widget top_level;
+extern int do_group;
 extern char *log_dir;
+extern int mwm_x_offset;
+extern int mwm_y_offset;
 
+/**********************************************************************/
+/*   Prototypes.						      */
+/**********************************************************************/
+
+void
+group_init()
+{	int	fd;
+	int	i;
+static	char	label_buf[2];
+	struct stat sbuf;
+	char	buf[4096];
+
+	if (getenv("FCTERM_GROUP_DEBUG"))
+		group_debug = atoi(getenv("FCTERM_GROUP_DEBUG"));
+
+	group_label = label_buf;
+	strcpy(label_buf, "A");
+	snprintf(buf, sizeof buf, "%s/fcterm.shm", log_dir);
+
+	if (stat(buf, &sbuf) == -1 ||
+	    sbuf.st_size != sizeof *shp ||
+	    (fd = open(buf, O_RDWR, 0666)) < 0) {
+	    	unlink(buf);
+		if ((fd = open(buf, O_RDWR | O_CREAT, 0666)) < 0) {
+			perror(buf);
+			return;
+			}
+		for (i = 0; i < (int) sizeof *shp; i++)
+			write(fd, "", 1);
+		}
+	shp = (sh_config_t *) mmap(NULL, sizeof *shp,
+		PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (shp->s_version != G_VERSION) {
+		memset(shp, 0, sizeof *shp);
+		shp->s_version = G_VERSION;
+		shp->s_struct_size = sizeof *shp;
+		shp->s_size = MAX_PROCS;
+		}
+
+	for (i = 0; i < MAX_PROCS; i++) {
+		if (shp->s_array[i].c_pid == 0)
+			break;
+		snprintf(buf, sizeof buf, "/proc/%d", shp->s_array[i].c_pid);
+		if (stat(buf, &sbuf) < 0)
+			break;
+		}
+	if (i >= MAX_PROCS)
+		return;
+
+	cur_cfg = &shp->s_array[i];
+	shp->s_array[i].c_pid = getpid();
+	snprintf(buf, sizeof buf, "/proc/%d", shp->s_array[i].c_pid);
+	stat(buf, &sbuf);
+	shp->s_array[i].c_ptime = sbuf.st_mtime;
+
+	label_buf[0] = i + 'A';
+
+	/***********************************************/
+	/*   Only enable grouping if positively asked  */
+	/*   for.				       */
+	/***********************************************/
+	if (do_group)
+		shp->s_grouping = TRUE;
+
+}
+
+/**********************************************************************/
+/*   See if someone told us to move.				      */
+/**********************************************************************/
 void
 group_config_poll(XtIntervalId *cfg_timer_id)
 {
-	FILE	*fp;
-	char	buf[BUFSIZ];
-
-	if (!do_group)
-		return;
+	int	x, y;
 
 	*cfg_timer_id = XtAppAddTimeOut(
 		XtWidgetToApplicationContext(top_level), 
 		1000L, group_config_poll, (void *) cfg_timer_id);
 
-	snprintf(buf, sizeof buf, "%s/fcterm.pub", log_dir);
-	if ((fp = fopen(buf, "r")) == NULL)
+	if (!shp->s_grouping)
 		return;
-	while (fgets(buf, sizeof buf, fp) != NULL) {
-		int	x, y;
-		int	pid;
 
-		if (strncmp(buf, "delta=", 6) != 0)
-			continue;
-		if (sscanf(buf, "delta=%d,%d,%d", &x, &y, &pid) != 3)
-			continue;
+	if (shp->s_version != G_VERSION)
+		return;
+	if (shp->s_this == cur_cfg - shp->s_array)
+		return;
 
-		if (pid == getpid())
-			break;
+	x = shp->s_x;
+	y = shp->s_y;
 
-		if (cx + x == sx && cy + y == sy)
-			break;
-printf("\npid=%d buf=%s", getpid(), buf);
-printf("move %d,%d %d,%d %d,%d\n", cx, cy, x, y, sx, sy);
-		ignore_move = TRUE;
-		XtMoveWidget(top_level, 
-			cx + x, cy + y);
-		XSync(XtDisplay(top_level), 1);
-		ignore_move = FALSE;
-		break;
-	}
+	if (group_debug)
+		printf("move %d,%d %d,%d => %d,%d\n", cx, cy, x, y, 
+		cx + x - mwm_x_offset, cy + y - mwm_y_offset);
+	if (x == 0 && y == 0)
+		return;
 
-	fclose(fp);
-}
 
-int
-group_read_config(char *fname, config_t *cfg)
-{	FILE	*fp;
-	char	buf[4096];
-	struct stat sbuf;
-
-	memset(cfg, 0, sizeof *cfg);
-	if ((fp = fopen(fname, "r")) == NULL)
-		return TRUE;
-
-	while (fgets(buf, sizeof buf, fp) != NULL) {
-		strtok(buf, "\n");
-		if (strncmp(buf, "pid=", 4) == 0) {
-			int p = atoi(buf + 4);
-			snprintf(buf, sizeof buf, "/proc/%d", p);
-			if (stat(buf, &sbuf) == 0) {
-				cfg->c_pid = p;
-				continue;
-				}
-			continue;
-			}
-		if (strncmp(buf, "start=", 6) == 0) {
-			cfg->c_time = strtoul(buf + 6, NULL, 0);
-			continue;
-			}
-		if (strncmp(buf, "pos=", 4) == 0) {
-			sscanf(buf + 4, "%d,%d", &cfg->c_x, &cfg->c_y);
-			continue;
-			}
-		}
-	fclose(fp);
-	if (cfg->c_pid == 0)
-		return TRUE;
-	return TRUE;
+	XtMoveWidget(top_level, 
+		cx + x - mwm_x_offset, cy + y - mwm_y_offset);
+	XSync(XtDisplay(top_level), 1);
 }
 
 void
-group_write_config(int x, int y, int pub)
-{	char	buf[4096];
-	char	buf1[4096];
-	char	label_buf[2];
-static	char *label;
-	FILE	*fp;
-	int	i;
-	config_t cfg;
-	int	debug = 1;
+group_enable(int n)
+{
+	shp->s_grouping = n;
+}
+int
+group_status()
+{
+	return shp->s_grouping;
+}
+void
+group_write_config(int x, int y)
+{	int	dx = x - cx;
+	int	dy = y - cy;
 
-	if (!do_group)
-		return;
+//	if (cur_cfg->c_x == x && cur_cfg->c_y == y)
+//		return;
+
+	if (group_debug)
+		printf("write_config: pos=%d,%d dx,dy=%d,%d\n", x, y, x - cx, y - cy);
+
+	shp->s_lock = 1;
+
+	cur_cfg->c_x = x;
+	cur_cfg->c_y = y;
+	cur_cfg->c_dx = dx;
+	cur_cfg->c_dy = dy;
+	shp->s_this = cur_cfg - shp->s_array;
+	shp->s_x = dx;
+	shp->s_y = dy;
+	cur_cfg->c_ttime = time(NULL);
+
+	shp->s_lock = 0;
 
 	cx = x;
 	cy = y;
-
-	if (debug)
-		printf("write_config: pos=%d,%d\n", x, y);
-
-	if (pub) {
-		snprintf(buf, sizeof buf, "%s/fcterm.pub", log_dir);
-		snprintf(buf1, sizeof buf1, "%s/fcterm.pub.tmp", log_dir);
-		if ((fp = fopen(buf, "w")) != NULL) {
-			fprintf(fp, "delta=%d,%d,%d\n",
-				x - sx, y - sy, getpid());
-			fclose(fp);
-			rename(buf1, buf);
-			}
-		}
-	sx = x;
-	sy = y;
-
-	if (label == NULL)
-		label = getenv("PTY_LABEL");
-
-	/***********************************************/
-	/*   Try and find a label for us.	       */
-	/***********************************************/
-	if (label == NULL) {
-		for (i = 'A'; i <= 'Z'; i++) {
-			snprintf(buf, sizeof buf, "%s/fcterm.%c.pos", 
-				log_dir,
-				i);
-			label_buf[0] = i;
-			label_buf[1] = '\0';
-
-			if (group_read_config(buf, &cfg) == 0) {
-				if (debug)
-					printf("trying %s - failed\n", buf);
-				label = label_buf;
-				continue;
-				}
-			if (cfg.c_pid)
-				continue;
-			if (debug)
-				printf("trying %s - good\n", buf);
-			/***********************************************/
-			/*   Found free slot. Restore position.	       */
-			/***********************************************/
-			label = label_buf;
-			printf("fcterm: pid=%d label=%s\n", (int) getpid(), label);
-			XtMoveWidget(top_level, cfg.c_x, cfg.c_y);
-			break;
-			}
-		}
-
-	snprintf(buf, sizeof buf, "%s/fcterm.%s.pos", 
-		log_dir,
-		label ? label : "anon"
-		);
-	if ((fp = fopen(buf, "w")) != NULL) {
-		struct stat sbuf;
-
-		fprintf(fp, "pid=%d\n", (int) getpid());
-		fprintf(fp, "pos=%d,%d\n", x, y);
-		stat("/proc/self", &sbuf);
-		fprintf(fp, "start=%lu\n", sbuf.st_mtime);
-		fclose(fp);
-		}
 }
 

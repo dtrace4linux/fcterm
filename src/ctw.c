@@ -116,6 +116,8 @@
 /*   ESC [1938 ; n m  Group fcterms (n == 1 - group; == 0 - ungroup)  */
 /*   ESC [1939 m   Show status.                                       */
 /*   ESC [1940 m   Search/command mode.                               */
+/*   ESC [1941 m   Zoom                                               */
+/*   ESC [1942 m   Minimap                                            */
 /*   ESC [n;m r	Set scrolling region to lines n..m.     	      */
 /*   ESC [n;m r	Set scrolling region.			      	      */
 /*   ESC [s	Saved cursor position.                  	      */
@@ -329,7 +331,7 @@ static int	fill_to_black = 0;
 extern char	*log_dir;
 extern int	version_build_no;
 extern Widget top_level;
-extern int	do_group;
+int	group_status(void);
 
 /**********************************************************************/
 /*   Get bitmaps for visuals.					      */
@@ -539,6 +541,7 @@ int	*(*XftDrawStringUtf8_ptr)();
 # if !defined(verify)
 void verify(CtwWidget ctw);
 # endif
+static void show_status(CtwWidget ctw);
 static long map_rgb_to_visual_rgb(CtwWidget ctw, long rgb);
 static void graph_destroy(CtwWidget ctw);
 static graph_t *graph_click(CtwWidget ctw, int x, int y, int execute);
@@ -1574,7 +1577,7 @@ CtwButtonDown(CtwWidget w, XEvent *event, String *x, Cardinal *y)
 	UNUSED_PARAMETER(x);
 	UNUSED_PARAMETER(y);
 
-printf("button=%x\n", event->xmotion.state & Button1Mask ? Button1 : 0);
+//printf("button=%x\n", event->xmotion.state & Button1Mask ? Button1 : 0);
 	if (w->ctw.flags[CTW_APPL_MOUSE]) {
 		application_mouse(w, event->xbutton.state, 0, event, 
 			event->xbutton.x,
@@ -6279,17 +6282,22 @@ check_cursor:
 			  	ctw->ctw.attr.vb_attr &= ~VB_BOXED;
 			  	break;
 			  case 1938:
-			  	do_group = args[++i];
+			  	group_enable(args[++i]);
 			  	goto show_status;
 			  case 1939: 
-			  show_status: {
-			  	char buf[BUFSIZ];
-				snprintf(buf, sizeof buf, "Grouping:  %d\r\n", do_group);
-			  	ctw_add_string(ctw, buf, -1);
+			  show_status:
+			  	show_status(ctw);
 				break;
-				}
 			  case 1940: {
 			  	ctw_command_mode(ctw);
+				break;
+			  	}
+			  case 1941: {
+			  	zoom_window();
+				break;
+			  	}
+			  case 1942: {
+			  	show_map();
 				break;
 			  	}
 			  }
@@ -8118,6 +8126,21 @@ scroll_rectangle(CtwWidget ctw, int r, int c, int w, int h, int num)
 			}
 		}
 
+}
+/**********************************************************************/
+/*   Show status after being asked by an escape sequence.	      */
+/**********************************************************************/
+static void
+show_status(CtwWidget ctw)
+{	extern char *group_label;
+  	char buf[BUFSIZ];
+
+	snprintf(buf, sizeof buf, "Fcterm pid: %d\r\n", getpid());
+  	ctw_add_string(ctw, buf, -1);
+	snprintf(buf, sizeof buf, "Group     : %s\r\n", group_label);
+  	ctw_add_string(ctw, buf, -1);
+	snprintf(buf, sizeof buf, "Grouping  : %s\r\n", group_status() ? "enabled" : "disabled");
+  	ctw_add_string(ctw, buf, -1);
 }
 /**********************************************************************/
 /*   Function to toggle cursor.					      */
