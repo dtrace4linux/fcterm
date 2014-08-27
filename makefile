@@ -99,9 +99,9 @@ mac:
 newf:
 	tar cvf - `find . -type f -newer TIMESTAMP ! -name tags ! -name y.tab.c ! -name config.def | grep -v /bin ` | gzip -9 > $(HOME)/tmp/src.ctw.tar.gz
 
-release:
-	echo mkrelease.pl -arch bin/fcterm samples fccat
-	mkrelease.pl bin/fcterm samples fccat
+#release:
+#	echo mkrelease.pl -arch bin/fcterm samples fccat
+#	mkrelease.pl bin/fcterm samples fccat
 noise:
 	v=ctw-`bin/fcterm -version` ; \
 	cd .. ; mv ctw $$v ; \
@@ -111,7 +111,7 @@ noise:
 	cd /tmp ; (echo cd docroot/images ; echo put noise2.bmp ) | ftp homepages.demon.co.uk
 
 
-release2:
+release:
 	git commit . || exit 1
 	strip bin/fcterm
 	elfrewrite bin/fcterm

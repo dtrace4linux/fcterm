@@ -291,8 +291,6 @@ main(int argc, char **argv)
 
 	handle_commands(arg_index, argc, argv);
 
-	group_init();
-
 	/***********************************************/
 	/*   Make  parent  detach  from  shell  so we  */
 	/*   dont have lots of jobs hanging around.    */
@@ -302,6 +300,8 @@ main(int argc, char **argv)
 			exit(0);
 		}
 
+	group_init();
+	
 	/***********************************************/
 	/*   Protect  us from ^C killing ourselves in  */
 	/*   a child.				       */

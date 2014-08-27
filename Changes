@@ -1,5 +1,12 @@
 Wed Aug 27 08:48:04 2014  fox
 
+     170* include/fcterm.h
+          makefile
+          src/ctw.c
+          src/fcterm.c
+          src/group.c
+          Launch group_init after fork, not before.
+
      169* archive.sh
           src/group.c
           Archive: 1.0021
