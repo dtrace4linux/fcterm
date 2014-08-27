@@ -255,7 +255,7 @@
 /*   Following  is  used  if  we  want  to  use my version of malloc  */
 /*   checking.							      */
 /**********************************************************************/
-# if defined(USE_CHKALLOC)
+# if defined(USE_CHKALLOC) || 1
 # 	include	"chkalloc.h"
 # else
 #	define	chk_calloc	calloc
@@ -331,7 +331,7 @@ static int	fill_to_black = 0;
 extern char	*log_dir;
 extern int	version_build_no;
 extern Widget top_level;
-int	group_status(void);
+int	group_status(int);
 
 /**********************************************************************/
 /*   Get bitmaps for visuals.					      */
@@ -8134,13 +8134,18 @@ static void
 show_status(CtwWidget ctw)
 {	extern char *group_label;
   	char buf[BUFSIZ];
+	char	*cp;
 
 	snprintf(buf, sizeof buf, "Fcterm pid: %d\r\n", getpid());
   	ctw_add_string(ctw, buf, -1);
 	snprintf(buf, sizeof buf, "Group     : %s\r\n", group_label);
   	ctw_add_string(ctw, buf, -1);
-	snprintf(buf, sizeof buf, "Grouping  : %s\r\n", group_status() ? "enabled" : "disabled");
+	snprintf(buf, sizeof buf, "Grouping  : %s\r\n", group_status(0) ? "enabled" : "disabled");
   	ctw_add_string(ctw, buf, -1);
+
+	cp = group_status2();
+  	ctw_add_string(ctw, cp, -1);
+	chk_free(cp);
 }
 /**********************************************************************/
 /*   Function to toggle cursor.					      */

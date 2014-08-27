@@ -224,7 +224,9 @@ void	do_utmp PROTO((fcterm_t *, int));
 void set_font(char *font);
 void restart_fcterm(void);
 int	tcp_get_port_address(char *);
+char	*group_status2(void);
 
 extern char	*log_dir;
 extern GC	gc;
 extern Pixmap map_pixmap;
+

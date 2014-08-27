@@ -263,7 +263,6 @@ main(int argc, char **argv)
 	fcntl(ConnectionNumber(XtDisplay(top_level)), F_SETFD, FD_CLOEXEC);
 
 	init_term();
-	group_init();
 
 	/***********************************************/
 	/*   In  case  X server crashes, need to free  */
@@ -291,6 +290,8 @@ main(int argc, char **argv)
 	arg_index = do_switches(argc, argv);
 
 	handle_commands(arg_index, argc, argv);
+
+	group_init();
 
 	/***********************************************/
 	/*   Make  parent  detach  from  shell  so we  */

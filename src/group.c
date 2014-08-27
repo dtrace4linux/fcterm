@@ -17,6 +17,7 @@
 /**********************************************************************/
 
 # include	"fcterm.h"
+# include	<dstr.h>
 # include	<sys/stat.h>
 # include	<sys/mman.h>
 # include	<time.h>
@@ -173,10 +174,40 @@ group_enable(int n)
 	shp->s_grouping = n;
 }
 int
-group_status()
+group_status(int cmd)
 {
-	return shp->s_grouping;
+	if (cmd == 0)
+		return shp->s_grouping;
+
+	return 0;
 }
+char *
+group_status2()
+{	int	i;
+	char	buf[BUFSIZ];
+	dstr_t dstr;
+	struct stat sbuf;
+
+	dstr_init(&dstr, 256);
+	for (i = 0; i < MAX_PROCS; i++) {
+		if (shp->s_array[i].c_pid == 0)
+			continue;
+		snprintf(buf, sizeof buf, "/proc/%d",
+			shp->s_array[i].c_pid);
+		if (stat(buf, &sbuf) < 0) {
+			continue;
+			}
+
+		snprintf(buf, sizeof buf, "%c: pid=%d pos=%d,%d\r\n", i + 'A', 
+			shp->s_array[i].c_pid, 
+			shp->s_array[i].c_x, 
+			shp->s_array[i].c_y);
+		dstr_add_mem(&dstr, buf, strlen(buf));
+		}
+	dstr_add_char(&dstr, '\0');
+	return DSTR_STRING(&dstr);
+}
+
 void
 group_write_config(int x, int y)
 {	int	dx = x - cx;
