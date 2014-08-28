@@ -637,6 +637,7 @@ find_menu_item(struct menu_commands *tbl, int val)
 void
 handle_commands(int i, int argc, char **argv)
 {	char	*help = 
+"create-screen <n>   Create or switch to the screen specified [0..11]\n"
 "group / ungroup     Enable grouping of fcterm's. Grouping will keep the\n"
 "                    relative positions fixed. Useful when screen size\n"
 "                    changes.\n"
@@ -673,6 +674,16 @@ handle_commands(int i, int argc, char **argv)
 			}
 		if (strcmp(cp, "status") == 0) {
 			printf("\033[1939m");
+			continue;
+			}
+		if (strcmp(cp, "create-screen") == 0) {
+			if (i + 1 >= argc) {
+				printf("usage: create-screen <n>\n");
+				break;
+				}
+
+			int id = atoi(argv[++i]);
+			printf("\033[1943;%dm", id);
 			continue;
 			}
 		if (strcmp(cp, "zoom") == 0) {
@@ -786,11 +797,12 @@ map_expose_callback(Widget widget, XtPointer client_data, XEvent *event)
 /**********************************************************************/
 void
 map_input_callback(Widget widget, XtPointer client_data, DrawingAreaCallbackStruct *cbs)
-{
-	UNUSED_PARAMETER(widget);
-	UNUSED_PARAMETER(client_data);
+{	ctw_callback_t reason;
 
-	map_click(cbs->event);
+	memset(&reason, 0, sizeof reason);
+	reason.client_data = client_data;
+	reason.event = cbs->event;
+	map_click(widget, client_data, cbs->event);
 }
 /**********************************************************************/
 /*   Calback when menu item selected.				      */
@@ -1083,7 +1095,9 @@ void
 menu_new_screen(fcterm_t *old_ctw, int id)
 {	fcterm_t *cur_ctw = new_fcterm(0);
 
-	XtUnmanageChild(old_ctw->f_ctw);
+	if (old_ctw)
+		XtUnmanageChild(old_ctw->f_ctw);
+
 	if (id >= 0)
 		cur_ctw->f_id = id;
 	create_screen(cur_ctw, TRUE, TRUE);

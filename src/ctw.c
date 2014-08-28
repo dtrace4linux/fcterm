@@ -118,6 +118,7 @@
 /*   ESC [1940 m   Search/command mode.                               */
 /*   ESC [1941 m   Zoom                                               */
 /*   ESC [1942 m   Minimap                                            */
+/*   ESC [1943; <id> m   Create new screen.                           */
 /*   ESC [n;m r	Set scrolling region to lines n..m.     	      */
 /*   ESC [n;m r	Set scrolling region.			      	      */
 /*   ESC [s	Saved cursor position.                  	      */
@@ -6288,18 +6289,18 @@ check_cursor:
 			  show_status:
 			  	show_status(ctw);
 				break;
-			  case 1940: {
+			  case 1940:
 			  	ctw_command_mode(ctw);
 				break;
-			  	}
-			  case 1941: {
+			  case 1941:
 			  	zoom_window();
 				break;
-			  	}
-			  case 1942: {
+			  case 1942:
 			  	show_map();
 				break;
-			  	}
+			  case 1943:
+				switch_screen(ctw, args[++i]);
+				break;
 			  }
 			}
 
@@ -7914,6 +7915,11 @@ ctw_save_state(CtwWidget ctw, dstr_t *dstrp)
 		}
 	if (ctw->ctw.c_spill_fp)
 		fclose(ctw->ctw.c_spill_fp);
+}
+void
+ctw_send_input(CtwWidget ctw, XEvent *event, String *x, Cardinal *y)
+{
+	CtwInput(ctw, event, x, y);
 }
 /**********************************************************************/
 /*   Function  to  set  current  setting  for the line at the top of  */

@@ -107,6 +107,7 @@ Escape sequences:
    ESC [1940 m   Search/command mode.
    ESC [1941 m   Zoom
    ESC [1942 m   Minimap
+   ESC [1943; <id> m   Create new screen.  
    ESC [n;m r	Set scrolling region to lines n..m.
    ESC [n;m r	Set scrolling region.
    ESC [s	Saved cursor position.

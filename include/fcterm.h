@@ -216,7 +216,7 @@ void	pty_write PROTO((fcterm_t *, char *, int));
 void set_title(fcterm_t *cur_ctw, int flags, char *title);
 void cb_init(cbuf_t *cbp, int size);
 void reset_terminal(fcterm_t *cur_ctw);
-void map_click(XEvent *event);
+void map_click(Widget w, XtPointer client_data, XEvent *event);
 void fork_new_terminal(fcterm_t *cur_ctw);
 void fork_wmgr(fcterm_t *cur_ctw, int val);
 void show_map(void);
@@ -225,6 +225,8 @@ void set_font(char *font);
 void restart_fcterm(void);
 int	tcp_get_port_address(char *);
 char	*group_status2(void);
+void	group_init(void);
+void handle_commands(int i, int argc, char **argv);
 
 extern char	*log_dir;
 extern GC	gc;

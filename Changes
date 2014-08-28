@@ -1,3 +1,15 @@
+Thu Aug 28 22:28:12 2014  fox
+
+     171* include/fcterm.h
+          include/sequence.h
+          makefile
+          mkseq.sh
+          src/ctw.c
+          src/fcterm.c
+          src/term.c
+          Add 'fcterm create-screen'.
+	  Allow type in whilst in minimap mode.
+
 Wed Aug 27 08:48:04 2014  fox
 
      170* include/fcterm.h

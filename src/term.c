@@ -687,12 +687,39 @@ int_handler()
 /*   User is clicking on the minimap.				      */
 /**********************************************************************/
 void
-map_click(XEvent *event)
+map_click(Widget widget, XtPointer client_data, XEvent *event)
 {	fcterm_t	*ctwp;
-	int	x, y;
+	int	i, x, y;
+static int id = 0;
 
-	if (event->type != ButtonPress)
-		return;
+	switch (event->type) {
+	  case KeyPress:
+//	  case KeyRelease:
+//printf("event=%d\n", event->type);
+		ctwp = hd_ctw;
+		for (i = 0; i < id; i++) {
+			if (ctwp->f_next == NULL) {
+				id = i;
+				break;
+				}
+			ctwp = ctwp->f_next;
+			}
+		if (ctwp == NULL)
+			ctwp = hd_ctw->f_next;
+		ctw_send_input(ctwp->f_ctw, event, NULL, NULL);
+		/***********************************************/
+		/*   Force a redraw.			       */
+		/***********************************************/
+		XtRemoveTimeOut(map_timer_id);
+		show_map();
+	  	return;
+
+	  case ButtonPress:
+	  	break;
+
+	  default:
+	  	return;
+	  }
 
 	/***********************************************/
 	/*   Need  to  figure  out  which  window  we  */
@@ -700,12 +727,19 @@ map_click(XEvent *event)
 	/***********************************************/
 	x = event->xbutton.x;
 	y = event->xbutton.y;
-	for (ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next) {
+	id = 0;
+	for (ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next, id++) {
 		if (x >= ctwp->mm_x && y >= ctwp->mm_y &&
 		    x < ctwp->mm_x + ctwp->mm_w &&
 		    y < ctwp->mm_y + ctwp->mm_h) {
-			XtRemoveTimeOut(map_timer_id);
-			switch_screen(cur_ctw, ctwp->f_id);
+		    	/***********************************************/
+		    	/*   Let  user  select  which  is  the active  */
+		    	/*   window.				       */
+		    	/***********************************************/
+		  	if (event->xbutton.button != 1) {
+				XtRemoveTimeOut(map_timer_id);
+				switch_screen(cur_ctw, ctwp->f_id);
+				}
 		    	break;
 		    	}
 		}
@@ -1118,7 +1152,8 @@ static char *names[] = {XtNtitle, XtNiconName};
 			}
 		}
 	else if (ctwp->f_id != 1) {
-		snprintf(buf, sizeof buf - 1, "(%s%d) %s", group_label, ctwp->f_id + 1, title);
+		snprintf(buf, sizeof buf - 1, "(%s%d) %s", 
+			group_label, ctwp->f_id + 1, title);
 		title = chk_strdup(buf);
 		}
 
@@ -1220,6 +1255,7 @@ show_map()
 	switch_screen(cur_ctw, GHOST_ID);
 
 	x = y = 0;
+//printf("%s start\n", time_str2());
 	for (ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next) {
 		if (ctwp->f_id == GHOST_ID)
 			continue;
@@ -1242,7 +1278,8 @@ show_map()
 		ctwp->mm_w = w / 2;
 		ctwp->mm_h = h * y_frac;
 		for (r = y; r < ybot; r++) {
-			for (c = x; c < x + w/2; c++) {
+			int c1 = x + w/2;
+			for (c = x; c < c1; c++) {
 				int xs = (c - x) * 2;
 				int ys = (r - y) / y_frac;
 //xs = MIN(xs, w - 1);
@@ -1266,6 +1303,7 @@ abort();
 			y += h * y_frac;
 			}
 		}
+//printf("%s end\n", time_str2());
 
 	XPutImage(dpy, map_pixmap, gc, new_image, 0, 0, 0, 0, w, h);
 	XDrawLine(dpy, map_pixmap, gc, w / 2, 0, w / 2, h);
@@ -2032,6 +2070,12 @@ void
 v_write(fcterm_t *cur_ctw, char *buf, int len)
 {	int	n;
 	int	fl;
+
+	/***********************************************/
+	/*   May be trying to write to the ghost ctw.  */
+	/***********************************************/
+	if (cur_ctw == NULL)
+		return;
 
 	/***********************************************/
 	/*   If stuff already buffered to go out then  */
