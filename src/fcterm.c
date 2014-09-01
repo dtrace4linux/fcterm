@@ -650,6 +650,9 @@ handle_commands(int i, int argc, char **argv)
 	if (i >= argc)
 		return;
 
+	if (argv[i][0] == '-')
+		return;
+
 	for ( ; i < argc; i++) {
 		char	*cp = argv[i];
 		if (strcmp(cp, "group") == 0) {
