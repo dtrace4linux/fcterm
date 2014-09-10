@@ -226,6 +226,7 @@ void restart_fcterm(void);
 int	tcp_get_port_address(char *);
 char	*group_status2(void);
 void	group_init(void);
+int	group_restore(char *);
 void handle_commands(int i, int argc, char **argv);
 
 extern char	*log_dir;

@@ -35,9 +35,15 @@ typedef struct config_t {
 	int	c_y;
 	int	c_dx;
 	int	c_dy;
+	int	c_width;
+	int	c_height;
+	long	c_winid;
+
+	int	t_msg;
+	int	tx, ty, tw, th;	/* Target x,y w*h */
 	} config_t;
 
-#define	G_VERSION	2
+#define	G_VERSION	3
 typedef struct sh_config_t {
 	int	s_version;
 	int	s_struct_size;
@@ -70,14 +76,23 @@ extern int mwm_y_offset;
 /**********************************************************************/
 /*   Prototypes.						      */
 /**********************************************************************/
+void group_init2(int alloc);
 
 void
 group_init()
+{
+	group_init2(TRUE);
+}
+void
+group_init2(int alloc)
 {	int	fd;
 	int	i;
 static	char	label_buf[2];
 	struct stat sbuf;
 	char	buf[4096];
+
+	if (shp)
+		return;
 
 	if (getenv("FCTERM_GROUP_DEBUG"))
 		group_debug = atoi(getenv("FCTERM_GROUP_DEBUG"));
@@ -105,6 +120,8 @@ static	char	label_buf[2];
 		shp->s_struct_size = sizeof *shp;
 		shp->s_size = MAX_PROCS;
 		}
+	if (!alloc)
+		return;
 
 	for (i = 0; i < MAX_PROCS; i++) {
 		if (shp->s_array[i].c_pid == 0)
@@ -145,6 +162,23 @@ group_config_poll(XtIntervalId *cfg_timer_id)
 		XtWidgetToApplicationContext(top_level), 
 		1000L, group_config_poll, (void *) cfg_timer_id);
 
+	/***********************************************/
+	/*   See   if   we   have   been   asked   to  */
+	/*   move/resize.			       */
+	/***********************************************/
+	if (cur_cfg->t_msg) {
+		printf("fcterm: move %s: %d,%d %dx%d\n", group_label,
+			cur_cfg->tx, cur_cfg->ty,
+			cur_cfg->tw, cur_cfg->th);
+		cur_cfg->t_msg = FALSE;
+		XtConfigureWidget(top_level, 
+			cur_cfg->tx - 0*mwm_x_offset,
+			cur_cfg->ty - 0*mwm_y_offset,
+			cur_cfg->tw,
+			cur_cfg->th,
+			1
+			);
+		}
 	if (!shp->s_grouping)
 		return;
 
@@ -173,6 +207,45 @@ group_enable(int n)
 {
 	shp->s_grouping = n;
 }
+/**********************************************************************/
+/*   Restore the saved state of windows.			      */
+/**********************************************************************/
+int
+group_restore(char *fname)
+{	char	buf[BUFSIZ];
+	FILE	*fp;
+	config_t	*cfg;
+
+	group_init2(FALSE);
+	if ((fp = fopen(fname, "r")) == NULL) {
+		printf("Cannot open %s - %s\n", fname, strerror(errno));
+		return -1;
+		}
+	while (fgets(buf, sizeof buf, fp) != NULL) {
+		unsigned char	id;
+		int	pid;
+		long	win;
+		int	x, y, w, h;
+
+		if (buf[0] == '\0' || buf[1] != ':')
+			continue;
+		sscanf(buf, "%c: pid=%d win=0x%lx pos=%d,%d size=%dx%d\n",
+			&id, &pid, &win, &x, &y, &w, &h);
+		if (id < 'A' || id >= 'Z')
+			continue;
+		id -= 'A';
+
+		cfg = &shp->s_array[id];
+		cfg->tx = x;
+		cfg->ty = y;
+		cfg->tw = w;
+		cfg->th = h;
+		cfg->t_msg = TRUE;
+	}
+	fclose(fp);
+	return 0;
+}
+
 int
 group_status(int cmd)
 {
@@ -198,10 +271,15 @@ group_status2()
 			continue;
 			}
 
-		snprintf(buf, sizeof buf, "%c: pid=%d pos=%d,%d\r\n", i + 'A', 
+		snprintf(buf, sizeof buf, "%c: pid=%d win=0x%lx pos=%d,%d size=%dx%d\r\n", 
+			i + 'A', 
 			shp->s_array[i].c_pid, 
+			shp->s_array[i].c_winid,
 			shp->s_array[i].c_x, 
-			shp->s_array[i].c_y);
+			shp->s_array[i].c_y, 
+			shp->s_array[i].c_width,
+			shp->s_array[i].c_height
+			);
 		dstr_add_mem(&dstr, buf, strlen(buf));
 		}
 	dstr_add_char(&dstr, '\0');
@@ -209,7 +287,7 @@ group_status2()
 }
 
 void
-group_write_config(int x, int y)
+group_write_config(long winid, int x, int y, int width, int height)
 {	int	dx = x - cx;
 	int	dy = y - cy;
 
@@ -221,10 +299,14 @@ group_write_config(int x, int y)
 
 	shp->s_lock = 1;
 
+	cur_cfg->c_winid = winid;
 	cur_cfg->c_x = x;
 	cur_cfg->c_y = y;
 	cur_cfg->c_dx = dx;
 	cur_cfg->c_dy = dy;
+	cur_cfg->c_width = width;
+	cur_cfg->c_height = height;
+
 	shp->s_this = cur_cfg - shp->s_array;
 	shp->s_x = dx;
 	shp->s_y = dy;

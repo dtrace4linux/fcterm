@@ -38,6 +38,7 @@ $(OBJDIR)/fcterm:	$(OBJDIR)/fcterm.o $(OBJ)
 
 install:
 	rm -f $(HOME)/bin/fcterm
+	rm -f $(HOME)/bin/fcterm-`bin/fcterm -version`
 	cp bin.linux-x86_64/fcterm $(HOME)/bin/fcterm-`bin/fcterm -version`
 	ln -s fcterm-`bin/fcterm -version` $(HOME)/bin/fcterm
 

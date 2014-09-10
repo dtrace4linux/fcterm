@@ -637,11 +637,15 @@ find_menu_item(struct menu_commands *tbl, int val)
 void
 handle_commands(int i, int argc, char **argv)
 {	char	*help = 
+"You can use 'fcterm status' and save it to a file, and then restore\n"
+"from the saved file with 'fcterm restore <filename>'.\n"
+"\n"
 "create-screen <n>   Create or switch to the screen specified [0..11]\n"
 "group / ungroup     Enable grouping of fcterm's. Grouping will keep the\n"
 "                    relative positions fixed. Useful when screen size\n"
 "                    changes.\n"
 "minimap             Show minimap.\n"
+"restore <filename>  Restore position from saved state.\n"
 "search              Display search prompt.\n"
 "status              Show status.\n"
 "zoom                Show minimap\n"
@@ -671,6 +675,15 @@ handle_commands(int i, int argc, char **argv)
 			printf("\033[1938;0mGrouping disabled.\n");
 			continue;
 			}
+		if (strcmp(cp, "restore") == 0) {
+			if (i + 1 >= argc) {
+				printf("usage: restore <filename>\n");
+				printf("File is the output from 'fcterm status >filename'\n");
+				exit(1);
+				}
+			group_restore(argv[++i]);
+			continue;
+			}
 		if (strcmp(cp, "search") == 0) {
 			printf("\033[1940mSearch mode enabled.\n");
 			continue;
@@ -682,7 +695,7 @@ handle_commands(int i, int argc, char **argv)
 		if (strcmp(cp, "create-screen") == 0) {
 			if (i + 1 >= argc) {
 				printf("usage: create-screen <n>\n");
-				break;
+				exit(1);
 				}
 
 			int id = atoi(argv[++i]);
@@ -2057,8 +2070,10 @@ structure_notify_callback(Widget w, XtPointer ptr, XEvent *event)
 	  case ConfigureNotify: {
 	  	XConfigureEvent *ep = &event->xconfigure;
 		group_write_config(
+			ep->window,
 			ep->x - mwm_x_offset, 
-			ep->y - mwm_y_offset);
+			ep->y - mwm_y_offset,
+			ep->width, ep->height);
 	  	break;
 		}
 

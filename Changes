@@ -1,3 +1,11 @@
+Wed Sep 10 22:54:06 2014  fox
+
+     173* include/fcterm.h
+          makefile
+          src/fcterm.c
+          src/group.c
+          Add 'fcterm restore' support.
+
 Mon Sep  1 20:34:31 2014  fox
 
      172* include/fcterm.h
