@@ -235,12 +235,23 @@ group_restore(char *fname)
 			continue;
 		id -= 'A';
 
+		{XWindowChanges ch;
+		memset(&ch, 0, sizeof ch);
+		ch.x = x;
+		ch.y = y;
+		ch.width = w;
+		ch.height = h;
+		XConfigureWindow(XtDisplay(top_level), win, 
+			CWX | CWY | CWWidth | CWHeight, &ch);
+		}
+#if 0
 		cfg = &shp->s_array[id];
 		cfg->tx = x;
 		cfg->ty = y;
 		cfg->tw = w;
 		cfg->th = h;
 		cfg->t_msg = TRUE;
+#endif
 	}
 	fclose(fp);
 	return 0;

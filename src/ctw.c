@@ -8140,7 +8140,9 @@ static void
 show_status(CtwWidget ctw)
 {	extern char *group_label;
   	char buf[BUFSIZ];
+  	char buf2[BUFSIZ];
 	char	*cp;
+	FILE	*fp;
 
 	snprintf(buf, sizeof buf, "Fcterm pid: %d\r\n", getpid());
   	ctw_add_string(ctw, buf, -1);
@@ -8151,6 +8153,14 @@ show_status(CtwWidget ctw)
 
 	cp = group_status2();
   	ctw_add_string(ctw, cp, -1);
+
+	snprintf(buf2, sizeof buf2, "%s/status.layout", log_dir);
+	snprintf(buf, sizeof buf, "fcterm: status in %s\n", buf2);
+	if ((fp = fopen(buf2, "w")) != NULL) {
+		fprintf(fp, "%s", cp);
+		fclose(fp);
+	  	ctw_add_string(ctw, buf, -1);
+		}
 	chk_free(cp);
 }
 /**********************************************************************/
