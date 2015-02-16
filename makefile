@@ -21,7 +21,8 @@ OBJ=	\
 	$(OBJDIR)/term.o \
 	$(OBJDIR)/ctw.o \
 	$(OBJDIR)/rotate.o \
-	$(OBJDIR)/scrbar.o
+	$(OBJDIR)/scrbar.o \
+	$(OBJDIR)/usage.o
 
 all:
 	. ./config.def ; $(MAKE) all0
@@ -87,6 +88,13 @@ $(OBJDIR)/rotate.o:	src/rotate.c
 	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/rotate.o src/rotate.c
 $(OBJDIR)/scrbar.o:	src/scrbar.c include/scrbar.h include/scrbarP.h
 	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/scrbar.o src/scrbar.c
+$(OBJDIR)/usage.o:	src/usage.c
+	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/usage.o src/usage.c
+src/usage.c: src/usage.txt makefile
+	(echo 'const char *usage_text = ' ; \
+	sed -e 's/"/\\"/g' -e 's/^\(.*\)/"\1\\n"/' < src/usage.txt ; \
+	echo ';' ) >src/usage.c
+
 
 $(OBJDIR)/pty: src/pty.c include/ptysrv.h
 	$(CC) $(INC) -I$(CRISP)/include $(CFLAGS) -o $(OBJDIR)/pty src/pty.c $(CRISP)/$(BIN)/foxlib.a -ldl

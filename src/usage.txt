@@ -1,0 +1,90 @@
+fcterm [-isc | -sco] [standard X11 options]\n",
+	[[+|-]sf] [-ut] [-geometry WxH+X+Y] [-Ce]
+	-C		Make terminal the 'console' window.
+	-debug    	Enable debug output.
+	-dump     	Dump screens to /tmp
+	-e cmd ...	Command to execute (last on line)
+	-f		Do not fork from shell.
+	-isc		Emulate Interactive Unix console driver.
+	-ls		Execute a login shell.
+	-[no]group      Group fcterms together to maintain position.
+	-sco		Emulate SCO Unix console driver.
+	-spill  	Enable infinite log spilling
+	+/-sf		+sf => disable sun function keys
+			-sf => enable Sun Function keys.
+	-ut		Inhibit utmp entry.
+	-verbose	Verbose debug messages.
+	-version	Display version number.
+
+Description
+
+  fcterm is a color xterm replacement with many features.
+
+  * multi terminal support
+  * infinite scroll
+  * minimap - see what is happening on all screens
+  * fast
+  * automatic grouping
+  * automatic recovery
+  * pty server support
+  * 8-bit and 24-bit color support
+  * error/warning highlighting.
+  * URL highlighting
+
+Useful resources:
+
+ -xrm *gridLineColor:<color>     Color to use for gridlines escape sequence.
+ -xrm *spillForeground:<color>   Foreground color of spilled lines.
+ -xrm *spillBackground:<color>   Background color of spilled lines.
+ -xrm *logDir:/tmp               Place where overflow lines kept
+ -xrm *saveLines:NNN             Number of lines to keep in memory
+ -xrm *spillSize:NNN[mkg]        Set default spill size.
+
+Environment variables:
+
+CTW_ENABLE_PRIMARY       default: true
+CTW_ENABLE_SECONDARY     default: false
+CTW_ENABLE_CLIPBOARD     default: false
+CTW_ENABLE_CUT_BUFFER0   default: false
+    Set default clipboard mode.
+
+CTW_DO_CONT
+    Show end-of-line autowrap continuations.
+
+CTW_DRAW_WATCH
+    Enable visual drawing actions (for debugging).
+
+CTW_FILL_TO_BLACK
+    Enable fill-to-black ISO standard.
+
+CTW_HIGHLIGHT_WORDFILE
+    Specify a file of words to read to be automatically highlighted.
+    Format is:
+    word fg bg flags
+       fg is the foreground color
+       bg is the background color
+       flags: 64 == error color (whole line)
+              128 == warning color (whole line)
+	      256 == search color (only actual word)
+
+CTW_FREETYPE
+    Enable freetype font drawing.
+
+CTW_GZIP_ROLLOVER
+    Enable compression of the scrolling spill files (in /tmp).
+
+CTW_HISTORY
+    Enable history (infinite) scrolling.
+
+CTW_LOGDIR
+    Directory where fcterm stores its state and screen logs.
+
+CTW_WORD_CHARS
+    Specify the word-break characters for double-click selection.
+
+PTY_LABEL
+    Name used to identify this terminal.
+
+fcterm help commands:
+
+

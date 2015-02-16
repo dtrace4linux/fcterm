@@ -5062,12 +5062,17 @@ static struct match_t {
 	int	m_fg;
 	int	m_bg;
 	int	m_flag;
-	} matches[] = {
+	} _matches[] = {
 	{"fatal", 	34, 45, LA_MATCH},
 	{"error", 	34, 45, LA_MATCH},
 	{"warning", 	35, 46, LA_MATCH2},
-	{0, 0, 0, 0},
+	{"uninitialised", 35, 46, LA_MATCH3},
+	{"uninitialized", 35, 46, LA_MATCH3},
+	{"undefined", 35, 46, LA_MATCH3},
 	};
+static int num_matches = sizeof(_matches) / sizeof(_matches[0]);
+static struct match_t *matches = _matches;
+
 # define MAP_SEARCH	0x01
 # define MAP_WORD	0x02
 # define MAP_LINK	0x04
@@ -5080,6 +5085,45 @@ print_search(CtwWidget ctw, line_t *lp, unsigned char *map)
 	vbyte_t	*vp1;
 	int	i;
 	struct match_t *mp;
+static int done_read = FALSE;
+
+	if (!done_read) {
+		char	*cp;
+		FILE	*fp;
+		char	buf[1024];
+		char	buf1[1024];
+		int	fg, bg, flags;
+
+		done_read = TRUE;
+		if ((cp = getenv("CTW_HIGHLIGHT_WORDFILE")) != NULL && 
+		    (fp = fopen(cp, "r")) != NULL) {
+		    	while (fgets(buf, sizeof buf, fp) != NULL) {
+				if (*buf == '#' || *buf == '\0')
+					continue;
+				if (buf[strlen(buf)-1] == '\n')
+					buf[strlen(buf)-1] = '\n';
+
+				if (sscanf(buf, "%s %d %d %d", buf1, &fg, &bg, &flags) != 4)
+					continue;
+
+				if (matches == _matches) {
+					matches = chk_alloc(sizeof *matches * (num_matches + 1));
+					memcpy(matches, _matches, sizeof *matches * num_matches);
+					}
+				else {
+					matches = chk_realloc((char *) matches, sizeof *matches * (num_matches + 1));
+					}
+
+				matches[num_matches].m_str = chk_strdup(buf1);
+				matches[num_matches].m_fg = fg;
+				matches[num_matches].m_bg = bg;
+				matches[num_matches].m_flag = flags;
+
+				num_matches++;
+				}
+		    	fclose(fp);
+			}
+		}
 
 	memset(map, 0, ctw->ctw.columns);
 
@@ -5092,7 +5136,7 @@ print_search(CtwWidget ctw, line_t *lp, unsigned char *map)
 				continue;
 			if (vp > lp->l_text && isalpha(vp[-1].vb_byte))
 				continue;
-			for (mp = matches; mp->m_str; mp++) {
+			for (mp = matches; mp < &matches[num_matches]; mp++) {
 				char	*str = mp->m_str;
 				if (tolower(vp->vb_byte) != *str)
 					continue;
@@ -5105,12 +5149,18 @@ print_search(CtwWidget ctw, line_t *lp, unsigned char *map)
 				if (vp1 < vpend && vp1->vb_byte == '_')
 					continue;
 
+				if (mp->m_flag & LA_MATCH3) {
+					vbyte_t *vp2;
+					for (vp2 = vp; vp2 < vp1; vp2++)
+						map[vp2 - lp->l_text] |= MAP_SEARCH;
+					return FALSE;
+					}
 				lp->l_attr |= mp->m_flag;
 				return TRUE;
 				}
 			}
 		}
-	lp->l_attr &= ~(LA_MATCH | LA_MATCH2);
+	lp->l_attr &= ~(LA_MATCH | LA_MATCH2 | LA_MATCH3);
 
 	/***********************************************/
 	/*   Handle http links.			       */

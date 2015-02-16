@@ -74,8 +74,9 @@ enum cursor_type {
 # define	LA_FLASHING	0x008	/* Something blinking on line */
 # define	LA_CONTINUED	0x010	/* Line continues from prior line. */
 # define	LA_SPILT	0x020	/* Line is a spilled line.	*/
-# define	LA_MATCH	0x040	/* We have a match.		*/
-# define	LA_MATCH2       0x080	/* We have a match.		*/
+# define	LA_MATCH	0x040	/* Highlight line in error color. */
+# define	LA_MATCH2       0x080	/* Highlight line in warning color */
+# define	LA_MATCH3       0x100	/* Highlight matched word.      */
 
 typedef struct line_t {
 	int	l_attr;

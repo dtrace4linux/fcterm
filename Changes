@@ -1,3 +1,17 @@
+Mon Feb 16 22:40:27 2015  fox
+
+     176* include/ctwP.h
+          makefile
+          src/ctw.c
+          src/term.c
+          src/usage.c
+          src/usage.txt
+          Add dynamic words as per #175.
+
+     175* src/ctw.c
+          Add support for undefined/uninitialized and load words
+	  from CTW_HIGHLIGHT_WORDFILE.
+
 Thu Sep 11 21:24:57 2014  fox
 
      174* src/fcterm.c
