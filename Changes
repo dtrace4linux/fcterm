@@ -1,5 +1,10 @@
 Mon Feb 16 22:40:27 2015  fox
 
+     177* include/ctwP.h
+          src/ctw.c
+          src/usage.c
+        Add support for Ctrl-O flushing.
+
      176* include/ctwP.h
           makefile
           src/ctw.c

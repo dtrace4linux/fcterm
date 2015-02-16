@@ -333,6 +333,7 @@ extern char	*log_dir;
 extern int	version_build_no;
 extern Widget top_level;
 int	group_status(int);
+char *group_status2(void);
 
 /**********************************************************************/
 /*   Get bitmaps for visuals.					      */
@@ -542,6 +543,7 @@ int	*(*XftDrawStringUtf8_ptr)();
 # if !defined(verify)
 void verify(CtwWidget ctw);
 # endif
+void group_enable(int n);
 static void show_status(CtwWidget ctw);
 static long map_rgb_to_visual_rgb(CtwWidget ctw, long rgb);
 static void graph_destroy(CtwWidget ctw);
@@ -1769,6 +1771,22 @@ static char *cur = "DACB";
 		keymod_mask |= KEYMOD_CTRL;
 	if (state & (Mod1Mask | Mod2Mask | Mod3Mask))
 		keymod_mask |= KEYMOD_META;
+
+	if (!ctw->ctw.flags[CTW_APPL_KEYPAD] &&
+	    state & ControlMask &&
+	    keysym == 'o') {
+	    	if (ctw->ctw.c_flags & CTWF_CTRLO_MODE) {
+		    	ctw->ctw.c_flags &= ~CTWF_CTRLO_MODE;
+			snprintf(buf, sizeof buf, "\r\n\033[47;30m[Ctrl-O typed - resuming output, %d lines discarded]\x1b[37;40m\r\n", ctw->ctw.c_discards);
+			ctw_add_string(ctw, buf, -1);
+			}
+		else {
+			ctw_add_string(ctw, "\r\n\033[47;30m[Ctrl-O typed - discarding output]\x1b[37;40m\r\n", -1);
+			ctw->ctw.c_discards = 0;
+		    	ctw->ctw.c_flags |= CTWF_CTRLO_MODE;
+			}
+		return;
+		}
 
 	if (keymod_mask == (KEYMOD_META | KEYMOD_SHIFT) &&
 	    keysym == XK_F10) {
@@ -4826,7 +4844,7 @@ printf("skip %d:%d\n", ln, ctw->ctw.spill_cnt);
 		if (ctw->ctw.c_lcache == 0)
 			ctw->ctw.c_lcache = (line_cache_t *) chk_zalloc((idx + 1) * sizeof(line_cache_t));
 		else
-			ctw->ctw.c_lcache = (line_cache_t *) chk_realloc(ctw->ctw.c_lcache, 
+			ctw->ctw.c_lcache = (line_cache_t *) chk_realloc((char *) ctw->ctw.c_lcache, 
 				(idx + 1) * sizeof(line_cache_t));
 		ctw->ctw.c_lcache_size = idx;
 
@@ -6958,6 +6976,14 @@ ctw_add_string(CtwWidget ctw, char *str, int len)
 			fclose(ctw->ctw.log_fp);
 			ctw->ctw.log_fp = (FILE *) NULL;
 			}
+		}
+
+	if (ctw->ctw.c_flags & CTWF_CTRLO_MODE) {
+		while (len-- > 0) {
+			if (*str++ == '\n')
+				ctw->ctw.c_discards++;
+			}
+		return;
 		}
 
 	if (ctw->ctw.flags[CTW_SPEED] >= 100) {

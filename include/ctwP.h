@@ -123,6 +123,7 @@ typedef struct graph_t {
 /**********************************************************************/
 # define	CTWF_FROZEN	0x0001
 # define	CTWF_CMD_MODE   0x0002
+# define	CTWF_CTRLO_MODE	0x0004
 
 /**********************************************************************/
 /*   Number  of  columns  we  allocate  in  addition to the resource  */
@@ -316,6 +317,7 @@ typedef struct ctw_part {
 	int	flags[CTW_MAX_ATTR];/* Current state of various escape sequences */
 	int	emulation;
 	int	c_flags;
+	int	c_discards;
 	int	c_line_no;
 	unsigned long c_scr_line_cnt;
 
