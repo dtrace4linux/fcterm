@@ -361,8 +361,9 @@ enum ctw_emulation {
 /**********************************************************************/
 /*   Index into array of flag values.				      */
 /**********************************************************************/
-enum ctw_flags {
-	CTW_AUTOWRAP = 0,
+enum ctw_flags { /* edit attr_names in ctw.c */
+	CTW_ALLOW_CTRLO = 0,
+	CTW_AUTOWRAP,
 	CTW_AUTOLINEFEED,
 	CTW_APPL_KEYPAD,
 	CTW_APPL_MOUSE,

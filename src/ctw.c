@@ -4,10 +4,10 @@
 /*  Author:        P. D. Fox                                          */
 /*  Created:       25 Nov 1991                     		      */
 /*                                                                    */
-/*  Copyright (c) 1990-2014 Paul Fox                                  */
+/*  Copyright (c) 1990-2015 Paul Fox                                  */
 /*                All Rights Reserved.                                */
 /*                                                                    */
-/*   $Header: Last edited: 06-Jul-2014 1.70 $ 			      */
+/*   $Header: Last edited: 18-Feb-2015 1.72 $ 			      */
 /*--------------------------------------------------------------------*/
 /*  Description:  Color terminal widget.                              */
 /*                                                                    */
@@ -1149,6 +1149,7 @@ initialize(Widget treq, Widget tnew)
 	new->ctw.c_th_pixmaps = NULL;
 	new->ctw.c_bh_pixmaps = NULL;
 	new->ctw.pixmap_mode = FALSE;
+	new->ctw.flags[CTW_ALLOW_CTRLO] = TRUE;
 	new->ctw.flags[CTW_COLOR] = setup_x11_colors(new, dpy);
 	new->ctw.flags[CTW_KEYBOARD_SCROLL] = FALSE;
 	new->ctw.flags[CTW_SCROLLING_REGION_ENABLE] = TRUE;
@@ -1773,19 +1774,47 @@ static char *cur = "DACB";
 		keymod_mask |= KEYMOD_META;
 
 	if (!ctw->ctw.flags[CTW_APPL_KEYPAD] &&
+	    ctw->ctw.flags[CTW_ALLOW_CTRLO] &&
 	    state & ControlMask &&
 	    keysym == 'o') {
 	    	if (ctw->ctw.c_flags & CTWF_CTRLO_MODE) {
 		    	ctw->ctw.c_flags &= ~CTWF_CTRLO_MODE;
-			snprintf(buf, sizeof buf, "\r\n\033[47;30m[Ctrl-O typed - resuming output, %d lines discarded]\x1b[37;40m\r\n", ctw->ctw.c_discards);
+			snprintf(buf, sizeof buf, "\r\n\033[47;30m[Ctrl-O typed - resuming output, %d lines discarded, %lu bytes]\x1b[37;40m\r\n", ctw->ctw.c_discards, ctw->ctw.c_discard_bytes);
 			ctw_add_string(ctw, buf, -1);
 			}
 		else {
 			ctw_add_string(ctw, "\r\n\033[47;30m[Ctrl-O typed - discarding output]\x1b[37;40m\r\n", -1);
 			ctw->ctw.c_discards = 0;
+			ctw->ctw.c_discard_bytes = 0;
 		    	ctw->ctw.c_flags |= CTWF_CTRLO_MODE;
 			}
 		return;
+		}
+	if (ctw->ctw.c_flags & CTWF_CTRLO_MODE &&
+	    keysym == ' ') {
+status:
+		time_str();
+		snprintf(buf, sizeof buf, "\033[47;30m[%s %d lines discarded, %lu bytes]\x1b[37;40m\r\n", 
+			time_str(), ctw->ctw.c_discards, ctw->ctw.c_discard_bytes);
+		ctw->ctw.c_flags &= ~CTWF_CTRLO_MODE;
+		ctw_add_string(ctw, buf, -1);
+		ctw->ctw.c_flags |= CTWF_CTRLO_MODE;
+	    	return;
+		}
+	if (ctw->ctw.c_flags & CTWF_CTRLO_MODE &&
+	    strchr("dpuf", keysym) != NULL) {
+	    	FILE *fp = popen(keysym == 'p' ? "ps -lf" :
+			keysym == 'f' ? "free -m" :
+			keysym == 'u' ? "uptime" : "df -h",
+			"r");
+		ctw->ctw.c_flags &= ~CTWF_CTRLO_MODE;
+		while (fgets(buf, sizeof buf, fp) != NULL) {
+			ctw_add_string(ctw, buf, -1);
+			ctw_add_string(ctw, "\r", 1);
+			}
+		pclose(fp);
+		ctw->ctw.c_flags |= CTWF_CTRLO_MODE;
+		goto status;
 		}
 
 	if (keymod_mask == (KEYMOD_META | KEYMOD_SHIFT) &&
@@ -6979,6 +7008,7 @@ ctw_add_string(CtwWidget ctw, char *str, int len)
 		}
 
 	if (ctw->ctw.c_flags & CTWF_CTRLO_MODE) {
+		ctw->ctw.c_discard_bytes += len;
 		while (len-- > 0) {
 			if (*str++ == '\n')
 				ctw->ctw.c_discards++;
@@ -7508,6 +7538,7 @@ ctw_flush_log(CtwWidget ctw)
 int
 ctw_get_attributes(CtwWidget ctw, int **ip, char ***strp)
 {	static char *attr_names[] = {
+	"Allow Ctrl-O",
 	"Autowrap",
 	"Auto line feed",
 	"Application keypad",

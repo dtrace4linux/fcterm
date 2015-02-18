@@ -318,6 +318,7 @@ typedef struct ctw_part {
 	int	emulation;
 	int	c_flags;
 	int	c_discards;
+	unsigned long c_discard_bytes;
 	int	c_line_no;
 	unsigned long c_scr_line_cnt;
 

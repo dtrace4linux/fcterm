@@ -1,3 +1,10 @@
+Wed Feb 18 22:42:38 2015  fox
+
+     178* include/ctw.h
+          include/ctwP.h
+          src/ctw.c
+          Add <space>/d/f/p/u support in ctrl-o mode.
+
 Mon Feb 16 22:40:27 2015  fox
 
      177* include/ctwP.h
