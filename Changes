@@ -1,3 +1,9 @@
+Thu Feb 19 23:12:31 2015  fox
+
+     179* .gitignore
+          src/ctw.c
+          Make 0xa0 visible - really annoying.
+
 Wed Feb 18 22:42:38 2015  fox
 
      178* include/ctw.h

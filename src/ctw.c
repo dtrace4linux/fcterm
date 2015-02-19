@@ -7,7 +7,7 @@
 /*  Copyright (c) 1990-2015 Paul Fox                                  */
 /*                All Rights Reserved.                                */
 /*                                                                    */
-/*   $Header: Last edited: 18-Feb-2015 1.72 $ 			      */
+/*   $Header: Last edited: 19-Feb-2015 1.73 $ 			      */
 /*--------------------------------------------------------------------*/
 /*  Description:  Color terminal widget.                              */
 /*                                                                    */
@@ -3904,6 +3904,20 @@ draw_string(CtwWidget ctw, int row, int col, char *str, int len, Pixel fg, Pixel
 				x + i * ctw->ctw.font_width, y - ctw->ctw.font_height,
 				ctw->ctw.font_width,
 				ctw->ctw.font_height);
+			}
+		}
+
+	/***********************************************/
+	/*   	Make non-printable space printable.   */
+	/***********************************************/
+	if (memchr(str, 0xa0, len) != NULL) {
+		for (i = 0; i < len; i++) {
+			if ((unsigned char) str[i] != 0xa0)
+				continue;
+			XDrawRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				x + i * ctw->ctw.font_width, y - ctw->ctw.font_height + 1,
+				ctw->ctw.font_width - 1,
+				ctw->ctw.font_height - 1);
 			}
 		}
 	if (attr & VB_FLASHING)
