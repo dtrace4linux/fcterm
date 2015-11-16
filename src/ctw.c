@@ -145,6 +145,7 @@
 /*   ESC [ ? 1000 h	Enter keypad mode.                            */
 /*   ESC [ ? 1034 h	SMM mode                                      */
 /*   ESC [ ? 1049 h	Use alternate screen buffer and screen clear. */
+/*   ESC [ ? 2004 h	Enter bracketed paste mode.                   */
 /*   								      */
 /*   ESC [ ? 1 l	Normal cursor keys			      */
 /*   ESC [ ? 3 l	80/132 column mode switch.		      */
@@ -157,6 +158,7 @@
 /*   ESC [ ? 47 l	Use normal screen buffer.              	      */
 /*   ESC [ ? 1000 l	Exit  keypad mode.                            */
 /*   ESC [ ? 1049 l	Use alternate screen buffer/save cursor/scr clear */
+/*   ESC [ ? 2004 l	Exit bracketed paste mode.                    */
 /*   								      */
 /*   ESC [ 6 n          Ask terminal for rows,col - ESC[r;cR          */
 /*   ESC [ ? 3 r	Disable window resize.  		      */
@@ -3202,6 +3204,11 @@ do_csi_quest(CtwWidget ctw, int cmd, int arg_no, int *args)
 			return TRUE;
 
 		  case 1049:
+		  	return TRUE;
+		  case 2004:
+		  	/***********************************************/
+		  	/*   Bracketed paste mode.		       */
+		  	/***********************************************/
 		  	return TRUE;
 		  }
 		break;

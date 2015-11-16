@@ -1735,20 +1735,56 @@ cancel_dialog(Widget w, XtPointer client_data, XtPointer call_data)
 	dialog = (Widget) NULL;
 }
 void
+redraw_load_avg(int x)
+{	Widget	widget = status;
+static time_t t;
+static float t1, t5, t15;
+static int graph[100];
+static int g;
+
+	char	buf[BUFSIZ];
+
+	if (time(NULL) + 2 > t) {
+		int fd = open("/proc/loadavg", O_RDONLY);
+		int n;
+		if (fd < 0)
+			return;
+
+		n = read(fd, buf, sizeof buf);
+		sscanf(buf, "%f %f %f", &t1, &t5, &t15);
+		close(fd);
+		t = time(NULL);
+		}
+
+	if (x == 0)
+		return;
+}
+
+/**********************************************************************/
+/*   Update the status panel.					      */
+/**********************************************************************/
+void
 redraw_status_panel(int n)
 {	Widget	widget = status;
 	int	i, num;
 	fcterm_t	*ctwp;
 	Dimension	w;
+	int	graph_x = 0;
 	int	swidth;
 	char	*cp;
 	char	buf[64];
+	int	enable_graphs = 0;
 
 	if (n < 0)
 		XClearWindow(XtDisplay(widget), XtWindow(widget));
 	for (num = 0, ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next)
 		num++;
 	XtVaGetValues(widget, XtNwidth, &w, NULL);
+
+	if (enable_graphs && w > 100) {
+		w -= 100;
+		graph_x = w;
+		}
 
 	swidth = MIN(w / num, 100);
 	swidth = w / MAX_SCREENS;
@@ -1799,6 +1835,7 @@ redraw_status_panel(int n)
 			4, STATUS_HEIGHT - 2);
 		}
 
+	redraw_load_avg(graph_x);
 }
 void
 status_expose_callback(Widget widget, XtPointer client_data, XtPointer call_data)
