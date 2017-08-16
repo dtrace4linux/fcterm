@@ -3209,6 +3209,7 @@ do_csi_quest(CtwWidget ctw, int cmd, int arg_no, int *args)
 		  	/***********************************************/
 		  	/*   Bracketed paste mode.		       */
 		  	/***********************************************/
+			ctw->ctw.flags[CTW_BRACKETED_PASTE_MODE] = flag;
 		  	return TRUE;
 		  }
 		break;
@@ -5133,9 +5134,11 @@ static struct match_t {
 	} _matches[] = {
 	{"fatal", 	34, 45, LA_MATCH},
 	{"error", 	34, 45, LA_MATCH},
+	{"fail", 	34, 45, LA_MATCH},
 	{"warning", 	35, 46, LA_MATCH2},
 	{"uninitialised", 35, 46, LA_MATCH3},
 	{"uninitialized", 35, 46, LA_MATCH3},
+	{"exception", 35, 46, LA_MATCH3},
 	{"undefined", 35, 46, LA_MATCH3},
 	};
 static int num_matches = sizeof(_matches) / sizeof(_matches[0]);
@@ -7565,6 +7568,7 @@ ctw_get_attributes(CtwWidget ctw, int **ip, char ***strp)
 	"Application keypad",
 	"Application cursor",
 	"Application mouse",
+	"Bracketed paste mode",
 	"Color reset",
 	"Color",		/* CTW_COLOR */
 	"Cut newlines",
