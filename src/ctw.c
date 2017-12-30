@@ -336,6 +336,7 @@ extern int	version_build_no;
 extern Widget top_level;
 int	group_status(int);
 char *group_status2(void);
+char	*time_str(void);
 
 /**********************************************************************/
 /*   Get bitmaps for visuals.					      */
