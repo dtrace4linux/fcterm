@@ -87,4 +87,8 @@ PTY_LABEL
 
 fcterm help commands:
 
+  This is accessed via Shift-Alt-F10
 
+  cmap   show colormap.
+  code   show sample code for drawing graphics.
+  esc    show escape sequence summary.

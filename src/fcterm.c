@@ -429,9 +429,9 @@ about_box(int x, int y)
 {	static char	*about_text[] = {
 		"FCTERM - Color terminal emulator",
 		"",
-		"(C) 1990-2014 Paul Fox, Foxtrot Systems Ltd",
+		"(C) 1990-2020 Paul Fox, Foxtrot Systems Ltd",
 		"",
-		"E-mail: fox@crisp.demon.co.uk, paul.d.fox@gmail.com",
+		"E-mail: crisp.editor:gmail.com, paul.d.fox@gmail.com",
 		"",
 		"<version>",
 		(char *) NULL

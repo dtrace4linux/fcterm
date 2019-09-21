@@ -27,6 +27,12 @@ OBJ=	\
 all:
 	. ./config.def ; $(MAKE) all0
 
+clang:
+	mkdir -p bin.clang ; \
+	export CC="clang -g -O2 -fsanitize=address" ; \
+	export OBJDIR=bin.clang ; \
+	. ./config.def ; $(MAKE) all0
+
 all0: $(OBJDIR)/fcterm $(OBJDIR)/pty $(OBJDIR)/ptysrv
 
 include/sequence.h: mkseq.sh

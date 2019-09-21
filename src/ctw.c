@@ -1493,6 +1493,15 @@ Resize(CtwWidget w)
 
 	if (!XtIsRealized((Widget) w))
 		return;
+
+	/***********************************************/
+	/*   Turn   off  the  cursor  before  calling  */
+	/*   alloc_screen,  else we get a UMR because  */
+	/*   we  adjusted  rows/cols  before  we have  */
+	/*   done the allocation.		       */
+	/***********************************************/
+	turn_off_cursor(w);
+
 	/***********************************************/
 	/*   Stop  ctw_get_xy()  from stopping window  */
 	/*   from getting bigger.		       */

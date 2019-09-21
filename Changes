@@ -1,3 +1,10 @@
+Sat Dec 30 22:05:39 2017  fox
+
+     180* include/ctw.h
+          src/ctw.c
+          src/fcterm.c
+          fix time_str().
+
 Thu Feb 19 23:12:31 2015  fox
 
      179* .gitignore

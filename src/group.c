@@ -23,7 +23,8 @@
 # include	<time.h>
 
 #define	DEBUG	1
-#define MAX_PROCS	26
+#define MAX_PROCS	128
+static int max_procs = MAX_PROCS;
 /**********************************************************************/
 /*   Save config for this fcterm.				      */
 /**********************************************************************/
@@ -96,6 +97,8 @@ static	char	label_buf[2];
 
 	if (getenv("FCTERM_GROUP_DEBUG"))
 		group_debug = atoi(getenv("FCTERM_GROUP_DEBUG"));
+	if (getenv("FCTERM_GROUP_MAX_PROCS"))
+		max_procs = atoi(getenv("FCTERM_GROUP_MAX_PROCS"));
 
 	group_label = label_buf;
 	strcpy(label_buf, "A");
@@ -114,23 +117,24 @@ static	char	label_buf[2];
 		}
 	shp = (sh_config_t *) mmap(NULL, sizeof *shp,
 		PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	if (shp->s_version != G_VERSION) {
+	if (shp->s_version != G_VERSION ||
+	    shp->s_size != max_procs) {
 		memset(shp, 0, sizeof *shp);
 		shp->s_version = G_VERSION;
 		shp->s_struct_size = sizeof *shp;
-		shp->s_size = MAX_PROCS;
+		shp->s_size = max_procs;
 		}
 	if (!alloc)
 		return;
 
-	for (i = 0; i < MAX_PROCS; i++) {
+	for (i = 0; i < max_procs; i++) {
 		if (shp->s_array[i].c_pid == 0)
 			break;
 		snprintf(buf, sizeof buf, "/proc/%d", shp->s_array[i].c_pid);
 		if (stat(buf, &sbuf) < 0)
 			break;
 		}
-	if (i >= MAX_PROCS)
+	if (i >= max_procs)
 		return;
 
 	cur_cfg = &shp->s_array[i];
@@ -269,11 +273,12 @@ char *
 group_status2()
 {	int	i;
 	char	buf[BUFSIZ];
+	char	id[BUFSIZ];
 	dstr_t dstr;
 	struct stat sbuf;
 
 	dstr_init(&dstr, 256);
-	for (i = 0; i < MAX_PROCS; i++) {
+	for (i = 0; i < max_procs; i++) {
 		if (shp->s_array[i].c_pid == 0)
 			continue;
 		snprintf(buf, sizeof buf, "/proc/%d",
@@ -282,8 +287,12 @@ group_status2()
 			continue;
 			}
 
-		snprintf(buf, sizeof buf, "%c: pid=%d win=0x%lx pos=%d,%d size=%dx%d\r\n", 
-			i + 'A', 
+		if (i < 26)
+			snprintf(id, sizeof id, "%c", i + 'A');
+		else
+			snprintf(id, sizeof id, "%d", i);
+		snprintf(buf, sizeof buf, "%s: pid=%d win=0x%lx pos=%d,%d size=%dx%d\r\n", 
+			id,
 			shp->s_array[i].c_pid, 
 			shp->s_array[i].c_winid,
 			shp->s_array[i].c_x, 
@@ -301,6 +310,12 @@ void
 group_write_config(long winid, int x, int y, int width, int height)
 {	int	dx = x - cx;
 	int	dy = y - cy;
+
+	/***********************************************/
+	/*   If we ran out of letters.		       */
+	/***********************************************/
+	if (cur_cfg == NULL)
+		return;
 
 //	if (cur_cfg->c_x == x && cur_cfg->c_y == y)
 //		return;

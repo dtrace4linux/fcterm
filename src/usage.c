@@ -88,5 +88,9 @@ const char *usage_text =
 "\n"
 "fcterm help commands:\n"
 "\n"
+"  This is accessed via Shift-Alt-F10\n"
 "\n"
+"  cmap   show colormap.\n"
+"  code   show sample code for drawing graphics.\n"
+"  esc    show escape sequence summary.\n"
 ;
