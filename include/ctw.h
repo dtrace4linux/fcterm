@@ -402,6 +402,7 @@ enum ctw_flags { /* edit attr_names in ctw.c */
 	CTW_CSI_g,		/* VT220 special */
 	CTW_CSI_EQUAL_C,	/* ISC */
 	CTW_UTF8,
+	CTW_ESC_LOG_BAD,
 
 	CTW_MAX_ATTR
 	};

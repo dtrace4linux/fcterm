@@ -722,7 +722,7 @@ layout_frame()
 	Dimension sw = 0, sh = 0;
 
 	XtVaGetValues(top_level, XtNheight, &fh, XtNwidth, &fw, NULL);
-	if (fw < 5 || fh < 5)
+	if (fw < STATUS_HEIGHT + 10 || fh < STATUS_HEIGHT + 10)
 		return;
 
 	if (XtIsManaged(scrollbar)) {
@@ -1734,13 +1734,18 @@ cancel_dialog(Widget w, XtPointer client_data, XtPointer call_data)
 	XtDestroyWidget(dialog);
 	dialog = (Widget) NULL;
 }
+
+/**********************************************************************/
+/*   Show loadavg and other info in the status lines, but TBD.	      */
+/**********************************************************************/
 void
 redraw_load_avg(int x)
-{	Widget	widget = status;
+{
+# if 0
+	Widget	widget = status;
 static time_t t;
 static float t1, t5, t15;
-static int graph[100];
-static int g;
+//static int graph[100];
 
 	char	buf[BUFSIZ];
 
@@ -1751,13 +1756,14 @@ static int g;
 			return;
 
 		n = read(fd, buf, sizeof buf);
-		sscanf(buf, "%f %f %f", &t1, &t5, &t15);
+		mysscanf(buf, "%f %f %f", &t1, &t5, &t15);
 		close(fd);
 		t = time(NULL);
 		}
 
 	if (x == 0)
 		return;
+# endif
 }
 
 /**********************************************************************/

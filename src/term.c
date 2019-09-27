@@ -480,9 +480,9 @@ do_switches(int argc, char **argv)
 				usage();
 			cp = argv[i];
 			if (*cp == '+')
-				sscanf(cp, "+%d+%d", &geom_x, &geom_y);
+				mysscanf(cp, "+%d+%d", &geom_x, &geom_y);
 			else
-				sscanf(cp, "%dx%d+%d+%d", 
+				mysscanf(cp, "%dx%d+%d+%d", 
 					&geom_width, &geom_height,
 					&geom_x, &geom_y);
 			continue;
@@ -692,6 +692,8 @@ map_click(Widget widget, XtPointer client_data, XEvent *event)
 	int	i, x, y;
 static int id = 0;
 
+	UNUSED_PARAMETER(client_data);
+
 	switch (event->type) {
 	  case KeyPress:
 //	  case KeyRelease:
@@ -815,7 +817,7 @@ pty_command(fcterm_t *cur_ctw, char *str, int len)
 	arg = strtok(NULL, "\n");
 	if (strcmp(cmd, "winsz") == 0) {
 		int	rows, cols;
-		if (arg == NULL || sscanf(arg, "rows=%d cols=%d", &rows, &cols) != 2)
+		if (arg == NULL || mysscanf(arg, "rows=%d cols=%d", &rows, &cols) != 2)
 			return;
 		if (rows == cur_ctw->f_rows &&
 		    cols == cur_ctw->f_cols)
@@ -828,7 +830,7 @@ pty_command(fcterm_t *cur_ctw, char *str, int len)
 		unsigned long time;
 
 		if (arg == NULL || 
-		    sscanf(arg, "%d %lu %d %d %d %d", &reason, &time, &type, &state, &x, &y) != 6)
+		    mysscanf(arg, "%d %lu %d %d %d %d", &reason, &time, &type, &state, &x, &y) != 6)
 			return;
 		ctw_mouse((CtwWidget) cur_ctw->f_ctw, reason, time, type, state, x, y);
 		return;
@@ -854,6 +856,7 @@ pty_input(fcterm_t *cur_ctw, int src, XtInputId id)
 //printf("fcterm(pid=%d): reading %x %d\n", getpid(), cur_ctw, cur_ctw->f_pty_fd);
 reread:
 	n = cb_read(cur_ctw->f_pty_fd, &cur_ctw->f_pty_ibuf, &start_bp);
+//printf("pty_input: read %d\n", n);
 	if (n == -2) {
 		printf("fcterm: buffer full - clearing buffer\n");
 		cb_reset(&cur_ctw->f_pty_ibuf);
@@ -1430,7 +1433,7 @@ static char	ctw_pid[32];
 		char host[BUFSIZ];
 		char port[BUFSIZ];
 		cur_ctw->f_pty_fd = -1;
-		if (sscanf(cp, "%[^:]:%s", host, port) == 2) {
+		if (mysscanf(cp, "%[^:]:%s", host, port) == 2) {
 			cur_ctw->f_pty_fd = tcp_connect(0, 0, 0, tcp_get_ipaddr(host), tcp_get_port_address(port));
 			}
 		else {

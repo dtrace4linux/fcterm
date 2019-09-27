@@ -217,6 +217,7 @@
 # include 	<X11/StringDefs.h>
 # include 	<X11/Shell.h>
 # include	<X11/Xatom.h>
+# include	<X11/XKBlib.h>
 # if HAVE_FREETYPE
 #include <ft2build.h>  
 #include FT_FREETYPE_H 
@@ -547,6 +548,7 @@ int	*(*XftDrawStringUtf8_ptr)();
 void verify(CtwWidget ctw);
 # endif
 void group_enable(int n);
+void	zoom_window();
 static void show_status(CtwWidget ctw);
 static long map_rgb_to_visual_rgb(CtwWidget ctw, long rgb);
 static void graph_destroy(CtwWidget ctw);
@@ -4449,8 +4451,10 @@ handle_escape(CtwWidget w, char *str, char *str_end)
 		/***********************************************/
 		if (cp >= cpend) {
 			w->ctw.escp = (char *) NULL;
-			ctw_add_char(w, "<ESC>");
-			send_str(w, w->ctw.escbuf, MAX_ESCBUF);
+		    	if (w->ctw.flags[CTW_ESC_LOG_BAD]) {
+				ctw_add_char(w, "<ESC>");
+				send_str(w, w->ctw.escbuf, MAX_ESCBUF);
+				}
 			return str;
 			}
 		*cp++ = *str++;
@@ -4572,8 +4576,10 @@ handle_escape(CtwWidget w, char *str, char *str_end)
 		w->ctw.escp = NULL;
 		if ((cp[-1] != 'm' && seen_str) || 
 		    process_escape(w) == FALSE) {
-			ctw_add_char(w, "<ESC>");
-			send_str(w, w->ctw.escbuf, cp - w->ctw.escbuf);
+		    	if (w->ctw.flags[CTW_ESC_LOG_BAD]) {
+				ctw_add_char(w, "<ESC>");
+				send_str(w, w->ctw.escbuf, cp - w->ctw.escbuf);
+				}
 			}
 		w->ctw.escp = NULL;
 		return str;
@@ -5184,7 +5190,7 @@ static int done_read = FALSE;
 				if (buf[strlen(buf)-1] == '\n')
 					buf[strlen(buf)-1] = '\n';
 
-				if (sscanf(buf, "%s %d %d %d", buf1, &fg, &bg, &flags) != 4)
+				if (mysscanf(buf, "%s %d %d %d", buf1, &fg, &bg, &flags) != 4)
 					continue;
 
 				if (matches == _matches) {
@@ -7612,6 +7618,7 @@ ctw_get_attributes(CtwWidget ctw, int **ip, char ***strp)
 	"ESC[g tabs",
 	"ESC[=C cursor settings",
 	"UTF-8",
+	"ESC bad logging",
 	(char *) NULL
 	};
 
@@ -8061,7 +8068,7 @@ ctw_save_state(CtwWidget ctw, dstr_t *dstrp)
 void
 ctw_send_input(CtwWidget ctw, XEvent *event, String *x, Cardinal *y)
 {
-	CtwInput(ctw, event, x, y);
+	CtwInput((Widget) ctw, event, x, y);
 }
 /**********************************************************************/
 /*   Function  to  set  current  setting  for the line at the top of  */
@@ -8393,7 +8400,7 @@ static int	keylist[MAX_SPECIAL_KEYS] = {
 			/***********************************************/
 			/*   Convert keycode to keysym.                */
 			/***********************************************/
-			ks = XKeycodeToKeysym(dpy, keymap->modifiermap[k], 0);
+			ks = XkbKeycodeToKeysym(dpy, keymap->modifiermap[k], 0, 0);
 			for (sk = 0; sk < MAX_SPECIAL_KEYS; sk++) {
 				if (ks == (KeySym) keylist[sk]) {
 					key_specials[sk].sk_keysym = ks;

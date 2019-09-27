@@ -233,7 +233,7 @@ group_restore(char *fname)
 
 		if (buf[0] == '\0' || buf[1] != ':')
 			continue;
-		sscanf(buf, "%c: pid=%d win=0x%lx pos=%d,%d size=%dx%d\n",
+		mysscanf(buf, "%c: pid=%d win=0x%lx pos=%d,%d size=%dx%d\n",
 			&id, &pid, &win, &x, &y, &w, &h);
 		if (id < 'A' || id >= 'Z')
 			continue;

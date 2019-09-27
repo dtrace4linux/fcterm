@@ -123,8 +123,7 @@ noise:
 	tar cvf - $$v/bin/fcterm $$v/samples $$v/fccat | bzip2 >/tmp/noise2.tar.bz2 ; \
 	mv $$v ctw
 	gfx -o /tmp/noise2.bmp /tmp/noise2.tar.bz2
-	cd /tmp ; (echo cd docroot/images ; echo put noise2.bmp ) | ftp homepages.demon.co.uk
-
+	scp /tmp/noise2.bmp crispgw:release/website/site/images
 
 release:
 	git commit . || exit 1
