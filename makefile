@@ -126,9 +126,9 @@ noise:
 	scp /tmp/noise2.bmp crispgw:release/website/site/images
 
 release:
-	git commit . || exit 1
+	git commit .
 	strip bin/fcterm
-	elfrewrite bin/fcterm
+	../../crisp/bin/elfrewrite bin/fcterm
 	build=b`grep build_no include/build.h | sed -e 's/^.* \([0-9][0-9]*\).*$$/\1/'` ; \
 	cd .. ; mv ctw ctw-$$build ; \
 	tar cvf - ctw-$$build/bin/fcterm ctw-$$build/README* ctw-$$build/Changes ctw-$$build/samples ctw-$$build/fccat | gzip -9 > /tmp/fcterm-$$build.tar.gz ; \
