@@ -1434,12 +1434,18 @@ static char	ctw_pid[32];
 		char port[BUFSIZ];
 		cur_ctw->f_pty_fd = -1;
 		if (mysscanf(cp, "%[^:]:%s", host, port) == 2) {
-			cur_ctw->f_pty_fd = tcp_connect(0, 0, 0, tcp_get_ipaddr(host), tcp_get_port_address(port));
+			int p = tcp_get_port_address(port);
+			if (p == 0) {
+				printf("Invalid PTY_SERVER setting - port is zero\n");
+				exit(1);
+				}
+			cur_ctw->f_pty_fd = tcp_connect(0, 0, 0, tcp_get_ipaddr(host), p);
 			}
 		else {
 			cur_ctw->f_pty_fd = tcp_connect(0, 0, 0, tcp_get_ipaddr(cp), PTY_SERVER_PORT);
 			}
 		if (cur_ctw->f_pty_fd >= 0) {
+			signal(SIGPIPE, SIG_IGN);
 			cp = getenv("PTY_LABEL");
 			snprintf(buf, sizeof buf - 1, 
 				"%s uid=%d name=%s-%d env=PTY_SCREEN=%d", 
