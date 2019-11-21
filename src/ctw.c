@@ -8290,6 +8290,7 @@ show_status(CtwWidget ctw)
 {	extern char *group_label;
   	char buf[BUFSIZ];
   	char buf2[BUFSIZ];
+	Display *dpy = XtDisplay(ctw);
 	char	*cp;
 	FILE	*fp;
 
@@ -8304,7 +8305,17 @@ show_status(CtwWidget ctw)
   	ctw_add_string(ctw, cp, -1);
 
 	snprintf(buf2, sizeof buf2, "%s/status.layout", log_dir);
-	snprintf(buf, sizeof buf, "fcterm: status in %s\n", buf2);
+	snprintf(buf, sizeof buf, "fcterm: status in %s\r\n", buf2);
+	if ((fp = fopen(buf2, "w")) != NULL) {
+		fprintf(fp, "%s", cp);
+		fclose(fp);
+	  	ctw_add_string(ctw, buf, -1);
+		}
+
+	snprintf(buf2, sizeof buf2, "%s/status.layout-%dx%d", log_dir,
+		DisplayWidth(dpy, DefaultScreen(dpy)),
+		DisplayHeight(dpy, DefaultScreen(dpy)));
+	snprintf(buf, sizeof buf, "fcterm: status in %s\r\n", buf2);
 	if ((fp = fopen(buf2, "w")) != NULL) {
 		fprintf(fp, "%s", cp);
 		fclose(fp);

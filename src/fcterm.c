@@ -178,6 +178,7 @@ static String fallback_resources[] = {
 /**********************************************************************/
 void handle_commands(int i, int argc, char **argv);
 fcterm_t *restore_state(void);
+void show_map(void);
 void set_font(char *font);
 void switch_screen(fcterm_t *, int id);
 void say_hello(fcterm_t *cur_ctw);
@@ -648,7 +649,7 @@ handle_commands(int i, int argc, char **argv)
 "restore <filename>  Restore position from saved state.\n"
 "search              Display search prompt.\n"
 "status              Show status.\n"
-"zoom                Show minimap\n"
+"zoom                Make window as tall as screen height\n"
 		;
 
 	if (i >= argc)
@@ -664,7 +665,7 @@ handle_commands(int i, int argc, char **argv)
 			continue;
 			}
 		if (strcmp(cp, "help") == 0) {
-			printf("%s", help);
+			printf("\n%s", help);
 			continue;
 			}
 		if (strcmp(cp, "minimap") == 0) {

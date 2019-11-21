@@ -219,6 +219,11 @@ group_restore(char *fname)
 {	char	buf[BUFSIZ];
 	FILE	*fp;
 	config_t	*cfg;
+	Window	*children;
+	Window root;
+	Window parent;
+	Screen *dpy = XtDisplay(top_level);
+	int nchildren;
 
 	group_init2(FALSE);
 	if ((fp = fopen(fname, "r")) == NULL) {
@@ -229,24 +234,41 @@ group_restore(char *fname)
 		unsigned char	id;
 		int	pid;
 		long	win;
-		int	x, y, w, h;
+		int	j;
+		int	n, x, y, w, h;
 
 		if (buf[0] == '\0' || buf[1] != ':')
 			continue;
-		mysscanf(buf, "%c: pid=%d win=0x%lx pos=%d,%d size=%dx%d\n",
-			&id, &pid, &win, &x, &y, &w, &h);
+		if ((n = mysscanf(buf, "%c: pid=%d win=0x%lx pos=%d,%d size=%dx%d\n",
+			&id, &pid, &win, &x, &y, &w, &h)) != 7) {
+				printf("scanf error - got %d\n", n);
+				continue;
+			}
 		if (id < 'A' || id >= 'Z')
 			continue;
-		id -= 'A';
 
+		printf("Moving %c: pid=%d win=0x%lx pos=%d,%d size=%dx%d\n",
+			id, pid, win, x, y, w, h);
+
+/*
+		XQueryTree(XtDisplay(top_level), win,
+			&root,
+			&parent,
+			&children,
+			&nchildren);
+printf("parent=%p\n", parent);
+*/
+
+		id -= 'A';
 		{XWindowChanges ch;
 		memset(&ch, 0, sizeof ch);
 		ch.x = x;
 		ch.y = y;
 		ch.width = w;
 		ch.height = h;
-		XConfigureWindow(XtDisplay(top_level), win, 
-			CWX | CWY | CWWidth | CWHeight, &ch);
+		XMoveResizeWindow(dpy, win, x, y, w, h);
+
+		XSync(dpy, 1);
 		}
 #if 0
 		cfg = &shp->s_array[id];
