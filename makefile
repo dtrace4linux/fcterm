@@ -126,7 +126,9 @@ noise:
 	scp /tmp/noise2.bmp crispgw:release/website/site/images
 
 release:
-	git commit . || true
+	b=`mkrelease.pl -incbuild` ; \
+	$(MAKE) ; \
+	git commit -m "Release b$b" . || true
 	strip bin/fcterm
 	../../crisp/bin/elfrewrite bin/fcterm
 	build=b`grep build_no include/build.h | sed -e 's/^.* \([0-9][0-9]*\).*$$/\1/'` ; \
