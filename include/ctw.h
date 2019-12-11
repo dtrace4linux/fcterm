@@ -461,6 +461,7 @@ int	ctw_get_attributes(CtwWidget, int **, char ***);
 /*   Restore state from a file.					      */
 /**********************************************************************/
 void	ctw_restore_state(CtwWidget ctw, FILE *fp);
+void ctw_save_state(CtwWidget ctw, dstr_t *dstrp);
 
 /**********************************************************************/
 /*   Function  to  set  attributes  current  state  of  the  various  */

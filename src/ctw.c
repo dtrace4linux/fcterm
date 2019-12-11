@@ -4,10 +4,10 @@
 /*  Author:        P. D. Fox                                          */
 /*  Created:       25 Nov 1991                     		      */
 /*                                                                    */
-/*  Copyright (c) 1990-2015 Paul Fox                                  */
+/*  Copyright (c) 1990-2019 Paul Fox                                  */
 /*                All Rights Reserved.                                */
 /*                                                                    */
-/*   $Header: Last edited: 19-Feb-2015 1.73 $ 			      */
+/*   $Header: Last edited: 11-Dec-2019 1.74 $ 			      */
 /*--------------------------------------------------------------------*/
 /*  Description:  Color terminal widget.                              */
 /*                                                                    */
@@ -239,8 +239,8 @@
 # endif
 /*# include	<malloc.h>*/
 # include	<stdlib.h>
-# include 	"ctwP.h"
 # include 	<dstr.h>
+# include 	"ctwP.h"
 # include 	<hash.h>
 # include	<X11/cursorfont.h>
 

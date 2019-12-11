@@ -178,7 +178,6 @@ static String fallback_resources[] = {
 /**********************************************************************/
 void handle_commands(int i, int argc, char **argv);
 fcterm_t *restore_state(void);
-void show_map(void);
 void set_font(char *font);
 void switch_screen(fcterm_t *, int id);
 void say_hello(fcterm_t *cur_ctw);
@@ -1099,7 +1098,7 @@ menu_callback(Widget widget, enum menu_items val, caddr_t call_data)
 		break;
 
 	  case MENU_TERMINAL_MAP:
-	  	show_map();
+	  	show_map(0, 0);
 		break;
 	  default:
 	  	break;

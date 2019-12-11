@@ -14,7 +14,6 @@
 # include	"fcterm.h"
 # include	"pwd.h"
 # include	"scrbar.h"
-# include	<dstr.h>
 # if defined(HAS_UTMP)
 # 	include	<utmp.h>
 #	define	utmpx	utmp
@@ -53,6 +52,8 @@
 
 static char **command_to_exec;
 extern char *group_label;
+extern int version_major;
+extern int version_minor;
 extern int version_build_no;
 int	direct;
 int	dump_flag;
@@ -496,6 +497,10 @@ do_switches(int argc, char **argv)
 			break;
 			}
 		if (strcmp(cp, "version") == 0) {
+			/***********************************************/
+			/*   Dont  add  anything  else here, else the  */
+			/*   "make install" will fail.		       */
+			/***********************************************/
 			printf("b%d\n", version_build_no);
 			exit(0);
 			}
@@ -713,7 +718,7 @@ static int id = 0;
 		/*   Force a redraw.			       */
 		/***********************************************/
 		XtRemoveTimeOut(map_timer_id);
-		show_map();
+		show_map(0, 0);
 	  	return;
 
 	  case ButtonPress:
@@ -1074,7 +1079,7 @@ restart_fcterm()
 		sprintf(buf + strlen(buf), "pid=%d\n", ctwp->f_pid);
 		sprintf(buf + strlen(buf), "[pty]\n");
 		dstr_add_mem(&dstr, buf, strlen(buf));
-		ctw_save_state(ctwp->f_ctw, &dstr);
+		ctw_save_state((CtwWidget) ctwp->f_ctw, &dstr);
 		dstr_add_char(&dstr, '\n');
 		fcntl(ctwp->f_pty_fd, F_SETFD, 0);
 		}
@@ -1207,7 +1212,7 @@ setup_signal_handlers()
 /*   Show the tty minimap.					      */
 /**********************************************************************/
 void
-show_map()
+show_map(void *p, unsigned long *v)
 {	Window	save_win;
 	fcterm_t	*ctwp;
 	int	w, h;
@@ -1217,6 +1222,9 @@ show_map()
 	GC	gc = 0;
 	float	y_frac, yf;
 	int	num;
+
+	UNUSED_PARAMETER(p);
+	UNUSED_PARAMETER(v);
 
 	if (map_pixmap) {
 		XFreePixmap(dpy, map_pixmap);
@@ -1492,6 +1500,13 @@ static char	ctw_pid[32];
 		perror("/dev/ptmx");
 		exit(1);
 		}
+
+	/***********************************************/
+	/*   Dont  let  child inherit our controlling  */
+	/*   pty.				       */
+	/***********************************************/
+	fcntl(cur_ctw->f_pty_fd, F_SETFD, 1);
+
 	if (grantpt(cur_ctw->f_pty_fd) < 0) {
 		perror("grantpt");
 		exit(1);
@@ -2270,6 +2285,7 @@ usage()
 {	char	*argv[2] = {"help", NULL};
 	extern const char *usage_text;
 
+	printf("version: %d.%d b%d\n", version_major, version_minor, version_build_no);
 	fputs(usage_text, stderr);
 
 	handle_commands(0, 1, argv);

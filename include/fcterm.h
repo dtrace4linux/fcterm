@@ -15,6 +15,7 @@
 # include	<X11/StringDefs.h>
 # include	<X11/Shell.h>
 #endif
+# include	<dstr.h>
 # include	"ctw.h"
 # if defined(HAVE_TERMIOS)
 #	include	<termios.h>
@@ -219,7 +220,7 @@ void reset_terminal(fcterm_t *cur_ctw);
 void map_click(Widget w, XtPointer client_data, XEvent *event);
 void fork_new_terminal(fcterm_t *cur_ctw);
 void fork_wmgr(fcterm_t *cur_ctw, int val);
-void show_map(void);
+void show_map(void *p, unsigned long *v);
 void	do_utmp PROTO((fcterm_t *, int));
 void set_font(char *font);
 void restart_fcterm(void);
