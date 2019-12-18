@@ -1221,7 +1221,12 @@ static int first_time = TRUE;
 		ctw_add_string((CtwWidget) cur_ctw->f_ctw, "\033[100X\r\n", -1);
 	}
 	pclose(fp);
-	ctw_add_string((CtwWidget) cur_ctw->f_ctw, "\n\033[37;40m", -1);
+
+	/***********************************************/
+	/*   Come  out  of  keypad  mode  in  case we  */
+	/*   aborted a crisp session.		       */
+	/***********************************************/
+	ctw_add_string((CtwWidget) cur_ctw->f_ctw, "\n\033>\033[37;40m", -1);
 }
 /**********************************************************************/
 /*   Toggle  autoswitch  - ability for screens to show what is going  */
@@ -1718,7 +1723,7 @@ restore_label()
 			XMoveResizeWindow(XtDisplay(top_level), XtWindow(top_level), 
 				main_x - mwm_x_offset, 
 				main_y - mwm_y_offset, w, h);
-printf("mwm_x_offset=%d %d\n", mwm_x_offset, mwm_y_offset);
+//printf("mwm_x_offset=%d %d\n", mwm_x_offset, mwm_y_offset);
 			continue;
 			}
 

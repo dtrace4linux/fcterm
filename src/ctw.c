@@ -5074,7 +5074,9 @@ lose_selection(CtwWidget ctw, Atom *selection)
 }
 /* ARGSUSED */
 static void
-requestor_callback(Widget w, XtPointer client_data, Atom *selection, Atom *type, XtPointer *value, unsigned long *length, int *format)
+requestor_callback(Widget w, XtPointer client_data, 
+	Atom *selection, Atom *type, 
+	XtPointer value, unsigned long *length, int *format)
 {	CtwWidget	ctw = (CtwWidget) w;
 	ctw_callback_t	reason;
 
@@ -5086,9 +5088,11 @@ requestor_callback(Widget w, XtPointer client_data, Atom *selection, Atom *type,
 	reason.reason = CTWR_PASTE;
 	reason.client_data = ctw->ctw.client_data;
 
-	if (value == NULL || (*value == NULL && *length == 0)) {
+	if (value == NULL && *length == 0)
 		return;
-		}
+//	if (value == NULL || (*value == NULL && *length == 0)) {
+//		return;
+//		}
 	reason.ptr = (char *) value;
 	reason.len = (int) *length;
 	XtCallCallbacks(w, XtNkbdCallback, (caddr_t) &reason);

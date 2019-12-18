@@ -982,10 +982,12 @@ reread:
 	/***********************************************/
 	/*   Allow us to auto-switch on input.	       */
 	/***********************************************/
-if(0)	if (!cur_ctw->f_active) {
+if(0) {
+	if (!cur_ctw->f_active) {
 		cur_ctw->f_active = TRUE;
 		status_expose_callback(0, 0, 0);
 		}
+}
 	if (auto_switch)
 		switch_screen(cur_ctw->f_id);
 }
