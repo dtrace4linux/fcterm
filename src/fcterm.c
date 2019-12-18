@@ -3,8 +3,9 @@
 /*   widget. This module is based on the athena widgets.	      */
 /*   								      */
 /*   Author: Paul Fox						      */
-/*   Date:   January 1992-2008       				      */
+/*   Date:   January 1992-2019       				      */
 /**********************************************************************/
+
 # include	<fcterm.h>
 # include	"include/build.h"
 # include	<X11/Xaw/Paned.h>
@@ -14,6 +15,7 @@
 # include	<w_draw.h>
 # include	<w_string.h>
 # include	<time.h>
+# include	<limits.h>
 # include	<sys/stat.h>
 # include	<X11/Xaw/Command.h>
 # include	<X11/Xaw/MenuButton.h>
@@ -118,12 +120,14 @@ fcterm_t	*ghost_ctw;
 int	prog_argc;
 char	**prog_argv;
 
-extern int fork_flag;
+extern char	*group_label;
+extern int	label_arg_specified;
+extern int	fork_flag;
 extern int	main_x;
 extern int	main_y;
-static Widget		font_dialog;
-static Widget		dialog;
-static Widget		monitor;
+static Widget	font_dialog;
+static Widget	dialog;
+static Widget	monitor;
 Widget		status;
 Widget		pane;
 Widget		pshell;
@@ -177,9 +181,9 @@ static String fallback_resources[] = {
 /*   Prototypes.						      */
 /**********************************************************************/
 void handle_commands(int i, int argc, char **argv);
+fcterm_t *restore_label(void);
 fcterm_t *restore_state(void);
 void set_font(char *font);
-void switch_screen(fcterm_t *, int id);
 void say_hello(fcterm_t *cur_ctw);
 void map_expose_callback(Widget widget, XtPointer client_data, XEvent *event);
 void map_input_callback(Widget widget, XtPointer client_data, DrawingAreaCallbackStruct *event);
@@ -188,7 +192,7 @@ void	set_autoswitch(int);
 static int x11_error_handler(Display *dpy, XErrorEvent *event);
 static int x11_io_error_handler(Display *dpy);
 void layout_frame(void);
-int	create_screen(fcterm_t *, int, int);
+int	create_screen(fcterm_t *, int, int, char *pwd);
 static void structure_notify_callback();
 Widget	create_menu PROTO((Widget, char *, struct menu_commands *));
 void	about_box();
@@ -346,7 +350,7 @@ main(int argc, char **argv)
 	/*   some interesting graphics.		       */
 	/***********************************************/
 	ghost_ctw = new_fcterm(GHOST_ID);
-	create_screen(ghost_ctw, FALSE, FALSE);
+	create_screen(ghost_ctw, FALSE, FALSE, NULL);
 
 	/***********************************************/
 	/*   Now create the first screen.	       */
@@ -355,9 +359,14 @@ main(int argc, char **argv)
 		cur_ctw = restore_state();
 		restarted = TRUE;
 		}
-	else {
+	else if (label_arg_specified) {
+		if ((cur_ctw = restore_label()) != NULL)
+			restarted = TRUE;
+		}
+
+	if (!restarted) {
 		cur_ctw = new_fcterm(0);
-		if (create_screen(cur_ctw, TRUE, TRUE) < 0)
+		if (create_screen(cur_ctw, TRUE, TRUE, NULL) < 0)
 			exit(1);
 		}
 
@@ -547,7 +556,7 @@ create_menu(Widget parent, char *title, struct menu_commands *cmds)
 /*   Create a new screen widget, and allocate a pty for it.	      */
 /**********************************************************************/
 int
-create_screen(fcterm_t *ctwp, int proper, int do_spawn)
+create_screen(fcterm_t *ctwp, int proper, int do_spawn, char *pwd)
 {	int	n;
 	Arg	args[20];
 
@@ -592,7 +601,7 @@ create_screen(fcterm_t *ctwp, int proper, int do_spawn)
 		if (!do_spawn)
 			return 0;
 
-		if (spawn_child(ctwp) < 0)
+		if (spawn_child(ctwp, pwd) < 0)
 			return -1;
 		/***********************************************/
 		/*   Dont let anyone else inherit the fd.      */
@@ -1116,7 +1125,7 @@ menu_new_screen(fcterm_t *old_ctw, int id)
 
 	if (id >= 0)
 		cur_ctw->f_id = id;
-	create_screen(cur_ctw, TRUE, TRUE);
+	create_screen(cur_ctw, TRUE, TRUE, NULL);
 	XtManageChild(cur_ctw->f_ctw);
 	layout_frame();
 	XtSetKeyboardFocus(top_level, cur_ctw->f_ctw);
@@ -1131,6 +1140,9 @@ pane_focus_callback(Widget widget, XtPointer client_data, XFocusChangeEvent *eve
 {	XWindowAttributes attr;
 static time_t last_t;
 
+	if (!XtIsManaged(cur_ctw->f_ctw)) {
+		return;
+		}
 	UNUSED_PARAMETER(client_data);
 
 	if (event->type == FocusIn &&
@@ -1170,12 +1182,14 @@ say_hello(fcterm_t *cur_ctw)
 {	char	*msg;
 static char *msgs[] = {
 	"** ",
-	"** Press <Ins> to paste; Right-mouse to see menu.",
-	"** Press <Alt-Ctrl-F10> to invoke search/command prompt.",
+	"** <Ins> to paste; Right-mouse to see menu.",
+	"** <Alt-Ctrl-F10> to invoke search/command prompt.",
 	NULL
 	};
 static int first_time = TRUE;
+	char	buf[BUFSIZ];
 	char	verbuf[BUFSIZ];
+	FILE *fp;
 	int	i;
 
 	if (!first_time)
@@ -1183,20 +1197,31 @@ static int first_time = TRUE;
 
 	first_time = TRUE;
 
-	sprintf(verbuf, "Fcterm version v%d.%03d-b%d", MAJ_VERSION, MIN_VERSION, version_build_no);
+	snprintf(verbuf, sizeof verbuf,
+		"Fcterm version v%d.%03d-b%d", MAJ_VERSION, MIN_VERSION, version_build_no);
 
 	for (i = 0; msgs[i]; i++) {
 		msg = "\033[31;43m";
-		ctw_add_string((CtwWidget) cur_ctw->f_ctw, msg, strlen(msg));
+		ctw_add_string((CtwWidget) cur_ctw->f_ctw, msg, -1);
 		if (i == 0)
-			ctw_add_string((CtwWidget) cur_ctw->f_ctw, verbuf, strlen(verbuf));
+			ctw_add_string((CtwWidget) cur_ctw->f_ctw, verbuf, -1);
 		else
-			ctw_add_string((CtwWidget) cur_ctw->f_ctw, msgs[i], strlen(msgs[i]));
+			ctw_add_string((CtwWidget) cur_ctw->f_ctw, msgs[i], -1);
 		msg = "\033[100X\r\n";
-		ctw_add_string((CtwWidget) cur_ctw->f_ctw, msg, strlen(msg));
+		ctw_add_string((CtwWidget) cur_ctw->f_ctw, msg, -1);
 		}
-	msg = "\n\033[37;40m";
-	ctw_add_string((CtwWidget) cur_ctw->f_ctw, msg, strlen(msg));
+	snprintf(verbuf, sizeof verbuf,
+		"%s   PID: %d\033[100X\r\n", cur_ctw->f_ttyname, cur_ctw->f_pid);
+	ctw_add_string((CtwWidget) cur_ctw->f_ctw, verbuf, -1);
+
+	fp = popen("/usr/bin/uptime", "r");
+	while (fgets(buf, sizeof buf, fp)) {
+		buf[strlen(buf)-1] = '\0';
+		ctw_add_string((CtwWidget) cur_ctw->f_ctw, buf, -1);
+		ctw_add_string((CtwWidget) cur_ctw->f_ctw, "\033[100X\r\n", -1);
+	}
+	pclose(fp);
+	ctw_add_string((CtwWidget) cur_ctw->f_ctw, "\n\033[37;40m", -1);
 }
 /**********************************************************************/
 /*   Toggle  autoswitch  - ability for screens to show what is going  */
@@ -1641,7 +1666,145 @@ refresh_dialog(Widget w, XtPointer client_data, XtPointer call_data)
 		}
 }
 /**********************************************************************/
-/*   Restore state from the parent.				      */
+/*   Restore state from a previous session/label file.		      */
+/**********************************************************************/
+void xx()
+{	fcterm_t *ctwp;
+	for (ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next) {
+		printf("ctwp %d %d managed=%d\n", ctwp->f_id, ctwp->f_active, XtIsManaged(ctwp->f_ctw));
+		}
+}
+fcterm_t *
+restore_label()
+{	char	fname[BUFSIZ];
+	FILE	*fp;
+	char	buf[BUFSIZ];
+	int	n;
+	int	active = -1;
+	int	active_id = -1;
+	char	*name;
+	char	*val;
+	char	*pwd = NULL;
+	char	*tty = NULL;
+
+	snprintf(fname, sizeof fname, "/tmp/%s/fcterm-state.%s",
+		getenv("USER"), group_label);
+	if ((fp = fopen(fname, "r")) == NULL) {
+		return NULL;
+		}
+
+	buf[0] = '\0';
+	fgets(buf, sizeof buf, fp);
+	if (strcmp(buf, "version=fcterm-state-v1\n") != 0) {
+		fclose(fp);
+		return NULL;
+		}
+
+//printf("restore_label: %s\n", fname);
+	/***********************************************/
+	/*   Ensure   new   widgets   get   a  screen  */
+	/*   allocated.				       */
+	/***********************************************/
+	XtRealizeWidget(top_level);
+
+	while (fgets(buf, sizeof buf, fp)) {
+		FILE	*fp1;
+
+		if (strncmp(buf, "pos=", 4) == 0) {
+			int	w, h;
+			mysscanf(buf, "pos=%d %d %d %d %d %d", 
+				&main_x, &main_y, &w, &h,
+				&mwm_x_offset, &mwm_y_offset);
+			XMoveResizeWindow(XtDisplay(top_level), XtWindow(top_level), 
+				main_x - mwm_x_offset, 
+				main_y - mwm_y_offset, w, h);
+printf("mwm_x_offset=%d %d\n", mwm_x_offset, mwm_y_offset);
+			continue;
+			}
+
+		if (strncmp(buf, "screen", 5) != 0)
+			continue;
+
+		cur_ctw = new_fcterm(0);
+		while (fgets(buf, sizeof buf, fp)) {
+			if (strcmp(buf, "  end\n") == 0)
+				break;
+			
+/*printf("(child):%s", buf);*/
+			if (strncmp(buf, "  ", 2) != 0)
+				continue;
+
+			name = strtok(buf + 2, "=");
+			val = strtok(NULL, "\n");
+			if (val == NULL)
+				continue;
+			if (strcmp(name, "pty_server") == 0)
+				cur_ctw->f_pty_server = atoi(val);
+			else if (strcmp(name, "label") == 0)
+				strncpy(cur_ctw->f_label, val, sizeof cur_ctw->f_label);
+			else if (strcmp(name, "cwd") == 0) {
+				chk_free_ptr((void **) &pwd);
+				pwd = chk_strdup(val);
+				}
+			else if (strcmp(name, "tty") == 0) {
+				chk_free_ptr((void **) &tty);
+				tty = chk_strdup(val);
+				}
+			else if (strcmp(name, "active") == 0) {
+				active = cur_ctw->f_active = atoi(val);
+				if (active)
+					active_id = cur_ctw->f_id;
+				}
+			else if (strcmp(name, "id") == 0)
+				cur_ctw->f_id = atoi(val);
+			}
+		if (create_screen(cur_ctw, TRUE, TRUE, pwd) < 0)
+			exit(1);
+		switch_screen(cur_ctw->f_id);
+
+//		XSync(XtDisplay(top_level), 1);
+
+		/***********************************************/
+		/*   Try and replay the screen state.	       */
+		/***********************************************/
+		snprintf(fname, sizeof fname, "/tmp/%s/fcterm-tty%s-pty.log",
+			getenv("USER"), tty ? basename(tty) : "");
+	//printf("restoring from: %s\n", fname);
+		if ((fp1 = fopen(fname, "r")) != NULL) {
+			ctw_logging((CtwWidget) cur_ctw->f_ctw, FALSE);
+			while ((n = fread(buf, 1, sizeof buf, fp1)) > 1) {
+				ctw_add_string((CtwWidget) cur_ctw->f_ctw, buf, n);
+	 			}
+			fclose(fp1);
+			ctw_logging((CtwWidget) cur_ctw->f_ctw, TRUE);
+
+			snprintf(buf, sizeof buf, "\r\n\r\n\033[37;0;1m[%s Session continued on %s]\r\n",
+					time_string(), cur_ctw->f_ttyname);
+			ctw_add_string((CtwWidget) cur_ctw->f_ctw, buf, strlen(buf));
+			}
+		else {
+			printf("fcterm: couldnt open and restore from: %s\n", fname);
+			}
+
+		}
+
+	fclose(fp);
+
+	if (active_id >= 0)
+		switch_screen(active_id);
+
+	unsetenv("FCTERM_STATE");
+	if (getenv("CTW_SAVE_STATE") != NULL) {
+		printf("State available: %s\n", fname);
+		}
+
+	chk_free_ptr((void **) &pwd);
+	chk_free_ptr((void **) &tty);
+	return cur_ctw;
+}
+/**********************************************************************/
+/*   Restore  state from the parent, eg because of X11 I/O error and  */
+/*   we try and restart.					      */
 /**********************************************************************/
 fcterm_t *
 restore_state()
@@ -1675,7 +1838,7 @@ restore_state()
 		if (strncmp(buf, "[ctw]", 5) != 0)
 			continue;
 		cur_ctw = new_fcterm(0);
-		if (create_screen(cur_ctw, TRUE, FALSE) < 0)
+		if (create_screen(cur_ctw, TRUE, FALSE, NULL) < 0)
 			exit(1);
 		while (fgets(buf, sizeof buf, fp)) {
 			if (*buf == '\n')
@@ -1692,6 +1855,8 @@ restore_state()
 				continue;
 			if (strcmp(name, "pty_server") == 0)
 				cur_ctw->f_pty_server = atoi(val);
+			else if (strcmp(name, "id") == 0)
+				cur_ctw->f_id= atoi(val);
 			else if (strcmp(name, "label") == 0)
 				strncpy(cur_ctw->f_label, val, sizeof cur_ctw->f_label);
 			else if (strcmp(name, "ttyname") == 0)
@@ -1741,6 +1906,7 @@ cancel_dialog(Widget w, XtPointer client_data, XtPointer call_data)
 void
 redraw_load_avg(int x)
 {
+	UNUSED_PARAMETER(x);
 # if 0
 	Widget	widget = status;
 static time_t t;
@@ -1835,13 +2001,58 @@ redraw_status_panel(int n)
 
 /*printf("%p: %d\n", ctwp->f_ctw, ctw_is_prompting(ctwp->f_ctw));*/
 		XSetForeground(XtDisplay(pane), gc,  
-			ctw_is_prompting(ctwp->f_ctw) ? 0x0080ff : 0xff0000);
+			ctw_is_prompting((CtwWidget) ctwp->f_ctw) ? 0x0080ff : 0xff0000);
 		XFillRectangle(XtDisplay(widget), XtWindow(widget), gc,
 			i * swidth + 2, 1,
 			4, STATUS_HEIGHT - 2);
 		}
 
 	redraw_load_avg(graph_x);
+}
+void
+set_font(char *font)
+{	int	n;
+	Arg	args[20];
+	int	rows, columns;
+	int	fwidth, fheight;
+	fcterm_t *ctwp;
+
+	do_wm_hints(top_level, cur_ctw->f_ctw, FALSE);
+
+	for (ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next) {
+		if (ctwp->f_pty_fd < 0)
+			continue;
+
+		n = 0;
+		XtSetArg(args[n], XtNfont, font); n++;
+		XtSetValues(ctwp->f_ctw, args, n);
+
+		get_font_size(ctwp, &fwidth, &fheight);
+
+		n = 0;
+		XtSetArg(args[n], XtNrows, &rows); n++;
+		XtSetArg(args[n], XtNcolumns, &columns); n++;
+		XtGetValues(ctwp->f_ctw, args, n);
+		/***********************************************/
+		/*   Re-use the row column size.	       */
+		/***********************************************/
+		n = 0;
+		XtSetArg(args[n], XtNrows, rows); n++;
+		XtSetArg(args[n], XtNcolumns, columns); n++;
+		XtSetArg(args[n], XtNwidth, fwidth * columns); n++;
+		XtSetArg(args[n], XtNheight, fheight * rows); n++;
+		XtSetValues(ctwp->f_ctw, args, n);
+
+		n = 0;
+		XtSetArg(args[n], XtNheight, fheight * rows); n++;
+		XtSetValues(pane, args, n);
+		XtSetValues(scrollbar, args, n);
+		}
+	/***********************************************/
+	/*   Tell    window    manager   about   size  */
+	/*   increments.			       */
+	/***********************************************/
+	do_wm_hints(top_level, cur_ctw->f_ctw, TRUE);
 }
 void
 status_expose_callback(Widget widget, XtPointer client_data, XtPointer call_data)
@@ -1866,7 +2077,7 @@ status_input_callback(Widget widget, XtPointer client_data, DrawingAreaCallbackS
 		XtVaGetValues(widget, XtNwidth, &w, NULL);
 		swidth = w / MAX_SCREENS;
 		id = event->xbutton.x / swidth;
-		switch_screen(cur_ctw, id);
+		switch_screen(id);
 		status_expose_callback(status, 0, 0);
 	  	break;
 	  }
@@ -1889,7 +2100,7 @@ status_timer_proc(XtPointer client_data, XtIntervalId *timer)
 			}
 		if (ctwp == NULL)
 			continue;
-		p = ctw_is_prompting(ctwp->f_ctw);
+		p = ctw_is_prompting((CtwWidget) ctwp->f_ctw);
 		if (p == ctwp->f_prompting)
 			continue;
 
@@ -1900,6 +2111,61 @@ status_timer_proc(XtPointer client_data, XtIntervalId *timer)
 
 	spanel_timer_id = XtAppAddTimeOut(app_con, 1000L, status_timer_proc, NULL);
 }
+
+/**********************************************************************/
+/*   Detect  window  manager  reparenting  us or moving us so we can  */
+/*   detect the window manager offsets.				      */
+/**********************************************************************/
+static void
+structure_notify_callback(Widget w, XtPointer ptr, XEvent *event)
+{	XReparentEvent *rp;
+
+	UNUSED_PARAMETER(w);
+	UNUSED_PARAMETER(ptr);
+
+	layout_frame();
+
+	switch (event->type) {
+	  case ConfigureNotify: {
+	  	XConfigureEvent *ep = &event->xconfigure;
+		group_write_config(
+			ep->window,
+			ep->x - mwm_x_offset, 
+			ep->y - mwm_y_offset,
+			ep->width, ep->height);
+	  	break;
+		}
+
+	  case ReparentNotify:
+		rp = &event->xreparent;
+		if (!cr_enable_wm_offset)
+			break;
+
+		/***********************************************/
+		/*   FVWM is broke badly. It reparents us but  */
+		/*   we  dont  get  told the offset. So we'll  */
+		/*   have to dig it out of the parent.	       */
+		/***********************************************/
+		if (rp->x == 0 && rp->y == 0 &&
+		    mwm_x_offset == 0 && mwm_y_offset == 0) {
+			XWindowAttributes	win_attr;
+			if (XGetWindowAttributes(XtDisplay(w), rp->parent, &win_attr)) {
+/*				printf("fcterm: ReparentNotify: broken window manager!\n");*/
+				mwm_x_offset = win_attr.x;
+				mwm_y_offset = win_attr.y;
+				}
+			}
+
+		if (mwm_x_offset == 0)
+			mwm_x_offset = rp->x;
+		if (mwm_y_offset == 0)
+			mwm_y_offset = rp->y;
+/*printf("offsets=%d %d\n", mwm_x_offset, mwm_y_offset);*/
+		break;
+	  }
+/*	printf("sub called type=%d %d,%d\n", event->type, rp->x, rp->y);*/
+}
+
 /**********************************************************************/
 /*   Function  called  when  user toggles an attribute in the dialog  */
 /*   box.							      */
@@ -2050,104 +2316,6 @@ ok_font(Widget w, XtPointer client_data, XtPointer call_data)
 		return;
 
 	set_font(font);
-}
-void
-set_font(char *font)
-{	int	n;
-	Arg	args[20];
-	int	rows, columns;
-	int	fwidth, fheight;
-	fcterm_t *ctwp;
-
-	do_wm_hints(top_level, cur_ctw->f_ctw, FALSE);
-
-	for (ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next) {
-		if (ctwp->f_pty_fd < 0)
-			continue;
-
-		n = 0;
-		XtSetArg(args[n], XtNfont, font); n++;
-		XtSetValues(ctwp->f_ctw, args, n);
-
-		get_font_size(ctwp, &fwidth, &fheight);
-
-		n = 0;
-		XtSetArg(args[n], XtNrows, &rows); n++;
-		XtSetArg(args[n], XtNcolumns, &columns); n++;
-		XtGetValues(ctwp->f_ctw, args, n);
-		/***********************************************/
-		/*   Re-use the row column size.	       */
-		/***********************************************/
-		n = 0;
-		XtSetArg(args[n], XtNrows, rows); n++;
-		XtSetArg(args[n], XtNcolumns, columns); n++;
-		XtSetArg(args[n], XtNwidth, fwidth * columns); n++;
-		XtSetArg(args[n], XtNheight, fheight * rows); n++;
-		XtSetValues(ctwp->f_ctw, args, n);
-
-		n = 0;
-		XtSetArg(args[n], XtNheight, fheight * rows); n++;
-		XtSetValues(pane, args, n);
-		XtSetValues(scrollbar, args, n);
-		}
-	/***********************************************/
-	/*   Tell    window    manager   about   size  */
-	/*   increments.			       */
-	/***********************************************/
-	do_wm_hints(top_level, cur_ctw->f_ctw, TRUE);
-}
-/**********************************************************************/
-/*   Detect  window  manager  reparenting  us or moving us so we can  */
-/*   detect the window manager offsets.				      */
-/**********************************************************************/
-static void
-structure_notify_callback(Widget w, XtPointer ptr, XEvent *event)
-{	XReparentEvent *rp;
-
-	UNUSED_PARAMETER(w);
-	UNUSED_PARAMETER(ptr);
-
-	layout_frame();
-
-	switch (event->type) {
-	  case ConfigureNotify: {
-	  	XConfigureEvent *ep = &event->xconfigure;
-		group_write_config(
-			ep->window,
-			ep->x - mwm_x_offset, 
-			ep->y - mwm_y_offset,
-			ep->width, ep->height);
-	  	break;
-		}
-
-	  case ReparentNotify:
-		rp = &event->xreparent;
-		if (!cr_enable_wm_offset)
-			break;
-
-		/***********************************************/
-		/*   FVWM is broke badly. It reparents us but  */
-		/*   we  dont  get  told the offset. So we'll  */
-		/*   have to dig it out of the parent.	       */
-		/***********************************************/
-		if (rp->x == 0 && rp->y == 0 &&
-		    mwm_x_offset == 0 && mwm_y_offset == 0) {
-			XWindowAttributes	win_attr;
-			if (XGetWindowAttributes(XtDisplay(w), rp->parent, &win_attr)) {
-/*				printf("fcterm: ReparentNotify: broken window manager!\n");*/
-				mwm_x_offset = win_attr.x;
-				mwm_y_offset = win_attr.y;
-				}
-			}
-
-		if (mwm_x_offset == 0)
-			mwm_x_offset = rp->x;
-		if (mwm_y_offset == 0)
-			mwm_y_offset = rp->y;
-/*printf("offsets=%d %d\n", mwm_x_offset, mwm_y_offset);*/
-		break;
-	  }
-/*	printf("sub called type=%d %d,%d\n", event->type, rp->x, rp->y);*/
 }
 /**********************************************************************/
 /*   Intercept  XError  events  but dont exit when they happen. Code  */

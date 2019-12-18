@@ -193,6 +193,8 @@ typedef struct ctw_part {
 /* private: */
 	struct font_stack	*font_stack;
 	FILE		*log_fp;
+	FILE		*c_log_fp;
+	int		c_logging_enabled;
 # if HAVE_FREETYPE
 	FT_Face		*xft_fontp;
 # endif

@@ -7,7 +7,7 @@
 /*   								      */
 /*   Author: Paul Fox						      */
 /*   Date:   February 1992       				      */
-/*   $Header: Last edited: 01-Aug-2011 1.11 $ 			      */
+/*   $Header: Last edited: 13-Dec-2019 1.12 $ 			      */
 /**********************************************************************/
 
 //#define __STRICT_ANSI__
@@ -64,6 +64,7 @@ int	login_shell_flag = FALSE;
 char	*slavename;
 char	*geometry;
 int	do_group = FALSE;
+int	label_arg_specified = FALSE;
 int	geom_x = -1, geom_y = -1;
 int	geom_width = -1, geom_height = -1;
 char	*term_str = "TERM=xterm";
@@ -87,6 +88,7 @@ int	main_y;
 
 struct stats  stats, old_stats;
 XtIntervalId	snap_id;
+XtIntervalId	save_state_id;
 XtIntervalId	timer_id;
 XtIntervalId	cfg_timer_id;
 XtIntervalId	map_timer_id;
@@ -137,10 +139,10 @@ extern int	enable_cut_buffer0;
 int	grantpt(int);
 int	unlockpt(int);
 char	*find_exec_path PROTO((char *, char *));
-void dump_screens(void);
+void	dump_screens(void);
+void	save_state(void);
 void	top_callback();
 char	*basename(char *);
-void switch_screen(fcterm_t *, int id);
 void set_status_label(fcterm_t *cur_ctw, char *title);
 void pty_output();
 void	group_config_poll(void *);
@@ -169,8 +171,14 @@ init_term()
 	gc = XCreateGC(dpy, RootWindow(dpy, DefaultScreen(dpy)),
 		GCForeground | GCBackground | GCGraphicsExposures, &values);
 
-	snap_id = XtAppAddTimeOut(app_con, 500L, dump_screens, NULL);
-	cfg_timer_id = XtAppAddTimeOut(app_con, 1000L, group_config_poll, &cfg_timer_id);
+	snap_id = XtAppAddTimeOut(app_con, 500L, 
+		(XtTimerCallbackProc) dump_screens, NULL);
+
+	save_state_id = XtAppAddTimeOut(app_con, 4000L, 
+		(XtTimerCallbackProc) save_state, NULL);
+
+	cfg_timer_id = XtAppAddTimeOut(app_con, 1000L, 
+		(XtTimerCallbackProc) group_config_poll, &cfg_timer_id);
 }
 /**********************************************************************/
 /*   Create a new screen structure.				      */
@@ -397,13 +405,13 @@ create_icon_pixmap()
 	/***********************************************/
 	{int	sz;
 	int	i, x, y;
-	int	err;
 	Atom	_net_wm_icon;
 	XImage	*xim = NULL;
 typedef unsigned long CARD32;
 static CARD32 *arr;
 
 	err = XpmCreateImageFromData(dpy, fcterm_xpm, &xim, NULL, NULL);
+	UNUSED_PARAMETER(err);
 //printf("xim=%p %dx%d\n", xim, xim->width, xim->height);
 
 	_net_wm_icon = XInternAtom(dpy, "_NET_WM_ICON", FALSE);
@@ -420,7 +428,8 @@ static CARD32 *arr;
 			}
 		}
 	XChangeProperty(dpy, XtWindow(top_level), _net_wm_icon, XA_CARDINAL,
-		32, PropModeReplace, arr, sz);
+		32, PropModeReplace, 
+		(unsigned char *) arr, sz);
 	chk_free(arr);
 	XDestroyImage(xim);
 	}
@@ -460,6 +469,15 @@ do_switches(int argc, char **argv)
 			dump_flag = TRUE;
 			continue;
 			}
+
+		if (strcmp(cp, "label") == 0) {
+			if (++i >= argc)
+				usage();
+			group_label = argv[i];
+			label_arg_specified = TRUE;
+			continue;
+			}
+
 		if (strcmp(cp, "spill") == 0) {
 			ctw_history = TRUE;
 			continue;
@@ -538,7 +556,7 @@ appl_callback(Widget w, int type, ctw_callback_t *reason)
 
 	switch (reason->reason) {
 	  case CTWR_FUNCTION_KEY:
-	  	switch_screen(cur_ctw, reason->key);
+	  	switch_screen(reason->key);
 	  	break;
 	  case CTWR_SET_AUTOSWITCH:
 	  	set_autoswitch(reason->flags);
@@ -697,6 +715,7 @@ map_click(Widget widget, XtPointer client_data, XEvent *event)
 	int	i, x, y;
 static int id = 0;
 
+	UNUSED_PARAMETER(widget);
 	UNUSED_PARAMETER(client_data);
 
 	switch (event->type) {
@@ -713,7 +732,7 @@ static int id = 0;
 			}
 		if (ctwp == NULL)
 			ctwp = hd_ctw->f_next;
-		ctw_send_input(ctwp->f_ctw, event, NULL, NULL);
+		ctw_send_input((CtwWidget) ctwp->f_ctw, event, NULL, NULL);
 		/***********************************************/
 		/*   Force a redraw.			       */
 		/***********************************************/
@@ -745,7 +764,7 @@ static int id = 0;
 		    	/***********************************************/
 		  	if (event->xbutton.button != 1) {
 				XtRemoveTimeOut(map_timer_id);
-				switch_screen(cur_ctw, ctwp->f_id);
+				switch_screen(ctwp->f_id);
 				}
 		    	break;
 		    	}
@@ -805,9 +824,12 @@ process_sigchld(XtPointer ptr, XtSignalId *id)
 	/*   Exit  if  last screen (and not the ghost  */
 	/*   screen).				       */
 	/***********************************************/
-	if (hd_ctw == NULL || (hd_ctw->f_next == NULL && hd_ctw->f_id == GHOST_ID))
+	if (hd_ctw == NULL || (hd_ctw->f_next == NULL && hd_ctw->f_id == GHOST_ID)) {
+		save_state();
 		exit(1);
-	switch_screen(NULL, cur_ctw->f_id);
+		}
+
+	switch_screen2();
 }
 static void
 pty_command(fcterm_t *cur_ctw, char *str, int len)
@@ -960,12 +982,12 @@ reread:
 	/***********************************************/
 	/*   Allow us to auto-switch on input.	       */
 	/***********************************************/
-	if (!cur_ctw->f_active) {
+if(0)	if (!cur_ctw->f_active) {
 		cur_ctw->f_active = TRUE;
 		status_expose_callback(0, 0, 0);
 		}
 	if (auto_switch)
-		switch_screen(NULL, cur_ctw->f_id);
+		switch_screen(cur_ctw->f_id);
 }
 /**********************************************************************/
 /*   We can try and write some of our blocked up stuff to the PTY.    */
@@ -1106,6 +1128,69 @@ restart_fcterm()
 	execvp(new_argv[0], new_argv);
 	printf("fcterm: Should not get here -- aborting\n");
 	exit(0);
+}
+
+/**********************************************************************/
+/*   Save the state of our terminal session.			      */
+/**********************************************************************/
+void
+save_state()
+{	int	num;
+	fcterm_t	*ctwp;
+	int	rows, cols;
+	char	buf[BUFSIZ];
+	char	path[PATH_MAX];
+	int	n;
+	FILE	*fp;
+
+	snprintf(buf, sizeof buf, "/tmp/%s/fcterm-state.%s", getenv("USER"),
+		group_label);
+	if (cur_ctw == NULL) {
+		remove(buf);
+		return;
+		}
+
+	if ((fp = fopen(buf, "w")) == NULL) {
+		return;
+	}
+
+	ctw_get_geometry((CtwWidget) cur_ctw->f_ctw, &rows, &cols);
+	fprintf(fp, "version=fcterm-state-v1\n");
+	fprintf(fp, "pid=%d\n", getpid());
+	fprintf(fp, "label=%s\n", group_label);
+	fprintf(fp, "rows=%d\n", rows);
+	fprintf(fp, "cols=%d\n", cols);
+	fprintf(fp, "win=0x%lx\n", XtWindow(top_level));
+	fprintf(fp, "pos=%d %d %d %d %d %d\n", main_x, main_y, 
+		top_level->core.width,
+		top_level->core.height,
+		mwm_x_offset, mwm_y_offset);
+	for (num = 0, ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next) {
+		if (ctwp->f_id == GHOST_ID)
+			continue;
+		num++;
+		fprintf(fp, "screen %d\n", num);
+		fprintf(fp, "  id=%d\n", ctwp->f_id);
+		fprintf(fp, "  pid=%d\n", ctwp->f_pid);
+		fprintf(fp, "  active=%d\n", ctwp->f_active);
+		fprintf(fp, "  label=%s\n", ctwp->f_label);
+
+		snprintf(buf, sizeof buf, "/proc/%d/cwd", ctwp->f_pid);
+		n = readlink(buf, path, sizeof path);
+		if (n < 0)
+			fprintf(fp, "  cwd=<unavailable>\n");
+		else {
+			path[n] = '\0';
+			fprintf(fp, "  cwd=%s\n", path);
+			}
+		fprintf(fp, "  tty=%s\n", ctwp->f_ttyname);
+		fprintf(fp, "  end\n");
+	}
+
+	fclose(fp);
+
+	save_state_id = XtAppAddTimeOut(app_con, 1000L, 
+		(XtTimerCallbackProc) save_state, NULL);
 }
 /**********************************************************************/
 /*   Routine  to  set the default attributes of the widget depending  */
@@ -1263,7 +1348,7 @@ show_map(void *p, unsigned long *v)
 		}
 	XFillRectangle(dpy, map_pixmap, gc, 0, 0, 
 		cur_ctw->f_ctw->core.width, cur_ctw->f_ctw->core.height);
-	switch_screen(cur_ctw, GHOST_ID);
+	switch_screen(GHOST_ID);
 
 	x = y = 0;
 //printf("%s start\n", time_str2());
@@ -1398,7 +1483,7 @@ steal_switches(int argc, char **argv)
 /*   Function to create a child shell process.			      */
 /**********************************************************************/
 int
-spawn_child(fcterm_t *cur_ctw)
+spawn_child(fcterm_t *cur_ctw, char *pwd)
 {	char	buf[4096];
 static char	ctw_pid[32];
 	char	tty[BUFSIZ];
@@ -1544,6 +1629,9 @@ static char	ctw_pid[32];
 		int	i;
 
 		close(ConnectionNumber(XtDisplay(top_level)));
+		if (pwd) {
+			chdir(pwd);
+			}
 
 		/***********************************************/
 		/*   Reset the signals.			       */
@@ -1877,7 +1965,7 @@ set_window_size(fcterm_t *cur_ctw, CtwWidget w, int force)
 			continue;
 
 		if (ctwp->f_pty_server) {
-			sprintf(buf, "winsz rows=%d cols=%d", cur_ctw->f_rows, cur_ctw->f_cols);
+			snprintf(buf, sizeof buf, "winsz rows=%d cols=%d", cur_ctw->f_rows, cur_ctw->f_cols);
 			if (getenv("FCTERM_DEBUG"))
 				printf("TX: %s\n", buf);
 			write(cur_ctw->f_pty_fd, "", 1);
@@ -2040,27 +2128,31 @@ dump_screens()
 		dstr_free(&dstr);
 		}
 
-	snap_id = XtAppAddTimeOut(app_con, 500L, dump_screens, NULL);
+	snap_id = XtAppAddTimeOut(app_con, 500L, 
+		(XtTimerCallbackProc) dump_screens, NULL);
 }
 /**********************************************************************/
 /*   Switch to a screen due to a keystroke.			      */
 /**********************************************************************/
 void
-switch_screen(fcterm_t *cur_ctw1, int id)
+switch_screen(int id)
 {	fcterm_t *ctwp;
-	ctw_callback_t	reason;
+	fcterm_t *t = NULL;
 
-	if (cur_ctw1 && id == cur_ctw1->f_id)
+	if (cur_ctw && cur_ctw->f_id == id)
 		return;
 
 	for (ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next) {
+		if (id == ctwp->f_id) {
+			t = ctwp;
+			continue;
+			}
+
 		ctwp->f_active = FALSE;
+		XtUnmanageChild(ctwp->f_ctw);
 		}
-	for (ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next) {
-		if (id == ctwp->f_id)
-			break;
-		}
-	if (ctwp == NULL) {
+
+	if (t == NULL) {
 		/***********************************************/
 		/*   Not there - create it.		       */
 		/***********************************************/
@@ -2068,12 +2160,22 @@ switch_screen(fcterm_t *cur_ctw1, int id)
 		return;
 		}
 
-	if (cur_ctw1) {
-		XtUnmanageChild(cur_ctw1->f_ctw);
-		}
+	cur_ctw = t;
 
-	XtManageChild(ctwp->f_ctw);
-	cur_ctw = ctwp;
+	switch_screen2();
+}
+/**********************************************************************/
+/*   On  exit,  we need to force the current screen to be displayed.  */
+/*   (process_sigchld callback)					      */
+/**********************************************************************/
+void
+switch_screen2()
+{
+	ctw_callback_t	reason;
+
+	cur_ctw->f_active = TRUE;
+	XtManageChild(cur_ctw->f_ctw);
+
 	XtSetKeyboardFocus(top_level, cur_ctw->f_ctw);
 	set_title(cur_ctw, CHANGE_TITLE | CHANGE_ICON, NULL);
 	status_expose_callback(0, 0, 0);
@@ -2084,7 +2186,7 @@ switch_screen(fcterm_t *cur_ctw1, int id)
 	reason.reason = CTWR_TOP_LINE;
 	reason.client_data = cur_ctw->f_ctw;
 	reason.top_line = ctw_get_top_line((CtwWidget) cur_ctw->f_ctw);
-	top_callback(ctwp->f_ctw, XtNtopCallback, (void *) &reason);
+	top_callback(cur_ctw->f_ctw, XtNtopCallback, (void *) &reason);
 }
 /**********************************************************************/
 /*   Write  stuff to the pty. Be careful about overflowing pty input  */
@@ -2141,7 +2243,8 @@ v_write(fcterm_t *cur_ctw, char *buf, int len)
 	/*   Put us on the callback list.	       */
 	/***********************************************/
 	cur_ctw->f_output_id = XtAppAddInput(app_con, cur_ctw->f_pty_fd, 
-		(XtPointer) XtInputWriteMask, pty_output, 
+		(XtPointer) XtInputWriteMask, 
+		(XtInputCallbackProc) pty_output, 
 		(XtPointer) cur_ctw);
 }
 /**********************************************************************/

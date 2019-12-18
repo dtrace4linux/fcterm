@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CC=${CC:-gcc -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -O2 -g -W -Wall -fno-stack-protector -fno-inline -fno-strict-aliasing}
+CC=${CC:-gcc -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -g -W -Wall -fno-stack-protector -fno-inline -fno-strict-aliasing}
 if [ -d /usr/include/freetype2 ]; then
 #	CC="$CC -DHAVE_FREETYPE -I/usr/include/freetype2"
 	CC="$CC -DHAVE_FREETYPE_XFT `freetype-config --cflags`"

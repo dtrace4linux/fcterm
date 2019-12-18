@@ -833,7 +833,7 @@ scrbarSetThumb(Widget w, float pos, float size)
 	XSegment	segs[10];
 	int	i;
 
-	if (w == NULL)
+	if (w == NULL || XtWindow(sw) == 0)
 		return 0;
 
 	UNUSED_PARAMETER(size);

@@ -57,6 +57,10 @@ CTW_DRAW_WATCH
 CTW_FILL_TO_BLACK
     Enable fill-to-black ISO standard.
 
+CTW_GZIP_ROLLOVER (default 50MB)
+    When the history log file (/tmp/$USER/fcterm-ttyN.log) reaches this
+    size, spill over to a new log file and gzip the old one.
+
 CTW_HIGHLIGHT_WORDFILE
     Specify a file of words to read to be automatically highlighted.
     Format is:
@@ -81,6 +85,19 @@ CTW_LOGDIR
 
 CTW_WORD_CHARS
     Specify the word-break characters for double-click selection.
+
+CTW_WHEEL_INIT_DECAY
+    (Default 5) Time for the wheel mouse to decay. This is the initial
+    ramping speed of the mouse.
+
+CTW_WHEEL_INCR_DECAY
+    (Default 10) Time for the wheel mouse to decay. After the initial time,
+    we decay at this rate.
+
+FCTERM_LABEL
+    Used to identify this running fcterm instance. You can you 
+    "-label <name>" on the command line, else an automatic one 
+    will be assigned.
 
 PTY_LABEL
     Name used to identify this terminal.

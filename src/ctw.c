@@ -212,6 +212,7 @@
 # undef sscanf
 # include	<assert.h>
 # include	<dlfcn.h>
+# include	<pwd.h>
 # include	<X11/Xlib.h>
 # include 	<X11/IntrinsicP.h>
 # include 	<X11/StringDefs.h>
@@ -313,9 +314,10 @@ char code_text[] = {
 # define	DEFAULT_WIDTH	(7 * 80)
 # define	DEFAULT_FONT	XtDefaultFont
 
+static char	*user;
 static XtIntervalId wheel_timer;
 static int 	default_rows = 24;
-static int 	default_spill_size = 25 * 1024 * 1024;
+static int 	default_spill_size = 50 * 1024 * 1024;
 static int 	default_columns = 80;
 static int	default_max_lines = 10000;
 static Boolean	defaultFALSE = FALSE;
@@ -336,6 +338,8 @@ extern char	*log_dir;
 extern int	version_build_no;
 extern Widget top_level;
 int	group_status(int);
+typedef struct fcterm_t fcterm_t;
+void switch_screen(int id);
 char *group_status2(void);
 char	*time_str(void);
 
@@ -547,8 +551,11 @@ int	*(*XftDrawStringUtf8_ptr)();
 # if !defined(verify)
 void verify(CtwWidget ctw);
 # endif
+static void ctw_log_string(CtwWidget ctw, char *str, int len);
 void group_enable(int n);
 void	zoom_window();
+int	mysscanf(char *, char *, ...);
+void	show_map();
 static void show_status(CtwWidget ctw);
 static long map_rgb_to_visual_rgb(CtwWidget ctw, long rgb);
 static void graph_destroy(CtwWidget ctw);
@@ -1090,9 +1097,18 @@ initialize(Widget treq, Widget tnew)
 {	CtwWidget	new = (CtwWidget) tnew;
 	Display	*dpy = XtDisplay(new);
 	char	*cp = getenv("CTW_WORD_CHARS");
+	struct passwd *pwd;
 
 	if (cp != NULL)
 		word_chars = cp;
+
+	if (user == NULL) {
+		if ((user = getenv("USER")) == NULL) {
+			user = "fcterm";
+			if ((pwd = getpwuid(getuid())) != NULL)
+				user = chk_strdup(pwd->pw_name);
+			}
+		}
 
 	UNUSED_PARAMETER(treq);
 
@@ -1142,6 +1158,7 @@ initialize(Widget treq, Widget tnew)
 	new->ctw.line_fontp = (XFontStruct *) NULL;
 	new->ctw.have_focus = TRUE;
 	new->ctw.timestamp = 0;
+	new->ctw.c_logging_enabled = TRUE;
 	new->ctw.nest_level = 0;
 	new->ctw.prompting = 0;
 	new->ctw.old_rows = 0;
@@ -2985,7 +3002,7 @@ create_fcterm_dir(CtwWidget ctw)
 
 	snprintf(buf, sizeof buf, "%s/%s", 
 			ctw->ctw.log_dir,
-			getenv("USER") ? getenv("USER") : "fcterm");
+			user);
 	if (stat(buf, &sbuf) == 0)
 		return;
 	if (mkdir(buf, 0700) < 0) {
@@ -3497,19 +3514,23 @@ down_line(CtwWidget ctw, char *str, char *str_end)
 		  case ESC:
 			{int n;
 			
-		  	if (*str++ != '[')
+			if (str >= str_end)
+				goto after_loop;
+
+		  	if (*str++ != '[' || str >= str_end)
 			  	goto after_loop;
 			while (1) {
 				if (isdigit(*str)) {
 					n = 0;
-					while (isdigit(*str))
+					while (str < str_end && isdigit(*str))
 						n = 10 * n + *str++ - '0';
 					}
 				else
 					n = 1;
-				if (*str != ';')
+				if (str < str_end && *str != ';')
 					break;
-				str++;
+				if (++str >= str_end)
+					goto after_loop;
 				}
 			switch (*str++) {
 			  case 'A':
@@ -4853,15 +4874,14 @@ printf("skip %d:%d\n", ln, ctw->ctw.spill_cnt);
 
 		for (i = 0; i < 1000; i++) {
 			snprintf(buf, sizeof buf, "%s/%s/fcterm-%s%s-%%Y%%m%%d-%03d.log", 
-				ctw->ctw.log_dir,
-				getenv("USER") ? getenv("USER") : "fcterm",
+				ctw->ctw.log_dir, user,
 				isdigit(*name) ? "tty" : "", name, i);
 			strftime(buf2, sizeof buf2, buf, localtime(&t));
-			sprintf(buf3, "%s.gz", buf2);
+			snprintf(buf3, sizeof buf3, "%s.gz", buf2);
 			if (stat(buf2, &sbuf) < 0 && stat(buf3, &sbuf) < 0)
 				break;
 			if (default_gzip_rollover && stat(buf3, &sbuf) < 0) {
-				sprintf(buf3, "gzip %s &", buf2);
+				snprintf(buf3, sizeof buf3, "gzip %s &", buf2);
 				if (system(buf3) != 0) 
 					perror("fcterm: gzip failed");
 				}
@@ -4880,8 +4900,7 @@ printf("skip %d:%d\n", ln, ctw->ctw.spill_cnt);
 		create_fcterm_dir(ctw);
 
 		snprintf(buf, sizeof buf, "%s/%s/fcterm-%s%s.log",
-				ctw->ctw.log_dir,
-				getenv("USER") ? getenv("USER") : "fcterm",
+				ctw->ctw.log_dir, user,
 				isdigit(*name) ? "tty" : "", name);
 		remove(buf);
 		if (symlink(ctw->ctw.c_spill_name, buf) < 0) {
@@ -5341,7 +5360,7 @@ static int	scol;
 		}
 	if (scol < ctw->ctw.columns) {
 		scol = ctw->ctw.columns;
-		sline = (unsigned char *) chk_realloc(sline, scol);
+		sline = (unsigned char *) chk_realloc((char *) sline, scol);
 		}
 	
 	print_search(ctw, lp, sline);
@@ -6436,7 +6455,11 @@ check_cursor:
 			  	show_map();
 				break;
 			  case 1943:
-				switch_screen(ctw, args[++i]);
+			  	/***********************************************/
+			  	/*   Was  "ctw" instead of NULL, but it needs  */
+			  	/*   to be a fcterm_t struct.		       */
+			  	/***********************************************/
+				switch_screen(args[++i]);
 				break;
 			  }
 			}
@@ -7038,6 +7061,8 @@ ctw_add_string(CtwWidget ctw, char *str, int len)
 	/*   If  we  have a log file then copy string  */
 	/*   to log file.			       */
 	/***********************************************/
+	ctw_log_string(ctw, str, len);
+
 	if (ctw->ctw.flags[CTW_LOGGING] && ctw->ctw.log_fp) {
 		if (fwrite(str, len, 1, ctw->ctw.log_fp) != 1) {
 			perror(ctw->ctw.log_file);
@@ -7636,10 +7661,7 @@ ctw_get_attributes(CtwWidget ctw, int **ip, char ***strp)
 /*   Return current font size info.				      */
 /**********************************************************************/
 void
-ctw_get_font_info(ctw, widthp, heightp)
-CtwWidget	ctw;
-int	*widthp;
-int	*heightp;
+ctw_get_font_info(CtwWidget ctw, int *widthp, int *heightp)
 {
 	if (widthp)
 		*widthp = ctw->ctw.font_width;
@@ -7779,6 +7801,73 @@ ctw_label_lines(CtwWidget ctw, int flag)
 		ctw->ctw.flags[CTW_LABEL_LINES] ^= 1;
 		}
 	ctw->ctw.c_line_no = 0;
+}
+
+/**********************************************************************/
+/*   Log  the  PTY  output,  including  escape  sequences,  etc to a  */
+/*   rolling log file.						      */
+/**********************************************************************/
+static void
+ctw_log_string(CtwWidget ctw, char *str, int len)
+{	static int once = TRUE;
+	struct stat sbuf;
+	time_t t;
+	char	buf[BUFSIZ];
+	char	buf2[BUFSIZ];
+	char	buf3[BUFSIZ];
+	char	*name;
+	
+	if (!ctw->ctw.c_logging_enabled)
+		return;
+
+	name = ctw->ctw.ttyname ? basename(ctw->ctw.ttyname) : "ZZ";
+	
+	snprintf(buf, sizeof buf, "%s/%s/fcterm-%s%s-pty.log", 
+			ctw->ctw.log_dir, user,
+			isdigit(*name) ? "tty" : "", name);
+
+	if (ctw->ctw.c_log_fp == NULL) {
+		if ((ctw->ctw.c_log_fp = fopen(buf, "a")) == NULL) {
+			if (once) {
+				printf("Cannot write to %s\n", name);
+				once = FALSE;
+				}
+			return;
+			}
+		}
+
+	fwrite(str, len, 1, ctw->ctw.c_log_fp);
+	fflush(ctw->ctw.c_log_fp);
+	if (stat(buf, &sbuf) < 0)
+		return;
+
+	if (sbuf.st_size < ctw->ctw.c_spill_size)
+		return;
+
+	fclose(ctw->ctw.c_log_fp);
+	ctw->ctw.c_log_fp = NULL;
+
+	t = time(NULL);
+	strftime(buf3, sizeof buf3, buf, localtime(&t));
+	snprintf(buf2, sizeof buf2, "%s/%s/fcterm-%s%s-pty-%s.log", 
+			ctw->ctw.log_dir, user,
+			isdigit(*name) ? "tty" : "", name, buf3);
+	if (!rename(buf, buf2)) {
+		printf("error: rename(%s, %s) - %s\n", buf, buf2, strerror(errno));
+	}
+	/***********************************************/
+	/*   Compress old log.			       */
+	/***********************************************/
+	snprintf(buf3, sizeof buf3, "gzip %s &", buf2);
+	if (system(buf3) != 0) 
+		perror("fcterm: gzip failed");
+
+}
+
+void
+ctw_logging(CtwWidget ctw, int flag)
+{
+	ctw->ctw.c_logging_enabled = flag;
 }
 /**********************************************************************/
 /*   Emulate mouse from the application.			      */

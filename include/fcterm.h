@@ -191,7 +191,7 @@ void	setup_signal_handlers PROTO((void));
 void	input_callback();
 void	appl_callback();
 void	pty_input();
-int	spawn_child(fcterm_t *);
+int	spawn_child(fcterm_t *, char *);
 void	child_handler();
 void	int_handler();
 void	resize_callback();
@@ -228,9 +228,19 @@ int	tcp_get_port_address(char *);
 char	*group_status2(void);
 void	group_init(void);
 int	group_restore(char *);
+void	group_write_config(long winid, int x, int y, int width, int height);
 void handle_commands(int i, int argc, char **argv);
+void status_expose_callback(Widget widget, XtPointer client_data, XtPointer call_data);
+char	*time_str();
+char	*time_str2();
+int	mysscanf(char *, char *, ...);
+char	*time_string(void);
+void switch_screen(int id);
+void switch_screen2(void);
 
 extern char	*log_dir;
 extern GC	gc;
 extern Pixmap map_pixmap;
+extern int	mwm_x_offset;
+extern int	mwm_y_offset;
 

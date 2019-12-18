@@ -1,3 +1,4 @@
+set history expansion 1
 define ph
 p hd_ctw
 p hd_ctw->f_next

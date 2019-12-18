@@ -458,10 +458,15 @@ void	ctw_set_top_line(CtwWidget, int);
 int	ctw_get_attributes(CtwWidget, int **, char ***);
 
 /**********************************************************************/
+/*   Guess if we are at an input prompt.			      */
+/**********************************************************************/
+int	ctw_is_prompting(CtwWidget ctw);
+
+/**********************************************************************/
 /*   Restore state from a file.					      */
 /**********************************************************************/
 void	ctw_restore_state(CtwWidget ctw, FILE *fp);
-void ctw_save_state(CtwWidget ctw, dstr_t *dstrp);
+void	ctw_save_state(CtwWidget ctw, dstr_t *dstrp);
 
 /**********************************************************************/
 /*   Function  to  set  attributes  current  state  of  the  various  */
@@ -505,6 +510,11 @@ void	ctw_get_font_info(CtwWidget, int *, int *);
 void	ctw_get_geometry(CtwWidget, int *, int *);
 
 /**********************************************************************/
+/*   Enable/disable logging - eg during startup.		      */
+/**********************************************************************/
+void	ctw_logging(CtwWidget, int);
+
+/**********************************************************************/
 /*   Dump  a  copy  of  everything  in  the  history  buffer  to the  */
 /*   specified file.						      */
 /**********************************************************************/
@@ -544,5 +554,7 @@ void	ctw_get_xy(CtwWidget, int *, int *, int, int);
 /*   Set default rollover filesize.				      */
 /**********************************************************************/
 void	ctw_set_spill_size(unsigned size);
+
+void	ctw_send_input(CtwWidget ctw, XEvent *event, String *x, Cardinal *y);
 
 #endif /* _Ctw_h */

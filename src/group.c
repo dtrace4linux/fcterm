@@ -21,6 +21,7 @@
 # include	<sys/stat.h>
 # include	<sys/mman.h>
 # include	<time.h>
+# include	<limits.h>
 
 #define	DEBUG	1
 #define MAX_PROCS	128
@@ -30,6 +31,7 @@ static int max_procs = MAX_PROCS;
 /**********************************************************************/
 typedef struct config_t {
 	int	c_pid;
+	int	c_pid_shell;
 	unsigned long c_ptime;
 	unsigned long c_ttime;
 	int	c_x;
@@ -42,9 +44,10 @@ typedef struct config_t {
 
 	int	t_msg;
 	int	tx, ty, tw, th;	/* Target x,y w*h */
+	char	c_pwd[1024];
 	} config_t;
 
-#define	G_VERSION	3
+#define	G_VERSION	4
 typedef struct sh_config_t {
 	int	s_version;
 	int	s_struct_size;
@@ -71,12 +74,11 @@ int	group_debug;
 extern Widget top_level;
 extern int do_group;
 extern char *log_dir;
-extern int mwm_x_offset;
-extern int mwm_y_offset;
 
 /**********************************************************************/
 /*   Prototypes.						      */
 /**********************************************************************/
+void group_update(void);
 void group_init2(int alloc);
 
 void
@@ -91,6 +93,7 @@ group_init2(int alloc)
 static	char	label_buf[2];
 	struct stat sbuf;
 	char	buf[4096];
+	char	*str;
 
 	if (shp)
 		return;
@@ -100,8 +103,6 @@ static	char	label_buf[2];
 	if (getenv("FCTERM_GROUP_MAX_PROCS"))
 		max_procs = atoi(getenv("FCTERM_GROUP_MAX_PROCS"));
 
-	group_label = label_buf;
-	strcpy(label_buf, "A");
 	snprintf(buf, sizeof buf, "%s/fcterm.shm", log_dir);
 
 	if (stat(buf, &sbuf) == -1 ||
@@ -143,7 +144,14 @@ static	char	label_buf[2];
 	stat(buf, &sbuf);
 	shp->s_array[i].c_ptime = sbuf.st_mtime;
 
-	label_buf[0] = i + 'A';
+	if (group_label == NULL) {
+		group_label = label_buf;
+		strcpy(label_buf, "A");
+		label_buf[0] = i + 'A';
+		}
+
+	str = chk_makestr("FCTERM_LABEL=", group_label, NULL);
+	putenv(str);
 
 	/***********************************************/
 	/*   Only enable grouping if positively asked  */
@@ -151,7 +159,6 @@ static	char	label_buf[2];
 	/***********************************************/
 	if (do_group)
 		shp->s_grouping = TRUE;
-
 }
 
 /**********************************************************************/
@@ -218,12 +225,12 @@ int
 group_restore(char *fname)
 {	char	buf[BUFSIZ];
 	FILE	*fp;
-	config_t	*cfg;
+/*	config_t	*cfg;
 	Window	*children;
 	Window root;
 	Window parent;
-	Screen *dpy = XtDisplay(top_level);
-	int nchildren;
+*/
+	Display *dpy = XtDisplay(top_level);
 
 	group_init2(FALSE);
 	if ((fp = fopen(fname, "r")) == NULL) {
@@ -234,7 +241,6 @@ group_restore(char *fname)
 		unsigned char	id;
 		int	pid;
 		long	win;
-		int	j;
 		int	n, x, y, w, h;
 
 		if (buf[0] == '\0' || buf[1] != ':')
@@ -299,6 +305,8 @@ group_status2()
 	dstr_t dstr;
 	struct stat sbuf;
 
+	group_update();
+
 	dstr_init(&dstr, 256);
 	for (i = 0; i < max_procs; i++) {
 		if (shp->s_array[i].c_pid == 0)
@@ -323,9 +331,44 @@ group_status2()
 			shp->s_array[i].c_height
 			);
 		dstr_add_mem(&dstr, buf, strlen(buf));
+
+		snprintf(buf, sizeof buf, "   pwd=%s\r\n",
+			shp->s_array[i].c_pwd);
+		dstr_add_mem(&dstr, buf, strlen(buf));
+
 		}
 	dstr_add_char(&dstr, '\0');
 	return DSTR_STRING(&dstr);
+}
+
+void
+group_update()
+{	int	i;
+	int	n;
+	char	buf[BUFSIZ];
+	char	path[PATH_MAX];
+	struct stat sbuf;
+	uid_t	uid = getuid();
+
+	for (i = 0; i < max_procs; i++) {
+		if (shp->s_array[i].c_pid == 0)
+			continue;
+
+		snprintf(buf, sizeof buf, "/proc/%d",
+			shp->s_array[i].c_pid);
+		if (stat(buf, &sbuf) < 0) {
+			continue;
+			}
+		if (sbuf.st_uid != uid)
+			continue;
+
+		strcat(buf, "/cwd");
+		n = readlink(buf, path, sizeof path);
+		if (n < 0)
+			continue;
+		path[n] = '\0';
+		strncpy(shp->s_array[i].c_pwd, path, sizeof shp->s_array[i].c_pwd);
+		}
 }
 
 void
