@@ -4835,6 +4835,17 @@ hist_save_line(CtwWidget ctw, int ln)
 	char	buf2[1024];
 	vbyte_t *vp = lp->l_text;
 	vbyte_t	*vpend;
+	char	*cp;
+	static int ctw_enable_spill = -1;
+
+	if (ctw_enable_spill < 0) {
+		ctw_enable_spill = 0;
+		if ((cp = getenv("CTW_ENABLE_SPILL")) != NULL)
+			ctw_enable_spill = atoi(cp);
+		}
+
+	if (!ctw_enable_spill)
+		return 0;
 
 	ln = ctw->ctw.c_scr_line_cnt;
 	if (ctw_history == 0)

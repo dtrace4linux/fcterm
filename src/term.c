@@ -75,6 +75,7 @@ int	fork_flag = TRUE;
 int	sun_function_keys = -1;
 int	debug;
 int	auto_switch;
+char	*tmpdir = "/var/tmp";
 int	verbose;
 volatile XtSignalId xchild_id;
 volatile int	child_flag;
@@ -157,7 +158,8 @@ init_term()
 	if (getenv("CTW_LOGDIR"))
 		log_dir = chk_strdup(getenv("CTW_LOGDIR"));
 	else {
-		snprintf(buf, sizeof buf, "/tmp/%s", 
+		snprintf(buf, sizeof buf, "%s/%s", 
+			tmpdir,
 			getenv("USER") ? getenv("USER") : "fcterm");
 		log_dir = chk_strdup(buf);
 		}
@@ -488,6 +490,12 @@ do_switches(int argc, char **argv)
 			}
 		if (strcmp(cp, "sf") == 0) {
 			sun_function_keys = flag;
+			continue;
+			}
+		if (strcmp(cp, "tmpdir") == 0) {
+			if (++i >= argc)
+				usage();
+			tmpdir = argv[i];
 			continue;
 			}
 		if (strcmp(cp, "ls") == 0) {
@@ -1114,7 +1122,8 @@ restart_fcterm()
 	/*   exec, so not a lot we can do if the file  */
 	/*   isnt there.			       */
 	/***********************************************/
-	sprintf(buf, "/tmp/%s/fcterm-state-%d", getenv("USER") ? getenv("USER") : "fcterm", getpid());
+	snprintf(buf, sizeof buf, "%s/%s/fcterm-state-%d", 
+		tmpdir, getenv("USER") ? getenv("USER") : "fcterm", getpid());
 	if ((fp = fopen(buf, "w")) == NULL) {
 		perror(buf);
 		exit(0);
@@ -1145,7 +1154,9 @@ save_state()
 	int	n;
 	FILE	*fp;
 
-	snprintf(buf, sizeof buf, "/tmp/%s/fcterm-state.%s", getenv("USER"),
+	snprintf(buf, sizeof buf, "%s/%s/fcterm-state.%s", 
+		tmpdir,
+		getenv("USER"),
 		group_label);
 	if (cur_ctw == NULL) {
 		remove(buf);

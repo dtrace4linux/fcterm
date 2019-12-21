@@ -1,20 +1,27 @@
-fcterm [-isc | -sco] [standard X11 options]\n",
+fcterm [-isc | -sco] [standard X11 options]
 	[[+|-]sf] [-ut] [-geometry WxH+X+Y] [-Ce]
 	-C		Make terminal the 'console' window.
 	-debug    	Enable debug output.
 	-dump     	Dump screens to /tmp
 	-e cmd ...	Command to execute (last on line)
 	-f		Do not fork from shell.
-	-isc		Emulate Interactive Unix console driver.
+	-label <name>   Run using a label, so we can restore session
+	                on startup (cwd and screen content).
 	-ls		Execute a login shell.
 	-[no]group      Group fcterms together to maintain position.
-	-sco		Emulate SCO Unix console driver.
 	-spill  	Enable infinite log spilling
 	+/-sf		+sf => disable sun function keys
 			-sf => enable Sun Function keys.
 	-ut		Inhibit utmp entry.
+	-tmpdir <dir>   Directory to store logfiles. Default is
+			/tmp/$USER.
 	-verbose	Verbose debug messages.
 	-version	Display version number.
+
+Emulation switches (legacy):
+
+	-isc		Emulate Interactive Unix console driver.
+	-sco		Emulate SCO Unix console driver.
 
 Description
 
@@ -29,6 +36,7 @@ Description
   * pty server support
   * 8-bit and 24-bit color support
   * error/warning highlighting.
+  * string searching
   * URL highlighting
 
 Useful resources:
@@ -54,8 +62,16 @@ CTW_DO_CONT
 CTW_DRAW_WATCH
     Enable visual drawing actions (for debugging).
 
+CTW_ENABLE_SPILL
+    Enable old-style terminal logging to logfile 
+    (/tmp/$USER/fcterm-ttyN-YYYYMMDD.log). New style simply
+    logs all pty output, and allows color-replay on a restart.
+
 CTW_FILL_TO_BLACK
     Enable fill-to-black ISO standard.
+
+CTW_FREETYPE
+    Enable freetype font drawing.
 
 CTW_GZIP_ROLLOVER (default 50MB)
     When the history log file (/tmp/$USER/fcterm-ttyN.log) reaches this
@@ -70,9 +86,6 @@ CTW_HIGHLIGHT_WORDFILE
        flags: 64 == error color (whole line)
               128 == warning color (whole line)
 	      256 == search color (only actual word)
-
-CTW_FREETYPE
-    Enable freetype font drawing.
 
 CTW_GZIP_ROLLOVER
     Enable compression of the scrolling spill files (in /tmp).

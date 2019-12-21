@@ -1692,7 +1692,8 @@ restore_label()
 	char	*pwd = NULL;
 	char	*tty = NULL;
 
-	snprintf(fname, sizeof fname, "/tmp/%s/fcterm-state.%s",
+	snprintf(fname, sizeof fname, "%s/%s/fcterm-state.%s",
+		tmpdir,
 		getenv("USER"), group_label);
 	if ((fp = fopen(fname, "r")) == NULL) {
 		return NULL;
@@ -1772,7 +1773,8 @@ restore_label()
 		/***********************************************/
 		/*   Try and replay the screen state.	       */
 		/***********************************************/
-		snprintf(fname, sizeof fname, "/tmp/%s/fcterm-tty%s-pty.log",
+		snprintf(fname, sizeof fname, "%s/%s/fcterm-tty%s-pty.log",
+			tmpdir,
 			getenv("USER"), tty ? basename(tty) : "");
 	//printf("restoring from: %s\n", fname);
 		if ((fp1 = fopen(fname, "r")) != NULL) {

@@ -178,6 +178,7 @@ typedef struct fcterm_t {
 	} fcterm_t;
 
 extern int	auto_switch;
+extern char	*tmpdir;
 extern char *application_name;
 extern char *geometry;
 extern char	*widget_name;

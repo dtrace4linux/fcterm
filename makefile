@@ -133,8 +133,22 @@ release:
 	../../crisp/bin/elfrewrite bin/fcterm
 	build=b`grep build_no include/build.h | sed -e 's/^.* \([0-9][0-9]*\).*$$/\1/'` ; \
 	cd .. ; mv ctw ctw-$$build ; \
-	tar cvf - ctw-$$build/bin/fcterm ctw-$$build/README* ctw-$$build/Changes ctw-$$build/samples ctw-$$build/fccat | gzip -9 > /tmp/fcterm-$$build.tar.gz ; \
+	tar cvf - ctw-$$build/bin/fcterm \
+		ctw-$$build/Changes \
+		ctw-$$build/README* \
+		ctw-$$build/ctw.sh \
+		ctw-$$build/fcterm.bitmap \
+		ctw-$$build/fcterm.xpm \
+		ctw-$$build/include \
+		ctw-$$build/makefile \
+		ctw-$$build/mkseq.sh \
+		ctw-$$build/samples \
+		ctw-$$build/src \
+		ctw-$$build/fccat | gzip -9 > /tmp/fcterm-$$build.tar.gz ; \
 	mv ctw-$$build ctw ; \
+	cp /tmp/fcterm-$$build.tar.gz $(HOME)/release/website/tools ; \
+	rm -f $(HOME)/release/website/tools/fcterm-current.tar.gz ; \
+	ln -s fcterm-$$build.tar.gz $(HOME)/release/website/tools/fcterm-current.tar.gz ; \
 	scp /tmp/fcterm-$$build.tar.gz crispgw:release/website/tools ; \
 	ssh crispgw rm -f release/website/tools/fcterm-current.tar.gz ; \
 	ssh crispgw ln -s fcterm-$$build.tar.gz release/website/tools/fcterm-current.tar.gz
