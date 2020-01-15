@@ -112,6 +112,12 @@ FCTERM_LABEL
     "-label <name>" on the command line, else an automatic one 
     will be assigned.
 
+FCTERM_PID
+    Process id of the controlling fcterm binary.
+
+FCTERM_TERM=1
+    Used to indicate subshell came from fcterm.
+
 PTY_LABEL
     Name used to identify this terminal.
 

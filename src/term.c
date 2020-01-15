@@ -1512,14 +1512,19 @@ static char	ctw_pid[32];
 	if (open_max < 0)
 		open_max = sysconf (_SC_OPEN_MAX);
 
-	putenv("CTW_TERM=1");
-	snprintf(ctw_pid, sizeof ctw_pid, "CTW_PID=%d", getpid());
+	putenv("FCTERM_TERM=1");
+	snprintf(ctw_pid, sizeof ctw_pid, "FCTERM_PID=%d", getpid());
 	putenv(ctw_pid);
 
 	cur_ctw->f_pty_fd = -1;
 
+	{static char buf[64];
+	snprintf(buf, sizeof buf, "FCTERM_LABEL=%s.%d", group_label, cur_ctw->f_id);
+	putenv(buf);
+	}
+
 	{static char buf[32];
-	sprintf(buf, "PTY_SCREEN=%d", cur_ctw->f_id);
+	snprintf(buf, sizeof buf, "PTY_SCREEN=%d", cur_ctw->f_id);
 	putenv(buf);
 	}
 	/***********************************************/
