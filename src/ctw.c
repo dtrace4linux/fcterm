@@ -110,7 +110,7 @@
 /*   ESC [1932 ; fontname; m Set font for drawing.		      */
 /*   ESC [1933 ; x; y; str; m Draw image string			      */
 /*   ESC [1934 m    Query winsize in pixels (WxH<Enter>).             */
-/*   ESC [1935 m    Dump status to /tmp/$USER/fcterm.$CTW_PID	      */
+/*   ESC [1935 m    Dump status to /var/tmp/$USER/fcterm.$CTW_PID	      */
 /*   ESC [1936 m    Box each character drawn.                         */
 /*   ESC [1937 m    Unbox each character drawn.                       */
 /*   ESC [1938 ; n m  Group fcterms (n == 1 - group; == 0 - ungroup)  */
@@ -497,9 +497,9 @@ static XtResource resources[] = {
 	  offset(client_data), XtRString, ""},
 
 	{ XtNlogFile, XtCLogFile, XtRString, sizeof(char *),
-	  offset(log_file), XtRString, "/tmp/CtwLog.XXXXXX"},
+	  offset(log_file), XtRString, NULL},
 	{ XtNlogDir, XtCLogDir, XtRString, sizeof(char *),
-	  offset(log_dir), XtRString, "/tmp"},
+	  offset(log_dir), XtRString, "/var/tmp"},
 	{ XtNlogging, XtCLogging, XtRBoolean, sizeof(int),
 	  offset(flags[CTW_LOGGING]), XtRInt, &defaultFALSE},
 #undef offset
@@ -1098,6 +1098,7 @@ initialize(Widget treq, Widget tnew)
 	Display	*dpy = XtDisplay(new);
 	char	*cp = getenv("CTW_WORD_CHARS");
 	struct passwd *pwd;
+	char	buf[BUFSIZ];
 
 	if (cp != NULL)
 		word_chars = cp;
@@ -1110,6 +1111,12 @@ initialize(Widget treq, Widget tnew)
 			}
 		}
 
+	/***********************************************/
+	/*   Possible memleak.			       */
+	/***********************************************/
+	snprintf(buf, sizeof buf, "/var/tmp/%s/CtwLog.XXXXXX", user);
+	new->ctw.log_file = chk_strdup(buf);
+
 	UNUSED_PARAMETER(treq);
 
 	if ((cp = getenv("CTW_FILL_TO_BLACK")) != NULL)
@@ -1121,6 +1128,8 @@ initialize(Widget treq, Widget tnew)
 		crwin_do_cont = atoi(cp);
 	if ((cp = getenv("CTW_GZIP_ROLLOVER")) != NULL)
 		default_gzip_rollover = atoi(cp);
+	if ((cp = getenv("CTW_GZIP_SIZE")) != NULL)
+		default_spill_size = atoi(cp);
 	if ((cp = getenv("CTW_HISTORY")) != NULL) 
 		ctw_history = atoi(cp);
 	if ((cp = getenv("CTW_DRAW_WATCH")) != NULL)
@@ -1255,6 +1264,7 @@ initialize(Widget treq, Widget tnew)
 	new->ctw.scroll_top = 0;
 	new->ctw.scroll_bot = new->ctw.rows;
 	new->ctw.sel_string = (char *) NULL;
+	new->ctw.c_spill_size = default_spill_size;
 	new->ctw.c_spill_name = (char *) NULL;
 	new->ctw.sel_length = 0;
 	new->ctw.sel_start_x = 0;
@@ -7831,6 +7841,7 @@ ctw_log_string(CtwWidget ctw, char *str, int len)
 	char	buf2[BUFSIZ];
 	char	buf3[BUFSIZ];
 	char	*name;
+	int	i;
 	
 	if (!ctw->ctw.c_logging_enabled)
 		return;
@@ -7844,7 +7855,7 @@ ctw_log_string(CtwWidget ctw, char *str, int len)
 	if (ctw->ctw.c_log_fp == NULL) {
 		if ((ctw->ctw.c_log_fp = fopen(buf, "a")) == NULL) {
 			if (once) {
-				printf("Cannot write to %s\n", name);
+				printf("ctw_log_string: Cannot write to: %s\n", buf);
 				once = FALSE;
 				}
 			return;
@@ -7862,12 +7873,26 @@ ctw_log_string(CtwWidget ctw, char *str, int len)
 	fclose(ctw->ctw.c_log_fp);
 	ctw->ctw.c_log_fp = NULL;
 
+	/***********************************************/
+	/*   If  we  have a small spill size, then we  */
+	/*   can keep hitting the same HHMMSS, so try  */
+	/*   aux files instead.			       */
+	/***********************************************/
 	t = time(NULL);
-	strftime(buf3, sizeof buf3, buf, localtime(&t));
-	snprintf(buf2, sizeof buf2, "%s/%s/fcterm-%s%s-pty-%s.log", 
-			ctw->ctw.log_dir, user,
-			isdigit(*name) ? "tty" : "", name, buf3);
-	if (!rename(buf, buf2)) {
+	for (i = 0; i < 1000; i++) {
+		strftime(buf3, sizeof buf3, "%Y%m%d-%H%M%S", localtime(&t));
+		snprintf(buf3 + strlen(buf3), sizeof buf3 - strlen(buf3) - 1,
+			"-%03d", i);
+		snprintf(buf2, sizeof buf2, "%s/%s/fcterm-%s%s-pty-%s.log", 
+				ctw->ctw.log_dir, user,
+				isdigit(*name) ? "tty" : "", name, buf3);
+
+		snprintf(buf3, sizeof buf3, "%s.gz", buf2);
+		if (stat(buf3, &sbuf) < 0)
+			break;
+		}
+
+	if (rename(buf, buf2)) {
 		printf("error: rename(%s, %s) - %s\n", buf, buf2, strerror(errno));
 	}
 	/***********************************************/

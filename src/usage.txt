@@ -64,7 +64,7 @@ CTW_DRAW_WATCH
 
 CTW_ENABLE_SPILL
     Enable old-style terminal logging to logfile 
-    (/tmp/$USER/fcterm-ttyN-YYYYMMDD.log). New style simply
+    (/var/tmp/$USER/fcterm-ttyN-YYYYMMDD.log). New style simply
     logs all pty output, and allows color-replay on a restart.
 
 CTW_FILL_TO_BLACK
@@ -73,9 +73,13 @@ CTW_FILL_TO_BLACK
 CTW_FREETYPE
     Enable freetype font drawing.
 
-CTW_GZIP_ROLLOVER (default 50MB)
-    When the history log file (/tmp/$USER/fcterm-ttyN.log) reaches this
-    size, spill over to a new log file and gzip the old one.
+CTW_GZIP_ROLLOVER (default: 1)
+    When the history log file (/var/tmp/$USER/fcterm-ttyN.log) exceeds the
+    spill/rollover size, then create a new log file, and gzip the old one.
+
+CTW_GZIP_SIZE (default: 50MB)
+    When log file reaches this size, and spill/rollover is enabled, create
+    a new log file.
 
 CTW_HIGHLIGHT_WORDFILE
     Specify a file of words to read to be automatically highlighted.
@@ -86,9 +90,6 @@ CTW_HIGHLIGHT_WORDFILE
        flags: 64 == error color (whole line)
               128 == warning color (whole line)
 	      256 == search color (only actual word)
-
-CTW_GZIP_ROLLOVER
-    Enable compression of the scrolling spill files (in /tmp).
 
 CTW_HISTORY
     Enable history (infinite) scrolling.
