@@ -5477,7 +5477,7 @@ static int	scol;
 				: ctw->ctw.x11_colors[attr.vb_fcolor + n];
 			bg = attr.vb_attr2 & VB2_BG_24 
 				? (Pixel) (((int) attr.vb_bg[0]) << 16) | (((int) attr.vb_bg[1]) << 8) | ((int) attr.vb_bg[2] << 0)
-				: ctw->ctw.x11_colors[attr.vb_bcolor + n];
+				: ctw->ctw.x11_colors[attr.vb_bcolor];
 			}
 
 		/***********************************************/
