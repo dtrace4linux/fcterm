@@ -318,6 +318,7 @@ enum ctw_reasons {
 	CTWR_SELECTION,		/* User is selecting text -- tell app to not give us */
 				/* any more data.				*/
 	CTWR_PASTE,		/* Received selection from owner.		*/
+	CTWR_PASTE_PROTECTED,	/* Paste with protected escape sequences. */
 	CTWR_OPEN_WINDOW,	/* Uniconise window.				*/
 	CTWR_CLOSE_WINDOW,	/* Iconise window.				*/
 	CTWR_MOVE_WINDOW,	/* Change window position.			*/

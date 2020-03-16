@@ -5106,7 +5106,10 @@ requestor_callback(Widget w, XtPointer client_data,
 	UNUSED_PARAMETER(type);
 	UNUSED_PARAMETER(format);
 
-	reason.reason = CTWR_PASTE;
+	if (ctw->ctw.flags[CTW_BRACKETED_PASTE_MODE])
+		reason.reason = CTWR_PASTE_PROTECTED;
+	else
+		reason.reason = CTWR_PASTE;
 	reason.client_data = ctw->ctw.client_data;
 
 	if (value == NULL && *length == 0)

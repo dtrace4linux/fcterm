@@ -134,6 +134,8 @@ Escape sequences:
    ESC [ ? 1000 h	Enter keypad mode.
    ESC [ ? 1034 h	SMM mode
    ESC [ ? 1049 h	Use alternate screen buffer and screen clear.
+   ESC [ ? 2004 h Bracketed paste mode
+                send: ESC[200~ ... ESC[201~ on paste
 
    ESC [ ? 1 l	Normal cursor keys
    ESC [ ? 3 l	80/132 column mode switch.
@@ -146,6 +148,7 @@ Escape sequences:
    ESC [ ? 47 l	Use normal screen buffer.
    ESC [ ? 1000 l	Exit  keypad mode.
    ESC [ ? 1049 l	Use alternate screen buffer/save cursor/scr clear
+   ESC [ ? 2004 l Disable Bracketed paste mode
 
    ESC [ 6 n          Ask terminal for rows,col - ESC[r;cR
    ESC [ ? 3 r	Disable window resize.

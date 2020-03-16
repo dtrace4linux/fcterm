@@ -698,7 +698,11 @@ input_callback(Widget w, int type, ctw_callback_t *reason)
 
 	cp = reason->ptr;
 //printf("input_callback: cur_ctw=%x\n", cur_ctw);
+	if (reason->reason == CTWR_PASTE_PROTECTED)
+		v_write(cur_ctw, "\033[200~", 6);
 	v_write(cur_ctw, cp, len);
+	if (reason->reason == CTWR_PASTE_PROTECTED)
+		v_write(cur_ctw, "\033[201~", 6);
 }
 void
 int_handler()
