@@ -39,12 +39,12 @@ int	cr_enable_wm_offset = TRUE;
 int	mwm_x_offset;
 int	mwm_y_offset;
 
-static char *fonts[] = {
+static char *bitmap_fonts[] = {
 	"5x7", "5x8", "6x10", "6x12", "6x13",
 	"6x13bold",
 	"6x9",
 	"7x13",
-	"7x13bold",
+	"* 7x13bold",
 	"7x14",
 	"7x14bold",
 	"8x13",
@@ -56,7 +56,23 @@ static char *fonts[] = {
 	"12x24",
 	NULL
 	};
-int 	cur_font = 8;
+static char *ft_fonts[] = {
+	"DejaVu Sans Mono-7",
+	"DejaVu Sans Mono-8",
+	"DejaVu Sans Mono-9",
+	"DejaVu Sans Mono-10",
+	"* DejaVu Sans Mono-11",
+	"DejaVu Sans Mono-12",
+	"DejaVu Sans Mono-13",
+	"DejaVu Sans Mono-14",
+	"DejaVu Sans Mono-15",
+	"DejaVu Sans Mono-16",
+	"DejaVu Sans Mono-17",
+	NULL
+	};
+static char **fonts = bitmap_fonts;
+
+int 	cur_font;
 
 /**********************************************************************/
 /*   Description for the popup menu.				      */
@@ -180,6 +196,7 @@ static String fallback_resources[] = {
 /**********************************************************************/
 /*   Prototypes.						      */
 /**********************************************************************/
+void	setup_cur_font(void);
 void handle_commands(int i, int argc, char **argv);
 fcterm_t *restore_label(void);
 fcterm_t *restore_state(void);
@@ -265,6 +282,8 @@ main(int argc, char **argv)
 	setup_signal_handlers();
 
 	fcntl(ConnectionNumber(XtDisplay(top_level)), F_SETFD, FD_CLOEXEC);
+
+	setup_cur_font();
 
 	init_term();
 
@@ -2060,6 +2079,25 @@ set_font(char *font)
 	/*   increments.			       */
 	/***********************************************/
 	do_wm_hints(top_level, cur_ctw->f_ctw, TRUE);
+}
+/**********************************************************************/
+/*   Figure  out current font, so that bigger/smaller knows where to  */
+/*   move.							      */
+/**********************************************************************/
+void
+setup_cur_font()
+{	int	i;
+
+	if (getenv("XX"))
+		fonts = ft_fonts;
+
+	for (i = 0; fonts[i]; i++) {
+		if (strncmp(bitmap_fonts[i], "* ", 2) == 0) {
+			bitmap_fonts[i] += 2;
+			cur_font = i;
+			break;
+			}
+		}
 }
 void
 status_expose_callback(Widget widget, XtPointer client_data, XtPointer call_data)

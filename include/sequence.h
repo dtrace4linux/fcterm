@@ -147,7 +147,7 @@
 "   ESC [ ? 47 l	Use normal screen buffer.\r\n"
 "   ESC [ ? 1000 l	Exit  keypad mode.\r\n"
 "   ESC [ ? 1049 l	Use alternate screen buffer/save cursor/scr clear\r\n"
-"   ESC [ ? 2004 l Disbale Bracketed paste mode\r\n"
+"   ESC [ ? 2004 l Disable Bracketed paste mode\r\n"
 "\r\n"
 "   ESC [ 6 n          Ask terminal for rows,col - ESC[r;cR\r\n"
 "   ESC [ ? 3 r	Disable window resize.\r\n"

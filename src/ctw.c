@@ -4,10 +4,10 @@
 /*  Author:        P. D. Fox                                          */
 /*  Created:       25 Nov 1991                     		      */
 /*                                                                    */
-/*  Copyright (c) 1990-2019 Paul Fox                                  */
+/*  Copyright (c) 1990-2020 Paul Fox                                  */
 /*                All Rights Reserved.                                */
 /*                                                                    */
-/*   $Header: Last edited: 11-Dec-2019 1.74 $ 			      */
+/*   $Header: Last edited: 17-Mar-2020 1.75 $ 			      */
 /*--------------------------------------------------------------------*/
 /*  Description:  Color terminal widget.                              */
 /*                                                                    */
@@ -1041,9 +1041,34 @@ init_freetype(CtwWidget new)
 # endif
 # if defined(HAVE_FREETYPE_XFT)
 	{
+	static char *dirs[] = {
+		"/usr/lib/libXft.so",
+		"/usr/lib/libXft.so.6",
+		"/usr/lib32/libXft.so",
+		"/usr/lib32/libXft.so.6",
+		"/usr/lib/x86_64-linux-gnu/libXft.so",
+		"/usr/lib/x86_64-linux-gnu/libXft.so.2",
+		"/usr/lib64/libXft.so",
+		"/usr/lib64/libXft.so.6",
+		NULL
+		};
+	int	i;
+	void *handle = NULL;
+
 	Display *dpy = XtDisplay((Widget) new);
 	int scr = DefaultScreen(dpy);
-	void	*handle = dlopen("/usr/lib/libXft.so", RTLD_LAZY);
+
+	if ((cp = getenv("CR_LIBFREETYPE_SO")) != NULL) {
+		handle = dlopen(cp, RTLD_LAZY);
+		//trace_log("CR_LIBFREETYPE_SO libXft:%s: %p\n", cp, handle);
+		}
+
+	for (i = 0; handle == NULL && dirs[i]; i++) {
+		if ((handle = dlopen(dirs[i], RTLD_LAZY)) != NULL) {
+			//trace_log("libXft opened: %s\n", dirs[i]);
+			break;
+			}
+		}
 	if (handle == NULL) {
 		printf("Couldnt open libXft.so\n");
 		return;
@@ -1083,7 +1108,7 @@ static char *old_font;
 				new->ctw.font);
 			}
 		freetype_enabled = TRUE;
-		printf("Xft: initialised (%s)\n", new->ctw.font);
+		//printf("Xft: initialised (%s)\n", new->ctw.font);
 		}
 	}
 # endif
