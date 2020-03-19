@@ -60,8 +60,8 @@ static char *ft_fonts[] = {
 	"DejaVu Sans Mono-7",
 	"DejaVu Sans Mono-8",
 	"DejaVu Sans Mono-9",
-	"DejaVu Sans Mono-10",
-	"* DejaVu Sans Mono-11",
+	"* DejaVu Sans Mono-10",
+	"DejaVu Sans Mono-11",
 	"DejaVu Sans Mono-12",
 	"DejaVu Sans Mono-13",
 	"DejaVu Sans Mono-14",
@@ -73,6 +73,7 @@ static char *ft_fonts[] = {
 static char **fonts = bitmap_fonts;
 
 int 	cur_font;
+extern int	freetype_flag;
 
 /**********************************************************************/
 /*   Description for the popup menu.				      */
@@ -2088,7 +2089,7 @@ void
 setup_cur_font()
 {	int	i;
 
-	if (getenv("XX"))
+	if (freetype_flag)
 		fonts = ft_fonts;
 
 	for (i = 0; fonts[i]; i++) {

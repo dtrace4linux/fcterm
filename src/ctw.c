@@ -334,6 +334,7 @@ int	enable_clipboard = FALSE; /* XView ? */
 int	enable_cut_buffer0 = FALSE;
 static int	fill_to_black = 0;
 
+extern int freetype_flag;
 extern char	*log_dir;
 extern int	version_build_no;
 extern Widget top_level;
@@ -993,7 +994,9 @@ static void
 init_freetype(CtwWidget new)
 {	char	*cp;
 
-	if ((cp = getenv("CTW_FREETYPE")) == NULL || atoi(cp) == 0)
+	if (freetype_flag)
+		;
+	else if ((cp = getenv("CTW_FREETYPE")) == NULL || atoi(cp) == 0)
 		return;
 
 # if defined(HAVE_FREETYPE)
@@ -3722,6 +3725,8 @@ static void
 draw_line(CtwWidget w, int row, int col, char *str, int len, Pixel fg, Pixel bg, int attr)
 {
 
+	assert(len > 0);
+
 	if (w->ctw.line_fontp == (XFontStruct *) NULL) {
 		draw_string(w, row, col, str, len, fg, bg, attr);
 		return;
@@ -3742,10 +3747,46 @@ draw_special_line_chars(CtwWidget ctw, int row, int c, char *buf, int len,
 	Pixel fg, Pixel bg, int attr, int hstate)
 {	char	*bp;
 	char	*bufend = buf + len;
+	int	n;
+	int	custom = 1;
 
 	while (buf < bufend) {
 		len = bufend - buf;
 		switch (*buf) {
+		  case 'q': /* - */
+		  	for (n = 0; n < len; n++, buf++) {
+				if (*buf != 'q')
+					break;
+				}
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width * n, 
+				ctw->ctw.font_height + 1);
+
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c), Y_PIXEL(ctw, row)  - ctw->ctw.font_ascent + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c + n), Y_PIXEL(ctw, row)  - ctw->ctw.font_ascent + ctw->ctw.font_height / 2);
+			c += n;
+		  	continue;
+		  case 'x': /* | */
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row - 1),
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row));
+			buf++;
+			c++;
+		  	continue;
+
 		  case '|':
 		  case '}':
 			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
@@ -3852,6 +3893,9 @@ draw_special_line_chars(CtwWidget ctw, int row, int c, char *buf, int len,
 			if (*bp == 0x01 || *bp == 0x02 || *bp == 0x03 ||
 			    *bp == '|' || *bp == '}' || *bp == ' ')
 				break;
+			if (custom && strchr("qx", *bp))
+				break;
+
 			if (*bp >= 0x5f && *bp <= 0x7e)
 				*bp = *bp == 0x5f ? 0x7f : (*bp - 0x5f);
 			}
@@ -3912,7 +3956,7 @@ draw_string(CtwWidget ctw, int row, int col, char *str, int len, Pixel fg, Pixel
 		int scr = DefaultScreen(dpy);
 	        Colormap cmap = DefaultColormap(dpy, DefaultScreen(dpy));
 	        XftColor color;
-	        XftDraw *draw;
+	        static XftDraw *draw;
 	        XRenderColor rendcol = { 0x4c00, 0x7800, 0x9900, 0xffff};
 
 		rendcol.red = ((fg >> 16) & 0xff) * 0x101;
@@ -3922,7 +3966,8 @@ draw_string(CtwWidget ctw, int row, int col, char *str, int len, Pixel fg, Pixel
         	XftColorAllocValue_ptr(dpy, DefaultVisual(dpy, scr), cmap,
                 	&rendcol, &color);
 
-	        draw = (XftDraw *) XftDrawCreate_ptr(dpy, XtWindow(ctw), DefaultVisual(dpy, scr), cmap);
+	        if (draw == NULL)
+			draw = (XftDraw *) XftDrawCreate_ptr(dpy, XtWindow(ctw), DefaultVisual(dpy, scr), cmap);
 		XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
 		XFillRectangle(dpy, XtWindow(ctw),
 			ctw->ctw.gc,
@@ -5470,6 +5515,7 @@ static int	scol;
 			c1++;
 			}
 		len = bp - buf;
+//printf("%d,%d len=%d %s %*.*s\n", row, col, len, attr.vb_attr & VB_LINE ? " line" : "", len, len, buf);
 		if (lp->l_attr & LA_CONTINUED && 
 		    len > 1 &&
 		    c + len == ctw->ctw.columns) {

@@ -57,6 +57,7 @@ extern int version_minor;
 extern int version_build_no;
 int	direct;
 int	dump_flag;
+int	freetype_flag;
 extern int ctw_history;
 int	console_flag = FALSE;
 int	utmp_flag = TRUE;
@@ -469,6 +470,10 @@ do_switches(int argc, char **argv)
 			}
 		if (strcmp(cp, "dump") == 0) {
 			dump_flag = TRUE;
+			continue;
+			}
+
+		if (strcmp(cp, "freetype") == 0) {
 			continue;
 			}
 
@@ -1445,6 +1450,12 @@ steal_switches(int argc, char **argv)
 	prog_name = find_exec_path(getenv("PATH"), argv[0]);
 
 	for (i = 1; i < argc; ) {
+		if (strcmp(argv[i], "-freetype") == 0) {
+			i++;
+			freetype_flag = TRUE;
+			continue;
+			}
+
 		if (strcmp(argv[i], "-isc") == 0) {
 			term_str = "TERM=AT386";
 			foxterm_str = "FOXTERM=isc";

@@ -1,27 +1,28 @@
 fcterm [-isc | -sco] [standard X11 options]
 	[[+|-]sf] [-ut] [-geometry WxH+X+Y] [-Ce]
-	-C		Make terminal the 'console' window.
-	-debug    	Enable debug output.
-	-dump     	Dump screens to /tmp
-	-e cmd ...	Command to execute (last on line)
-	-f		Do not fork from shell.
-	-label <name>   Run using a label, so we can restore session
-	                on startup (cwd and screen content).
-	-ls		Execute a login shell.
-	-[no]group      Group fcterms together to maintain position.
-	-spill  	Enable infinite log spilling
-	+/-sf		+sf => disable sun function keys
-			-sf => enable Sun Function keys.
-	-ut		Inhibit utmp entry.
-	-tmpdir <dir>   Directory to store logfiles. Default is
-			/tmp/$USER.
-	-verbose	Verbose debug messages.
-	-version	Display version number.
 
+  -C		  Make terminal the 'console' window.
+  -debug    	  Enable debug output.
+  -dump     	  Dump screens to /tmp
+  -e cmd ...	  Command to execute (last on line)
+  -f		  Do not fork from shell.
+  -freetype	  Enable freetype fonts.
+  -label <name>   Run using a label, so we can restore session
+                  on startup (cwd and screen content).
+  -ls		  Execute a login shell.
+  -[no]group      Group fcterms together to maintain position.
+  -spill  	  Enable infinite log spilling
+  +/-sf		  +sf => disable sun function keys
+  		  -sf => enable Sun Function keys.
+  -ut		  Inhibit utmp entry.
+  -tmpdir <dir>   Directory to store logfiles. Default is /tmp/$USER.
+  -verbose	  Verbose debug messages.
+  -version	  Display version number.
+  
 Emulation switches (legacy):
 
-	-isc		Emulate Interactive Unix console driver.
-	-sco		Emulate SCO Unix console driver.
+  -isc		Emulate Interactive Unix console driver.
+  -sco		Emulate SCO Unix console driver.
 
 Description
 
@@ -31,6 +32,7 @@ Description
   * infinite scroll
   * minimap - see what is happening on all screens
   * fast
+  * freetype fonts
   * automatic grouping
   * automatic recovery
   * pty server support
