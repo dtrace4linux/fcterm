@@ -201,6 +201,7 @@ typedef struct ctw_part {
 # endif
 # if HAVE_FREETYPE_XFT
 	XftFont		*xft_fontp;
+	XftDraw		*c_xft_draw;
 # endif
 	XFontStruct	*fontp;
 	XFontStruct	*line_fontp;	/* Font for line-drawing graphics. */

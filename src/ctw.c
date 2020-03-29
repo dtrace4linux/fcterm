@@ -1073,29 +1073,31 @@ init_freetype(CtwWidget new)
 	int	i;
 	void *handle = NULL;
 
-	if ((cp = getenv("CR_LIBFREETYPE_SO")) != NULL) {
-		handle = dlopen(cp, RTLD_LAZY);
-		//trace_log("CR_LIBFREETYPE_SO libXft:%s: %p\n", cp, handle);
-		}
-
-	for (i = 0; handle == NULL && dirs[i]; i++) {
-		if ((handle = dlopen(dirs[i], RTLD_LAZY)) != NULL) {
-			//trace_log("libXft opened: %s\n", dirs[i]);
-			break;
+	if (XftFontOpen_ptr == NULL) {
+		if ((cp = getenv("CR_LIBFREETYPE_SO")) != NULL) {
+			handle = dlopen(cp, RTLD_LAZY);
+			//trace_log("CR_LIBFREETYPE_SO libXft:%s: %p\n", cp, handle);
 			}
-		}
-	if (handle == NULL) {
-		printf("Couldnt open libXft.so\n");
-		return;
-		}
 
-	XftFontOpen_ptr = dlsym(handle, "XftFontOpen");
-	XftFontClose_ptr = dlsym(handle, "XftFontClose");
-	XftColorAllocValue_ptr = dlsym(handle, "XftColorAllocValue");
-	XftDrawCreate_ptr = dlsym(handle, "XftDrawCreate");
-	XftDrawDestroy_ptr = dlsym(handle, "XftDrawDestroy");
-	XftDrawStringUtf8_ptr = dlsym(handle, "XftDrawStringUtf8");
-	XftTextExtents8_ptr = dlsym(handle, "XftTextExtents8");
+		for (i = 0; handle == NULL && dirs[i]; i++) {
+			if ((handle = dlopen(dirs[i], RTLD_LAZY)) != NULL) {
+				//trace_log("libXft opened: %s\n", dirs[i]);
+				break;
+				}
+			}
+		if (handle == NULL) {
+			printf("Couldnt open libXft.so\n");
+			return;
+			}
+
+		XftFontOpen_ptr = dlsym(handle, "XftFontOpen");
+		XftFontClose_ptr = dlsym(handle, "XftFontClose");
+		XftColorAllocValue_ptr = dlsym(handle, "XftColorAllocValue");
+		XftDrawCreate_ptr = dlsym(handle, "XftDrawCreate");
+		XftDrawDestroy_ptr = dlsym(handle, "XftDrawDestroy");
+		XftDrawStringUtf8_ptr = dlsym(handle, "XftDrawStringUtf8");
+		XftTextExtents8_ptr = dlsym(handle, "XftTextExtents8");
+		}
 
 	reset_freetype_font(new, new->ctw.font);
 	}
@@ -4184,7 +4186,6 @@ draw_string(CtwWidget ctw, int row, int col, char *str, int len, Pixel fg, Pixel
 		int scr = DefaultScreen(dpy);
 	        Colormap cmap = DefaultColormap(dpy, DefaultScreen(dpy));
 	        XftColor color;
-	        static XftDraw *draw;
 	        XRenderColor rendcol = { 0x4c00, 0x7800, 0x9900, 0xffff};
 
 		rendcol.red = ((fg >> 16) & 0xff) * 0x101;
@@ -4194,14 +4195,14 @@ draw_string(CtwWidget ctw, int row, int col, char *str, int len, Pixel fg, Pixel
         	XftColorAllocValue_ptr(dpy, DefaultVisual(dpy, scr), cmap,
                 	&rendcol, &color);
 
-	        if (draw == NULL)
-			draw = (XftDraw *) XftDrawCreate_ptr(dpy, XtWindow(ctw), DefaultVisual(dpy, scr), cmap);
+	        if (ctw->ctw.c_xft_draw == NULL)
+			ctw->ctw.c_xft_draw = (XftDraw *) XftDrawCreate_ptr(dpy, XtWindow(ctw), DefaultVisual(dpy, scr), cmap);
 		XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
 		XFillRectangle(dpy, XtWindow(ctw),
 			ctw->ctw.gc,
 			x, y - ctw->ctw.font_ascent,
 			len * ctw->ctw.font_width, ctw->ctw.font_height);
-                XftDrawStringUtf8_ptr(draw, &color, ctw->ctw.xft_fontp, x, y,
+                XftDrawStringUtf8_ptr(ctw->ctw.c_xft_draw, &color, ctw->ctw.xft_fontp, x, y,
                                 (FcChar8*)str, len);
 		return;
 		}
@@ -5495,6 +5496,8 @@ static char *old_font;
 	if (XftFontOpen_ptr == NULL)
 		return;
 
+//printf("%p reset_freetype_font(%s)\n", new, font);
+
 	/* Fonts: bitstream vera sans mono */
 	/* Sans Serif-7 */
 	/* Free Mono-12 */
@@ -5528,6 +5531,7 @@ static char *old_font;
 			new->ctw.font);
 		return;
 		}
+//printf("XftFontOpen: %p\n", new->ctw.xft_fontp);
 	
 	new->ctw.font_height = new->ctw.xft_fontp->ascent + new->ctw.xft_fontp->descent;
 	new->ctw.font_width = new->ctw.xft_fontp->max_advance_width;
