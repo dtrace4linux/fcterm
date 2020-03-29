@@ -2,7 +2,7 @@
 # define	MIN_VERSION	40
 int	version_major = MAJ_VERSION;
 int	version_minor = MIN_VERSION;
-int	version_build_no = 193;
-# define VERSION_BUILD_NO 193
-char	version_build_date[] = "Sat Feb 29 22:33:12 GMT 2020";
+int	version_build_no = 194;
+# define VERSION_BUILD_NO 194
+char	version_build_date[] = "Sun Mar 29 13:52:34 BST 2020";
 
