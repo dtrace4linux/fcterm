@@ -45,9 +45,11 @@ $(OBJDIR)/fcterm:	$(OBJDIR)/fcterm.o $(OBJ)
 
 install:
 	rm -f $(HOME)/bin/fcterm
-	rm -f $(HOME)/bin/fcterm-`bin/fcterm -version`
-	cp bin.linux-x86_64/fcterm $(HOME)/bin/fcterm-`bin/fcterm -version`
-	ln -s fcterm-`bin/fcterm -version` $(HOME)/bin/fcterm
+	d=`date +%Y%m%d-` ; \
+	v=`bin/fcterm -version` ; \
+	rm -f $(HOME)/bin/fcterm-$$d$$v ; \
+	cp bin.linux-x86_64/fcterm $(HOME)/bin/fcterm-$$d$$v; \
+	ln -s fcterm-$$d$$v $(HOME)/bin/fcterm
 
 make_macos:
 	export PLATFORM=apple-osx-10.7-x86 ; \

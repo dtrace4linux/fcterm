@@ -1228,7 +1228,7 @@ say_hello(fcterm_t *cur_ctw)
 static char *msgs[] = {
 	"** ",
 	"** <Ins> to paste; Right-mouse to see menu.",
-	"** <Alt-Ctrl-F10> to invoke search/command prompt.",
+	"** <Alt-Shift-F10> to invoke search/command prompt.",
 	NULL
 	};
 static int first_time = TRUE;

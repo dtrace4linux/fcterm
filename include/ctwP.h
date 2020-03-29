@@ -329,7 +329,7 @@ typedef struct ctw_part {
 	/***********************************************/
 	/*   Command line buffer.		       */
 	/***********************************************/
-# define MAX_CMD_BUF 80
+# define MAX_CMD_BUF 120
 	char	c_ibuf[MAX_CMD_BUF];
 	int	c_idx;
 	char	*c_search;

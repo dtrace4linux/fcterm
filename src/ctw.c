@@ -2807,7 +2807,8 @@ change_name(CtwWidget ctw, int flags, char *str)
 /**********************************************************************/
 static void
 command_input(CtwWidget ctw, int keymod_mask, int keysym, int ch)
-{
+{	int	len;
+
 	UNUSED_PARAMETER(keymod_mask);
 
 /*
@@ -2895,8 +2896,9 @@ command_input(CtwWidget ctw, int keymod_mask, int keysym, int ch)
 		  case 0:
 		  	break;
 		  case '\b':
-			if (ctw->ctw.c_idx)
-				ctw->ctw.c_idx--;
+			if (ctw->ctw.c_idx == 0)
+				break;
+			ctw->ctw.c_idx--;
 			memmove(&ctw->ctw.c_ibuf[ctw->ctw.c_idx],
 				&ctw->ctw.c_ibuf[ctw->ctw.c_idx + 1],
 				strlen(&ctw->ctw.c_ibuf[ctw->ctw.c_idx] + 1) + 1);
@@ -2913,6 +2915,10 @@ command_input(CtwWidget ctw, int keymod_mask, int keysym, int ch)
 			ctw->ctw.c_idx = 0;
 		  	break;
 		  default:
+		  	len = strlen(ctw->ctw.c_ibuf);
+		  	if (len + 2 >= MAX_CMD_BUF)
+				break;
+
 			if (ctw->ctw.c_ibuf[ctw->ctw.c_idx] == '\0') {
 				ctw->ctw.c_ibuf[ctw->ctw.c_idx++] = ch;
 				ctw->ctw.c_ibuf[ctw->ctw.c_idx] = '\0';
@@ -2927,18 +2933,19 @@ command_input(CtwWidget ctw, int keymod_mask, int keysym, int ch)
 		  }
 		}
 	command_draw(ctw);
+	show_cursor(ctw);
 }
 static void
 command_draw(CtwWidget ctw)
 {	line_t	lbuf;
-	vbyte_t vbytes[80];
+	vbyte_t *vbytes;
 	char	*cp;
 	int	c = 0;
 
+	vbytes = chk_calloc(sizeof(vbyte_t) * ctw->ctw.columns, 1);
 	memset(&lbuf, 0, sizeof lbuf);
-	memset(vbytes, 0, sizeof vbytes);
 	lbuf.l_text = vbytes;
-	for (c = 0; c < 80; c++) {
+	for (c = 0; c < ctw->ctw.columns; c++) {
 		vbytes[c].vb_byte = ' ';
 		vbytes[c].vb_fcolor = 1;
 		vbytes[c].vb_fcolor = 3;
@@ -2948,10 +2955,11 @@ command_draw(CtwWidget ctw)
 	for (cp = "Command: "; *cp; c++) {
 		vbytes[c].vb_byte = *cp++;
 		}
-	for (cp = ctw->ctw.c_ibuf; *cp; c++) {
+	for (cp = ctw->ctw.c_ibuf; *cp && c < ctw->ctw.columns; c++) {
 		vbytes[c].vb_byte = *cp++;
 		}
-	print_string(ctw, &lbuf, ctw->ctw.rows-1, 0, 80);
+	print_string(ctw, &lbuf, ctw->ctw.rows-1, 0, ctw->ctw.columns);
+	chk_free(vbytes);
 
 }
 /**********************************************************************/
