@@ -1535,6 +1535,47 @@ HandleExpose(Widget w, XExposeEvent *event)
 {
 	exposed_region((CtwWidget) w, event->x, event->y, event->width, event->height);
 }
+
+/**********************************************************************/
+/*   Rerdraw  tail  end of screen when resizing, to try and get line  */
+/*   wrap, etc working.						      */
+/**********************************************************************/
+void
+resize_refresh_from_log(CtwWidget ctw)
+{	char	buf[128 * 1024];
+	char	*name;
+	int	fd;
+	struct stat sbuf;
+	int	n;
+static int backtrack_size = -1;
+
+	if (backtrack_size < 0) {
+		char *cp = getenv("CTW_BACKTRACK_SIZE");
+		if (cp)
+			backtrack_size = cp ? atoi(cp) : (64 * 1024);
+		}
+
+	name = ctw->ctw.ttyname ? basename(ctw->ctw.ttyname) : "ZZ";
+	
+	snprintf(buf, sizeof buf, "%s/%s/fcterm-%s%s-pty.log", 
+			ctw->ctw.log_dir, user,
+			isdigit(*name) ? "tty" : "", name);
+	if ((fd = open(buf, O_RDONLY)) < 0)
+		return;
+
+	ctw->ctw.nodraw++;
+
+	fstat(fd, &sbuf);
+	if (sbuf.st_size > backtrack_size)
+		lseek(fd, sbuf.st_size - backtrack_size, SEEK_SET);
+
+	while ((n = read(fd, buf, sizeof buf)) > 0) {
+		ctw_add_string2(ctw, buf, n);
+		}
+
+	close(fd);
+	ctw->ctw.nodraw--;
+}
 /* ARGSUSED */
 static void
 Resize(CtwWidget ctw)
@@ -1595,6 +1636,9 @@ Resize(CtwWidget ctw)
 			turn_on_cursor(ctw);
 			}
 		}
+
+	resize_refresh_from_log(ctw);
+
 	ctw->ctw.c_disabled_update = FALSE;
 
 	/***********************************************/
