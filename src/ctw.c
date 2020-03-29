@@ -549,6 +549,7 @@ void	*(*XftTextExtents8_ptr)();
 int	*(*XftColorAllocValue_ptr)();
 int	*(*XftDrawCreate_ptr)();
 int	*(*XftDrawDestroy_ptr)();
+int	*(*XftDrawDestroy_ptr)();
 int	*(*XftDrawStringUtf8_ptr)();
 # endif
 /**********************************************************************/
@@ -1480,6 +1481,10 @@ Destroy(CtwWidget ctw)
 
 	graph_destroy(ctw);
 	chk_free_ptr((void **) &ctw->ctw.c_lcache);
+# if HAVE_FREETYPE_XFT
+	if (ctw->ctw.c_xft_draw)
+		XftDrawDestroy_ptr(ctw->ctw.c_xft_draw);
+# endif
 
 	for (i = 0; i < ctw->ctw.max_lines + ctw->ctw.rows; i++)
 		chk_free((void *) ctw->ctw.c_lines[i].l_text);
