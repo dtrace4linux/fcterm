@@ -132,7 +132,7 @@ release:
 	strip bin/fcterm
 	../../crisp/bin/elfrewrite bin/fcterm
 	build=b`grep build_no include/build.h | sed -e 's/^.* \([0-9][0-9]*\).*$$/\1/'` ; \
-	build=$(date +%Y%m%d-)$build ; \
+	build=$(date +%Y%m%d-)$$build ; \
 	cd .. ; mv ctw ctw-$$build ; \
 	tar cvf - ctw-$$build/bin/fcterm \
 		ctw-$$build/Changes \
