@@ -52,6 +52,10 @@ Useful resources:
 
 Environment variables:
 
+CTW_BACKTRACK_SIZE
+    When resizing terminal, replay last NN bytes (default: 64k) so
+    that the lines are autowrapped on resize.
+
 CTW_ENABLE_PRIMARY       default: true
 CTW_ENABLE_SECONDARY     default: false
 CTW_ENABLE_CLIPBOARD     default: false
