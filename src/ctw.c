@@ -544,6 +544,7 @@ int	(*FT_Set_Char_Size_ptr)();
 # endif
 # if HAVE_FREETYPE_XFT
 XftFont	*(*XftFontOpen_ptr)();
+XftFont	*(*XftFontClose_ptr)();
 void	*(*XftTextExtents8_ptr)();
 int	*(*XftColorAllocValue_ptr)();
 int	*(*XftDrawCreate_ptr)();
@@ -1089,6 +1090,7 @@ init_freetype(CtwWidget new)
 		}
 
 	XftFontOpen_ptr = dlsym(handle, "XftFontOpen");
+	XftFontClose_ptr = dlsym(handle, "XftFontClose");
 	XftColorAllocValue_ptr = dlsym(handle, "XftColorAllocValue");
 	XftDrawCreate_ptr = dlsym(handle, "XftDrawCreate");
 	XftDrawDestroy_ptr = dlsym(handle, "XftDrawDestroy");
@@ -1587,6 +1589,17 @@ Resize(CtwWidget ctw)
 			}
 		}
 	ctw->ctw.c_disabled_update = FALSE;
+
+	/***********************************************/
+	/*   Clear turd of old line.		       */
+	/***********************************************/
+	XClearArea(XtDisplay(ctw), XtWindow(ctw), 
+		X_PIXEL(ctw, 0),
+		ROW_TO_PIXEL(ctw, ctw->ctw.rows),
+		ctw->ctw.columns * ctw->ctw.font_width,
+		ctw->ctw.font_height,
+		False);
+	update_region(ctw, 0, 0, ctw->ctw.rows, ctw->ctw.columns);
 }
 /**********************************************************************/
 /*   Method   called  when  application  wants  to  change  resource  */
@@ -5497,8 +5510,16 @@ static char *old_font;
 	if (!font || strcmp(font, "7x13bold") == 0)
 		font = "DejaVuSansMono";
 
+	if (new->ctw.xft_fontp) {
+		if (XftFontClose_ptr) {
+			XftFontClose_ptr(dpy, new->ctw.xft_fontp);
+			}
+		else {
+			printf("leaking freetype font? (no XftFontClose)\n");
+			}
+		}
+
 	new->ctw.xft_fontp = XftFontOpen_ptr(dpy, scr,
-//	                XFT_FAMILY, XftTypeString, "dejavuserifcondensed",
 	                XFT_FAMILY, XftTypeString, font,
         	        XFT_SIZE, XftTypeDouble, size ? atof(size) : 12.0,
                 	NULL);
@@ -5714,7 +5735,7 @@ static int	scol;
 	if (!XtIsManaged((Widget) ctw) && ctw->ctw.pixmap_mode == FALSE)
 		return;
 
-	if (scol == 0) {
+	if (sline == NULL) {
 		scol = ctw->ctw.columns;
 		sline = (unsigned char *) chk_zalloc(scol);
 		}

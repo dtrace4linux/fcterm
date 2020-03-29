@@ -1263,6 +1263,7 @@ set_title(fcterm_t *ctwp, int flags, char *title)
 	char	*name;
 	char	buf[BUFSIZ];
 static char *names[] = {XtNtitle, XtNiconName};
+	int	free_title = FALSE;
 
 	if (title == NULL) {
 		title = ctwp->f_title;
@@ -1273,12 +1274,14 @@ static char *names[] = {XtNtitle, XtNiconName};
 				ctwp->f_ttyname, 
 				ctwp->f_pid);
 			title = chk_strdup(buf);
+			free_title = TRUE;
 			}
 		}
 	else if (ctwp->f_id != 1) {
 		snprintf(buf, sizeof buf - 1, "(%s%d) %s", 
 			group_label, ctwp->f_id + 1, title);
 		title = chk_strdup(buf);
+		free_title = TRUE;
 		}
 
 	while (XtParent(w))
@@ -1301,7 +1304,7 @@ static char *names[] = {XtNtitle, XtNiconName};
 		if (strcmp(name, title) == 0)
 			continue;
 		n = 0;
-		XtSetArg(args[n], names[i], chk_strdup(title)); n++;
+		XtSetArg(args[n], names[i], title); n++;
 		XtSetValues(w, args, n);
 		}
 	if (ctwp->f_title == NULL)
@@ -1310,6 +1313,8 @@ static char *names[] = {XtNtitle, XtNiconName};
 		chk_free_ptr((void **) &ctwp->f_title);
 		ctwp->f_title = chk_strdup(title);
 		}
+	if (free_title)
+		chk_free(title);
 }
 /**********************************************************************/
 /*   Trap certain types of signals.				      */

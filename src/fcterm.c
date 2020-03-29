@@ -70,6 +70,7 @@ static char *ft_fonts[] = {
 	"DejaVu Sans Mono-15",
 	"DejaVu Sans Mono-16",
 	"DejaVu Sans Mono-17",
+	"DejaVu Sans Mono-18",
 	NULL
 	};
 static char **fonts = bitmap_fonts;
