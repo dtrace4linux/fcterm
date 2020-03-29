@@ -126,7 +126,7 @@ noise:
 	scp /tmp/noise2.bmp crispgw:release/website/site/images
 
 release:
-	b=`mkrelease.pl -incbuild` ; \
+	b=`mkrelease.pl -date -incbuild` ; \
 	$(MAKE) ; \
 	git commit -m "Release b$b" . || true
 	strip bin/fcterm
