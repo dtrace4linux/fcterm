@@ -2,3 +2,4 @@ bin
 bin.clang/
 bin.linux-x86_32/
 bin.linux-x86_64/
+tags

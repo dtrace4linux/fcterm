@@ -244,4 +244,4 @@ extern GC	gc;
 extern Pixmap map_pixmap;
 extern int	mwm_x_offset;
 extern int	mwm_y_offset;
-
+extern int verbose;

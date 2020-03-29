@@ -108,6 +108,8 @@ Escape sequences:
    ESC [1941 m   Zoom
    ESC [1942 m   Minimap
    ESC [1943; <id> m   Create new screen.  
+   ESC [1944 m   Font smaller
+   ESC [1945 m   Font larger
    ESC [n;m r	Set scrolling region to lines n..m.
    ESC [n;m r	Set scrolling region.
    ESC [s	Saved cursor position.

@@ -57,6 +57,8 @@ static char *bitmap_fonts[] = {
 	NULL
 	};
 static char *ft_fonts[] = {
+	"DejaVu Sans Mono-5",
+	"DejaVu Sans Mono-6",
 	"DejaVu Sans Mono-7",
 	"DejaVu Sans Mono-8",
 	"DejaVu Sans Mono-9",
@@ -197,6 +199,8 @@ static String fallback_resources[] = {
 /**********************************************************************/
 /*   Prototypes.						      */
 /**********************************************************************/
+void	font_larger(void);
+void	font_smaller(void);
 void	setup_cur_font(void);
 void handle_commands(int i, int argc, char **argv);
 fcterm_t *restore_label(void);
@@ -660,6 +664,20 @@ find_menu_item(struct menu_commands *tbl, int val)
 			return tbl[i].widget;
 		}
 }
+void
+font_larger()
+{
+  	if (fonts[cur_font + 1] == NULL)
+		return;
+	set_font(fonts[++cur_font]);
+}
+void
+font_smaller()
+{
+  	if (cur_font == 0)
+		return;
+	set_font(fonts[--cur_font]);
+}
 /**********************************************************************/
 /*   Handle commands - shortcuts to printing escape sequences.	      */
 /**********************************************************************/
@@ -673,9 +691,11 @@ handle_commands(int i, int argc, char **argv)
 "group / ungroup     Enable grouping of fcterm's. Grouping will keep the\n"
 "                    relative positions fixed. Useful when screen size\n"
 "                    changes.\n"
+"larger              Make font larger.\n"
 "minimap             Show minimap.\n"
 "restore <filename>  Restore position from saved state.\n"
 "search              Display search prompt.\n"
+"smaller             Make font smaller.\n"
 "status              Show status.\n"
 "zoom                Make window as tall as screen height\n"
 		;
@@ -715,6 +735,14 @@ handle_commands(int i, int argc, char **argv)
 			}
 		if (strcmp(cp, "search") == 0) {
 			printf("\033[1940mSearch mode enabled.\n");
+			continue;
+			}
+		if (strcmp(cp, "smaller") == 0) {
+			printf("\033[1944m");
+			continue;
+			}
+		if (strcmp(cp, "larger") == 0) {
+			printf("\033[1945m");
 			continue;
 			}
 		if (strcmp(cp, "status") == 0) {
@@ -964,14 +992,10 @@ menu_callback(Widget widget, enum menu_items val, caddr_t call_data)
 	  	ctw_get_selection((CtwWidget) cur_ctw->f_ctw);
 	  	break;
 	  case FONT_SMALLER:
-	  	if (cur_font == 0)
-			return;
-		set_font(fonts[--cur_font]);
+	  	font_smaller();
 		break;
 	  case FONT_LARGER:
-	  	if (fonts[cur_font + 1] == NULL)
-			return;
-		set_font(fonts[++cur_font]);
+	  	font_larger();
 		break;
 
 	  case SNAP_HISTORY:
@@ -2044,6 +2068,11 @@ set_font(char *font)
 	int	fwidth, fheight;
 	fcterm_t *ctwp;
 
+	if (strncmp(font, "* ", 2) == 0)
+		font += 2;
+	if (verbose)
+		printf("set_font [%d]: %s\n", cur_font, font);
+
 	do_wm_hints(top_level, cur_ctw->f_ctw, FALSE);
 
 	for (ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next) {
@@ -2060,6 +2089,12 @@ set_font(char *font)
 		XtSetArg(args[n], XtNrows, &rows); n++;
 		XtSetArg(args[n], XtNcolumns, &columns); n++;
 		XtGetValues(ctwp->f_ctw, args, n);
+		if (verbose)
+			printf("..font_size=%dx%d :: %dx%d rows=%d cols=%d\n", 
+				fwidth, fheight, 
+				ctwp->f_ctw->core.width,
+				ctwp->f_ctw->core.height,
+				rows, columns);
 		/***********************************************/
 		/*   Re-use the row column size.	       */
 		/***********************************************/

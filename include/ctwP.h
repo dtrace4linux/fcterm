@@ -183,6 +183,7 @@ typedef struct ctw_part {
 					/* to draw or flash.			*/
 	char		*ttyname;
 	int		prompting;	/* For detecting shell prompts. */
+	int		c_disabled_update;
 	/***********************************************/
 	/*   Graph list.			       */
 	/***********************************************/

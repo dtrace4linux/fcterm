@@ -703,8 +703,17 @@ input_callback(Widget w, int type, ctw_callback_t *reason)
 
 	cp = reason->ptr;
 //printf("input_callback: cur_ctw=%x\n", cur_ctw);
-	if (reason->reason == CTWR_PASTE_PROTECTED)
+	if (reason->reason == CTWR_PASTE_PROTECTED) {
+		int	i;
+		/***********************************************/
+		/*   Stub out any injection attacks.	       */
+		/***********************************************/
 		v_write(cur_ctw, "\033[200~", 6);
+		for (i = 0; i < len; i++) {
+			if (cp[i] == '\033' || cp[i] == ('o' & 0x1f))
+				cp[i] = '*';
+			}
+		}
 	v_write(cur_ctw, cp, len);
 	if (reason->reason == CTWR_PASTE_PROTECTED)
 		v_write(cur_ctw, "\033[201~", 6);

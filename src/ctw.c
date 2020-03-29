@@ -119,6 +119,8 @@
 /*   ESC [1941 m   Zoom                                               */
 /*   ESC [1942 m   Minimap                                            */
 /*   ESC [1943; <id> m   Create new screen.                           */
+/*   ESC [1944 m   Font smaller                                       */
+/*   ESC [1945 m   Font larger                                        */
 /*   ESC [n;m r	Set scrolling region to lines n..m.     	      */
 /*   ESC [n;m r	Set scrolling region.			      	      */
 /*   ESC [s	Saved cursor position.                  	      */
@@ -288,6 +290,7 @@ char	*mktemp();
 /**********************************************************************/
 # define	X_PIXEL(w, x) ((w->ctw.font_width * (x)) + w->ctw.internal_width)
 # define	Y_PIXEL(w, y) ((w->ctw.font_height * (y)) + w->ctw.font_ascent + w->ctw.internal_height)
+# define	ROW_PIXEL(w, y) ((w->ctw.font_height * (y)) + w->ctw.internal_height)
 
 /**********************************************************************/
 /*   ROW_TO_PIXEL  is  similar  to  Y_PIXEL  but  mustnt be used for  */
@@ -544,6 +547,7 @@ XftFont	*(*XftFontOpen_ptr)();
 void	*(*XftTextExtents8_ptr)();
 int	*(*XftColorAllocValue_ptr)();
 int	*(*XftDrawCreate_ptr)();
+int	*(*XftDrawDestroy_ptr)();
 int	*(*XftDrawStringUtf8_ptr)();
 # endif
 /**********************************************************************/
@@ -555,8 +559,11 @@ void verify(CtwWidget ctw);
 static void ctw_log_string(CtwWidget ctw, char *str, int len);
 void group_enable(int n);
 void	zoom_window();
+void	reset_freetype_font(CtwWidget, char *);
 int	mysscanf(char *, char *, ...);
 void	show_map();
+void	font_smaller(void);
+void	font_larger(void);
 static void show_status(CtwWidget ctw);
 static long map_rgb_to_visual_rgb(CtwWidget ctw, long rgb);
 static void graph_destroy(CtwWidget ctw);
@@ -796,6 +803,7 @@ alloc_screen(CtwWidget ctw, int clear_flag)
 	if (ctw->ctw.rows == ctw->ctw.old_rows && ctw->ctw.columns == ctw->ctw.old_columns)
 		return;
 
+//printf("alloc_screen: rows=%d cols=%d old_rows=%d old_columns=%d\n", ctw->ctw.rows, ctw->ctw.columns, ctw->ctw.old_rows, ctw->ctw.old_columns);
 	turn_off_cursor(ctw);
 	/***********************************************/
 	/*   If   window   is  changing  width,  then  */
@@ -805,6 +813,7 @@ alloc_screen(CtwWidget ctw, int clear_flag)
 	/*   columns handy.			       */
 	/***********************************************/
 	if (ctw->ctw.rows == ctw->ctw.old_rows) {
+//printf("%d alloc_screen herre1\n", __LINE__);
 		if (ctw->ctw.columns < ctw->ctw.old_columns) {
 			goto tidy_up;
 			}
@@ -828,6 +837,7 @@ alloc_screen(CtwWidget ctw, int clear_flag)
 		line_t	*lp;
 		int	nend;
 		/*int	new_rows = ctw->ctw.rows - ctw->ctw.old_rows;*/
+//printf("%d alloc_screen herre1\n", __LINE__);
 
 		/***********************************************/
 		/*   If  window  keeping  same width but just  */
@@ -836,10 +846,12 @@ alloc_screen(CtwWidget ctw, int clear_flag)
 		/*   whole memory space.		       */
 		/***********************************************/
 		if (ctw->ctw.rows < ctw->ctw.old_rows) {
-/*printf("resize smaller %d -> %d (dtop=%d)\n", ctw->ctw.old_rows, ctw->ctw.rows, dsp_get_top(ctw));*/
+//printf("%d: resize smaller %d -> %d (dtop=%d)\n", __LINE__, ctw->ctw.old_rows, ctw->ctw.rows, dsp_get_top(ctw));
 			for (i = ctw->ctw.max_lines + ctw->ctw.rows; 
-			     i < ctw->ctw.max_lines + ctw->ctw.old_rows; i++)
+			     i < ctw->ctw.max_lines + ctw->ctw.old_rows; i++) {
+//printf("free row %d %p\n", i, ctw->ctw.c_lines[i].l_text);
 				chk_free_ptr((void **) &ctw->ctw.c_lines[i].l_text);
+				}
 			/*
 			for (i = dsp_get_top(ctw) + ctw->ctw.rows; 
 				i < dsp_get_max_lines(ctw) + ctw->ctw.rows; i++) {
@@ -857,6 +869,7 @@ alloc_screen(CtwWidget ctw, int clear_flag)
 			goto tidy_up;
 			}
 /*printf("resize BIGGER %d -> %d\n", ctw->ctw.old_rows, ctw->ctw.rows);*/
+//printf("%d alloc_screen herre1\n", __LINE__);
 		/***********************************************/
 		/*   Must  be  getting  taller allocate extra  */
 		/*   lines and blacken them.		       */
@@ -886,6 +899,7 @@ alloc_screen(CtwWidget ctw, int clear_flag)
 	/*   possible.				       */
 	/***********************************************/
 	old_max_lines = ctw->ctw.max_lines;
+//printf("%d alloc_screen herre1 rows=%d cols=%d\n", __LINE__, ctw->ctw.rows, ctw->ctw.columns);
 	if (ctw->ctw.c_lines) {
 		rows = ctw->ctw.old_rows + ctw->ctw.max_lines;
 		old_lines = (line_t *) chk_alloc(rows * sizeof(line_t));
@@ -1058,9 +1072,6 @@ init_freetype(CtwWidget new)
 	int	i;
 	void *handle = NULL;
 
-	Display *dpy = XtDisplay((Widget) new);
-	int scr = DefaultScreen(dpy);
-
 	if ((cp = getenv("CR_LIBFREETYPE_SO")) != NULL) {
 		handle = dlopen(cp, RTLD_LAZY);
 		//trace_log("CR_LIBFREETYPE_SO libXft:%s: %p\n", cp, handle);
@@ -1080,39 +1091,11 @@ init_freetype(CtwWidget new)
 	XftFontOpen_ptr = dlsym(handle, "XftFontOpen");
 	XftColorAllocValue_ptr = dlsym(handle, "XftColorAllocValue");
 	XftDrawCreate_ptr = dlsym(handle, "XftDrawCreate");
+	XftDrawDestroy_ptr = dlsym(handle, "XftDrawDestroy");
 	XftDrawStringUtf8_ptr = dlsym(handle, "XftDrawStringUtf8");
 	XftTextExtents8_ptr = dlsym(handle, "XftTextExtents8");
 
-	if (XftFontOpen_ptr) {
-		/* Fonts: bitstream vera sans mono */
-		/* Sans Serif-7 */
-		/* Free Mono-12 */
-static char *old_font;
-
-		char	*font = new->ctw.font;
-		char *size = NULL;
-		if (font) {
-			chk_free_ptr((void **) &old_font);
-			old_font = font = chk_strdup(font);
-			size = strchr(font, '-');
-			if (size)
-				*size++ = '\0';
-			}
-		if (!font || strcmp(font, "7x13bold") == 0)
-			font = "DejaVuSansMono";
-
-		new->ctw.xft_fontp = XftFontOpen_ptr(dpy, scr,
-	//	                XFT_FAMILY, XftTypeString, "dejavuserifcondensed",
-		                XFT_FAMILY, XftTypeString, font,
-	        	        XFT_SIZE, XftTypeDouble, size ? atof(size) : 12.0,
-	                	NULL);
-		if (new->ctw.xft_fontp == NULL) {
-			printf("fcterm: cannot load FreeType font: %s\n",
-				new->ctw.font);
-			}
-		freetype_enabled = TRUE;
-		//printf("Xft: initialised (%s)\n", new->ctw.font);
-		}
+	reset_freetype_font(new, new->ctw.font);
 	}
 # endif
 }
@@ -1452,6 +1435,7 @@ realize(Widget w, XtValueMask *valueMask, XSetWindowAttributes *attributes)
 
 	new->ctw.flags[CTW_ERASE_BLACK] = TRUE;
 	new->ctw.flags[CTW_CUT_NEWLINES] = TRUE;
+	new->ctw.c_disabled_update = FALSE;
 
 	/***********************************************/
 	/*   Be    careful    in   case   we   change  */
@@ -1544,11 +1528,11 @@ HandleExpose(Widget w, XExposeEvent *event)
 }
 /* ARGSUSED */
 static void
-Resize(CtwWidget w)
+Resize(CtwWidget ctw)
 {	int	x, y;
 	int	diff;
 
-	if (!XtIsRealized((Widget) w))
+	if (!XtIsRealized((Widget) ctw))
 		return;
 
 	/***********************************************/
@@ -1557,48 +1541,52 @@ Resize(CtwWidget w)
 	/*   we  adjusted  rows/cols  before  we have  */
 	/*   done the allocation.		       */
 	/***********************************************/
-	turn_off_cursor(w);
+	turn_off_cursor(ctw);
+
+	ctw->ctw.c_disabled_update = TRUE;
 
 	/***********************************************/
 	/*   Stop  ctw_get_xy()  from stopping window  */
 	/*   from getting bigger.		       */
 	/***********************************************/
-	w->ctw.rows = 32767;
-	w->ctw.columns = 32767;
-	ctw_get_xy(w, &y, &x, w->core.width, w->core.height);
+	ctw->ctw.rows = 32767;
+	ctw->ctw.columns = 32767;
+	ctw_get_xy(ctw, &y, &x, ctw->core.width, ctw->core.height);
 	if (y < 1)
 		y = 1;
 	if (x < 1)
 		x = 1;
-	w->ctw.rows = y;
-	w->ctw.columns = x;
-	w->ctw.scroll_top = 0;
-	w->ctw.scroll_bot = y;
-	w->ctw.flags[CTW_SCROLLING_REGION] = FALSE;
+	ctw->ctw.rows = y;
+	ctw->ctw.columns = x;
+	ctw->ctw.scroll_top = 0;
+	ctw->ctw.scroll_bot = y;
+	ctw->ctw.flags[CTW_SCROLLING_REGION] = FALSE;
 
 	/***********************************************/
 	/*   try  and  make  the bottom of the scroll  */
 	/*   area take up the slack so we can now see  */
 	/*   more text.                                */
 	/***********************************************/
-	diff = w->ctw.rows - w->ctw.old_rows;
+	diff = ctw->ctw.rows - ctw->ctw.old_rows;
+//printf("Resize: rows=%d cols=%d old_rows=%d old_columns=%d top=%d diff=%d\n", ctw->ctw.rows, ctw->ctw.columns, ctw->ctw.old_rows, ctw->ctw.old_columns, dsp_get_top(ctw), diff);
 	if (diff < 0) {
-		turn_off_cursor(w);
-		ctw_set_top_line(w, dsp_get_top(w) - diff);
-		w->ctw.old_top_line = -1;
-		turn_on_cursor(w);
+		turn_off_cursor(ctw);
+		ctw_set_top_line(ctw, dsp_get_top(ctw) - diff);
+		ctw->ctw.old_top_line = -1;
+		turn_on_cursor(ctw);
 		}
-	alloc_screen(w, FALSE);
+	alloc_screen(ctw, FALSE);
 	if (diff > 0) {
-		int n = dsp_get_top(w) - diff;
+		int n = dsp_get_top(ctw) - diff;
 		if (n > 0) {
-			turn_off_cursor(w);
-			w->ctw.y += diff;
-			ctw_set_top_line(w, n);
-			w->ctw.old_top_line = -1;
-			turn_on_cursor(w);
+			turn_off_cursor(ctw);
+			ctw->ctw.y += diff;
+			ctw_set_top_line(ctw, n);
+			ctw->ctw.old_top_line = -1;
+			turn_on_cursor(ctw);
 			}
 		}
+	ctw->ctw.c_disabled_update = FALSE;
 }
 /**********************************************************************/
 /*   Method   called  when  application  wants  to  change  resource  */
@@ -1622,6 +1610,10 @@ Set_values(CtwWidget cur, CtwWidget req, CtwWidget new, ArgList args, Cardinal *
 			XSetFont(XtDisplay(new), new->ctw.gc, fp->fid);
 			XSetFont(XtDisplay(new), new->ctw.cursor_gc, fp->fid);
 			XSetFont(XtDisplay(new), new->ctw.line_gc, fp->fid);
+			refresh_needed = TRUE;
+			}
+		else {
+			reset_freetype_font(new, new->ctw.font);
 			refresh_needed = TRUE;
 			}
 		}
@@ -3781,8 +3773,231 @@ draw_special_line_chars(CtwWidget ctw, int row, int c, char *buf, int len,
 
 			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
 			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
-				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row - 1),
-				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, Y_PIXEL(ctw, row));
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, ROW_PIXEL(ctw, row),
+				X_PIXEL(ctw, c + len - 1) + ctw->ctw.font_width / 2, ROW_PIXEL(ctw, row + 1));
+			buf++;
+			c++;
+		  	continue;
+
+		  case 'k': /* -+
+		  		|
+		  		 */
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row + 1));
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c), 
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c)  + ctw->ctw.font_width / 2,
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2);
+			buf++;
+			c++;
+		  	continue;
+
+		  case 'l': /*  +-
+		                |
+			    */
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row + 1));
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2,
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c + 1), 
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2);
+			buf++;
+			c++;
+		  	continue;
+
+		  case 'm': /*  | 
+		                +-
+			    */
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row),
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2,
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c + 1), 
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent + ctw->ctw.font_height / 2);
+			buf++;
+			c++;
+		  	continue;
+
+		  case 'j': /*   | 
+		                -+
+			    */
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row),
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c)  + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2);
+			buf++;
+			c++;
+		  	continue;
+
+		  case 't': /*   |_
+		                 |
+			    */
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row),
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row + 1));
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2,
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c + 1), 
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2);
+			buf++;
+			c++;
+		  	continue;
+
+		  case 'u': /*  _|
+		                 |
+			    */
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row),
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row + 1));
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c) +  ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2);
+			buf++;
+			c++;
+		  	continue;
+
+		  case 'w': /*  ___
+		                 |
+			    */
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row + 1));
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c + 1),
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2);
+			buf++;
+			c++;
+		  	continue;
+
+		  case 'v': /*  _|_
+			    */
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row),
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c + 1),
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2);
+			buf++;
+			c++;
+		  	continue;
+
+		  case 'n': /*  +  
+			    */
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, bg);
+			XFillRectangle(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				Y_PIXEL(ctw, row) - ctw->ctw.font_ascent,
+				ctw->ctw.font_width, 
+				ctw->ctw.font_height + 1);
+
+			XSetForeground(XtDisplay(ctw), ctw->ctw.gc, fg);
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row),
+				X_PIXEL(ctw, c) + ctw->ctw.font_width / 2, 
+				ROW_PIXEL(ctw, row + 1));
+			XDrawLine(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.gc,
+				X_PIXEL(ctw, c),
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2,
+				X_PIXEL(ctw, c + 1),
+				ROW_PIXEL(ctw, row) + ctw->ctw.font_height / 2);
 			buf++;
 			c++;
 		  	continue;
@@ -3893,7 +4108,7 @@ draw_special_line_chars(CtwWidget ctw, int row, int c, char *buf, int len,
 			if (*bp == 0x01 || *bp == 0x02 || *bp == 0x03 ||
 			    *bp == '|' || *bp == '}' || *bp == ' ')
 				break;
-			if (custom && strchr("qx", *bp))
+			if (custom && strchr("qxklmjtuw", *bp))
 				break;
 
 			if (*bp >= 0x5f && *bp <= 0x7e)
@@ -5256,6 +5471,52 @@ reset_font(CtwWidget w, int delete_flag)
 # endif
 	return 0;
 }
+
+void
+reset_freetype_font(CtwWidget new, char *font)
+{
+static char *old_font;
+	Display *dpy = XtDisplay((Widget) new);
+	int scr = DefaultScreen(dpy);
+
+	if (XftFontOpen_ptr == NULL)
+		return;
+
+	/* Fonts: bitstream vera sans mono */
+	/* Sans Serif-7 */
+	/* Free Mono-12 */
+
+	char *size = NULL;
+	if (font) {
+		chk_free_ptr((void **) &old_font);
+		old_font = font = chk_strdup(font);
+		size = strchr(font, '-');
+		if (size)
+			*size++ = '\0';
+		}
+	if (!font || strcmp(font, "7x13bold") == 0)
+		font = "DejaVuSansMono";
+
+	new->ctw.xft_fontp = XftFontOpen_ptr(dpy, scr,
+//	                XFT_FAMILY, XftTypeString, "dejavuserifcondensed",
+	                XFT_FAMILY, XftTypeString, font,
+        	        XFT_SIZE, XftTypeDouble, size ? atof(size) : 12.0,
+                	NULL);
+	if (new->ctw.xft_fontp == NULL) {
+		printf("fcterm: cannot load FreeType font: %s\n",
+			new->ctw.font);
+		return;
+		}
+	
+	new->ctw.font_height = new->ctw.xft_fontp->ascent + new->ctw.xft_fontp->descent;
+	new->ctw.font_width = new->ctw.xft_fontp->max_advance_width;
+	new->ctw.font_ascent = new->ctw.xft_fontp->ascent;
+	new->ctw.font_descent = new->ctw.xft_fontp->descent;
+
+	freetype_enabled = TRUE;
+	//printf("Xft: initialised (%s)\n", new->ctw.font);
+}
+
 /**********************************************************************/
 /*   Create a mask for showing search strings.			      */
 /**********************************************************************/
@@ -5265,6 +5526,7 @@ static struct match_t {
 	int	m_bg;
 	int	m_flag;
 	} _matches[] = {
+	{"critical", 	34, 45, LA_MATCH},
 	{"fatal", 	34, 45, LA_MATCH},
 	{"error", 	34, 45, LA_MATCH},
 	{"fail", 	34, 45, LA_MATCH},
@@ -6559,6 +6821,12 @@ check_cursor:
 			  	/*   to be a fcterm_t struct.		       */
 			  	/***********************************************/
 				switch_screen(args[++i]);
+				break;
+			  case 1944:
+			  	font_smaller();
+				break;
+			  case 1945:
+			  	font_larger();
 				break;
 			  }
 			}
@@ -8282,6 +8550,7 @@ ctw_set_top_line(CtwWidget ctw, int top_line)
 {	ctw_callback_t	reason;
 	int	old_top;
 	int	amt_to_scroll;
+	int	sl, sc, el, ec;
 
 /*
 printf("%p set top %d (top=%d dsp_top=%d)\n", ctw, top_line, ctw->ctw.top_line, dsp_get_top(ctw));
@@ -8320,19 +8589,28 @@ printf("%p set top %d (top=%d dsp_top=%d)\n", ctw, top_line, ctw->ctw.top_line, 
 	if (top_line < old_top && top_line + ctw->ctw.rows - 2 > old_top) {
 		amt_to_scroll = old_top - top_line;
 		insert_line(ctw, 0, ctw->ctw.rows, amt_to_scroll, FALSE);
-		update_region(ctw, 0, 0, 
-			amt_to_scroll, ctw->ctw.columns);
+		sl = 0;
+		sc = 0;
+		el = amt_to_scroll;
+		ec = ctw->ctw.columns;
 		}
 	else if (top_line > old_top && top_line < old_top + ctw->ctw.rows) {
 		amt_to_scroll = top_line - old_top;
 		delete_line(ctw, 0, amt_to_scroll);
-		update_region(ctw, ctw->ctw.rows - amt_to_scroll, 0, 
-			ctw->ctw.rows, ctw->ctw.columns);
+		sl = ctw->ctw.rows - amt_to_scroll;
+		sc = 0; 
+		el = ctw->ctw.rows;
+		ec = ctw->ctw.columns;
 		}
 	else {
 /*printf(" .. here3 top_line=%d old_top=%d rows=%d\n", top_line, old_top, ctw->ctw.rows);*/
-		update_region(ctw, 0, 0, ctw->ctw.rows, ctw->ctw.columns);
+		sl = 0;
+		sc = 0;
+		el = ctw->ctw.rows;
+		ec = ctw->ctw.columns;
 		}
+//printf("calling update_region(%d, %d, %d, %d) rows=%d columns=%d\n", sl, sc, el, ec, ctw->ctw.rows, ctw->ctw.columns);
+	update_region(ctw, sl, sc, el, ec);
 	/***********************************************/
 	/*   Let user affect a scrollbar.	       */
 	/***********************************************/
@@ -8659,6 +8937,9 @@ unhilite(CtwWidget ctw)
 static void
 update_region(CtwWidget ctw, int start_line, int start_col, int end_line, int end_col)
 {	int	r;
+
+	if (ctw->ctw.c_disabled_update)
+		return;
 
 /*printf("update_region: %d,%d -> %d,%d\n", start_line, start_col, end_line, end_col);*/
 	if (end_line > ctw->ctw.rows)
