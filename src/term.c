@@ -367,13 +367,28 @@ close_screen(fcterm_t *ctwp)
 }
 void
 create_icon_pixmap()
-{	Pixmap	pixmap;
-	Pixmap	pixmap_mask;
-	XpmAttributes xpm_attr;
+{	static Pixmap	pixmap;
+	static Pixmap	pixmap_mask;
+	static XpmAttributes xpm_attr;
 	Arg	args[20];
 	int	err;
 	Display	*dpy = XtDisplay(top_level);
-	Window	win;
+	static Window	win;
+
+	/***********************************************/
+	/*   Size of the "screen" in the XPM image     */
+	/***********************************************/
+	int	im_x = 15;
+	int	im_y = 6;
+	int	im_w = 35;
+	int	im_h = 26;
+
+	if (pixmap) {
+		XFreePixmap(dpy, pixmap);
+		}
+	if (pixmap_mask) {
+		XFreePixmap(dpy, pixmap_mask);
+		}
 
 	pixmap = XCreateBitmapFromData(dpy, XtWindow(top_level),
 		fcterm_bits, fcterm_width, fcterm_height);
@@ -383,6 +398,7 @@ create_icon_pixmap()
 	/***********************************************/
 	/*   Do color bitmap.			       */
 	/***********************************************/
+	XpmFreeAttributes(&xpm_attr);
 	memset((char *) &xpm_attr, 0, sizeof xpm_attr);
 	err = XpmCreatePixmapFromData(dpy,
 			RootWindow(dpy, DefaultScreen(dpy)),
@@ -391,6 +407,24 @@ create_icon_pixmap()
 			&pixmap_mask,
 			&xpm_attr
 			);
+	int sw = WidthOfScreen(DefaultScreenOfDisplay(dpy));
+	int sh = HeightOfScreen(DefaultScreenOfDisplay(dpy));
+	int nw = (int) (((float) top_level->core.width / sw) * im_w);
+	int nh = (int) (((float) top_level->core.height / sh) * im_h);
+//printf("top: %dx%d screen=%dx%d new=%dx%d\n", top_level->core.width, top_level->core.height, sw, sh, nw, nh);
+
+	XSetForeground(dpy, gc, 0x202020);
+	
+	int xpm_x = im_x + (int) (((float) top_level->core.x / sw) * im_w);
+	int xpm_y = im_y + (int) (((float) top_level->core.y / sh) * im_h);
+	int xpm_w = (int) (((float) top_level->core.width / sw) * im_w);
+	int xpm_h = (int) (((float) top_level->core.height / sh) * im_h);
+
+	XFillRectangle(dpy, pixmap, gc,
+		xpm_x, xpm_y, xpm_w, xpm_h);
+
+	if (win)
+		XDestroyWindow(dpy, win);
 	win = XCreateSimpleWindow(dpy,
 		RootWindow(dpy, DefaultScreen(dpy)),
 		0, 0, 64, 55, 0, 0, 0);
@@ -405,6 +439,8 @@ create_icon_pixmap()
 
 	/***********************************************/
 	/*   Create the _NET_WM_ICON.		       */
+	/*   KDE  will  accept  this in preference to  */
+	/*   the above.				       */
 	/***********************************************/
 	{int	sz;
 	int	i, x, y;
@@ -415,6 +451,12 @@ static CARD32 *arr;
 
 	err = XpmCreateImageFromData(dpy, fcterm_xpm, &xim, NULL, NULL);
 	UNUSED_PARAMETER(err);
+	for (y = xpm_y; y < xpm_y + xpm_h; y++) {
+		for (x = xpm_x; x < xpm_x + xpm_w; x++) {
+			XPutPixel(xim, x, y, 0x000000);
+		}
+	}
+
 //printf("xim=%p %dx%d\n", xim, xim->width, xim->height);
 
 	_net_wm_icon = XInternAtom(dpy, "_NET_WM_ICON", FALSE);
@@ -423,6 +465,9 @@ static CARD32 *arr;
 	i = 0;
 	arr[i++] = xim->width;
 	arr[i++] = xim->height;
+	/***********************************************/
+	/*   Remove any transparency.		       */
+	/***********************************************/
 	for (y = 0; y < xim->height; y++) {
 		for (x = 0; x < xim->width; x++) {
 			Pixel p = XGetPixel(xim, x, y);

@@ -2215,6 +2215,7 @@ structure_notify_callback(Widget w, XtPointer ptr, XEvent *event)
 			ep->x - mwm_x_offset, 
 			ep->y - mwm_y_offset,
 			ep->width, ep->height);
+		create_icon_pixmap();
 	  	break;
 		}
 
