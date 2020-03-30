@@ -409,8 +409,8 @@ create_icon_pixmap()
 			);
 	int sw = WidthOfScreen(DefaultScreenOfDisplay(dpy));
 	int sh = HeightOfScreen(DefaultScreenOfDisplay(dpy));
-	int nw = (int) (((float) top_level->core.width / sw) * im_w);
-	int nh = (int) (((float) top_level->core.height / sh) * im_h);
+//	int nw = (int) (((float) top_level->core.width / sw) * im_w);
+//	int nh = (int) (((float) top_level->core.height / sh) * im_h);
 //printf("top: %dx%d screen=%dx%d new=%dx%d\n", top_level->core.width, top_level->core.height, sw, sh, nw, nh);
 
 	XSetForeground(dpy, gc, 0x202020);
