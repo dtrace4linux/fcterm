@@ -426,6 +426,11 @@ enum ctw_flags { /* edit attr_names in ctw.c */
 void	ctw_add_string(CtwWidget, char *, int);
 
 /**********************************************************************/
+/*   Asciitext record/pause/stop				      */
+/**********************************************************************/
+int	ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn);
+
+/**********************************************************************/
 /*   Add string to display but dont interpret any control sequences.  */
 /*   Just display raw glyphs.					      */
 /**********************************************************************/

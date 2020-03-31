@@ -121,6 +121,8 @@
 /*   ESC [1943; <id> m   Create new screen.                           */
 /*   ESC [1944 m   Font smaller                                       */
 /*   ESC [1945 m   Font larger                                        */
+/*   ESC [1946 m   Record asciitext                                   */
+/*   ESC [1947 m   Stop asciitext recording                           */
 /*   ESC [n;m r	Set scrolling region to lines n..m.     	      */
 /*   ESC [n;m r	Set scrolling region.			      	      */
 /*   ESC [s	Saved cursor position.                  	      */
@@ -564,8 +566,10 @@ void	zoom_window();
 void	reset_freetype_font(CtwWidget, char *);
 int	mysscanf(char *, char *, ...);
 void	show_map();
-void	font_smaller(void);
-void	font_larger(void);
+void	cmd_font_smaller(void);
+void	cmd_font_larger(void);
+void	cmd_asciitext_record(CtwWidget);
+void	cmd_asciitext_stop(CtwWidget);
 static void show_status(CtwWidget ctw);
 static long map_rgb_to_visual_rgb(CtwWidget ctw, long rgb);
 static void graph_destroy(CtwWidget ctw);
@@ -1477,6 +1481,12 @@ Destroy(CtwWidget ctw)
 	if (wheel_timer) {
 		XtRemoveTimeOut(wheel_timer);
 		wheel_timer = 0;
+		}
+
+	if (ctw->ctw.c_asciitext_fp) {
+		chk_free_ptr((void **) &ctw->ctw.c_asciitext_fn);
+		fclose(ctw->ctw.c_asciitext_fp);
+		ctw->ctw.c_asciitext_fp = NULL;
 		}
 
 	graph_destroy(ctw);
@@ -6905,10 +6915,16 @@ check_cursor:
 				switch_screen(args[++i]);
 				break;
 			  case 1944:
-			  	font_smaller();
+			  	cmd_font_smaller();
 				break;
 			  case 1945:
-			  	font_larger();
+			  	cmd_font_larger();
+				break;
+			  case 1946:
+			  	cmd_asciitext_record(ctw);
+				break;
+			  case 1947:
+			  	cmd_asciitext_stop(ctw);
 				break;
 			  }
 			}
@@ -7970,6 +7986,48 @@ start_again:
 		XtCallCallbacks((Widget) ctw, XtNtopCallback, (caddr_t) &reason);
 		}
 }
+int
+ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
+{	FILE	*fp;
+	char	buf[BUFSIZ];
+
+	switch (cmd) {
+	  case 1:
+		if (ctw->ctw.c_asciitext_fp) {
+			printf("ctw: %s: already recording\n", fn);
+			return -1;
+		}
+		if ((fp = fopen(fn, "w")) == NULL) {
+			printf("ctw: %s - %s", fn, strerror(errno));
+			return -1;
+		}
+		ctw->ctw.c_asciitext_fn = chk_strdup(fn);
+		snprintf(buf, sizeof buf, "[ctw: recording: %s]\r\n", fn);
+		ctw_add_string2(ctw, buf, strlen(buf));
+		ctw->ctw.c_asciitext_fp = fp;
+		fprintf(fp, "{\"version\": 2, \"width\": %d, \"height\": %d, \"timestamp\":, %lu, ",
+			ctw->ctw.columns, ctw->ctw.rows, time(NULL));
+		fprintf(fp, " \"title\": \"Demo\", \"env: {\"");
+		fprintf(fp, "\"TERM\": \"%s\", ", getenv("TERM"));
+		fprintf(fp, "\"SHELL\": \"%s\", ", getenv("SHELL"));
+		fprintf(fp, "}}\n");
+		gettimeofday(&ctw->ctw.c_asciitext_start, NULL);
+		break;
+
+	  case 2:
+		if (ctw->ctw.c_asciitext_fp) {
+			snprintf(buf, sizeof buf, "[ctw: stopped: %s]\r\n", ctw->ctw.c_asciitext_fn);
+			ctw_add_string2(ctw, buf, strlen(buf));
+			chk_free_ptr((void **) &ctw->ctw.c_asciitext_fn);
+
+			fclose(ctw->ctw.c_asciitext_fp);
+			ctw->ctw.c_asciitext_fp = NULL;
+			}
+	  	break;
+	  }
+
+	return 0;
+}
 /**********************************************************************/
 /*   Popup the command line prompt.				      */
 /**********************************************************************/
@@ -8269,6 +8327,30 @@ ctw_log_string(CtwWidget ctw, char *str, int len)
 	
 	if (!ctw->ctw.c_logging_enabled)
 		return;
+
+	if (ctw->ctw.c_asciitext_fp) {
+		struct timeval t;
+		struct timeval tdiff;
+		gettimeofday(&t, NULL);
+		timersub(&t, &ctw->ctw.c_asciitext_start, &tdiff);
+
+		fprintf(ctw->ctw.c_asciitext_fp, "[%ld.%06ld, \"o\", \"", 
+			tdiff.tv_sec, tdiff.tv_usec);
+		for (i = 0; i < len; i++) {
+			int ch = str[i];
+			if (ch == '\n')
+				fprintf(ctw->ctw.c_asciitext_fp, "\\n");
+			else if (ch == '\r')
+				fprintf(ctw->ctw.c_asciitext_fp, "\\r");
+			else if (ch == '"')
+				fprintf(ctw->ctw.c_asciitext_fp, "\\\"");
+			else if (ch < ' ' || ch >= 0x7f)
+				fprintf(ctw->ctw.c_asciitext_fp, "\\u%04x", ch);
+			else
+				fprintf(ctw->ctw.c_asciitext_fp, "%c", ch);
+			}
+		fprintf(ctw->ctw.c_asciitext_fp, "\"]\n");
+	}
 
 	name = ctw->ctw.ttyname ? basename(ctw->ctw.ttyname) : "ZZ";
 	

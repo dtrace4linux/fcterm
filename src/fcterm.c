@@ -200,8 +200,8 @@ static String fallback_resources[] = {
 /**********************************************************************/
 /*   Prototypes.						      */
 /**********************************************************************/
-void	font_larger(void);
-void	font_smaller(void);
+void	cmd_font_larger(void);
+void	cmd_font_smaller(void);
 void	setup_cur_font(void);
 void handle_commands(int i, int argc, char **argv);
 fcterm_t *restore_label(void);
@@ -534,6 +534,46 @@ my_sscanf(char *str, int *x, int *y)
 	*y = atoi(str);
 	return 2;
 }
+
+void
+cmd_asciitext_record(CtwWidget ctw)
+{	char	*fn = NULL;
+	char	buf[BUFSIZ];
+	char	buf2[BUFSIZ];
+	time_t t;
+	if (fn == NULL) {
+		t = time(NULL);
+		strftime(buf2, sizeof buf2, "%Y%m%d-%H%M%S", localtime(&t));
+		snprintf(buf, sizeof buf, 
+			"/tmp/%s.record-%s.cast",
+			getenv("USER"), buf2);
+		fn = buf;
+		}
+
+	ctw_asciitext_record(ctw, 1, fn);
+}
+
+void
+cmd_asciitext_stop(CtwWidget ctw)
+{
+	ctw_asciitext_record(ctw, 2, NULL);
+}
+
+void
+cmd_font_larger()
+{
+  	if (fonts[cur_font + 1] == NULL)
+		return;
+	set_font(fonts[++cur_font]);
+}
+void
+cmd_font_smaller()
+{
+  	if (cur_font == 0)
+		return;
+	set_font(fonts[--cur_font]);
+}
+
 /**********************************************************************/
 /*   Create a new popup menu.					      */
 /**********************************************************************/
@@ -665,20 +705,6 @@ find_menu_item(struct menu_commands *tbl, int val)
 			return tbl[i].widget;
 		}
 }
-void
-font_larger()
-{
-  	if (fonts[cur_font + 1] == NULL)
-		return;
-	set_font(fonts[++cur_font]);
-}
-void
-font_smaller()
-{
-  	if (cur_font == 0)
-		return;
-	set_font(fonts[--cur_font]);
-}
 /**********************************************************************/
 /*   Handle commands - shortcuts to printing escape sequences.	      */
 /**********************************************************************/
@@ -694,6 +720,7 @@ handle_commands(int i, int argc, char **argv)
 "                    changes.\n"
 "larger              Make font larger.\n"
 "minimap             Show minimap.\n"
+"record <filename>   Record asciitext v2\n"
 "restore <filename>  Restore position from saved state.\n"
 "search              Display search prompt.\n"
 "smaller             Make font smaller.\n"
@@ -725,6 +752,10 @@ handle_commands(int i, int argc, char **argv)
 			printf("\033[1938;0mGrouping disabled.\n");
 			continue;
 			}
+		if (strcmp(cp, "record") == 0) {
+			printf("\033[1946m");
+			continue;
+			}
 		if (strcmp(cp, "restore") == 0) {
 			if (i + 1 >= argc) {
 				printf("usage: restore <filename>\n");
@@ -744,6 +775,10 @@ handle_commands(int i, int argc, char **argv)
 			}
 		if (strcmp(cp, "larger") == 0) {
 			printf("\033[1945m");
+			continue;
+			}
+		if (strcmp(cp, "stop") == 0) {
+			printf("\033[1947m");
 			continue;
 			}
 		if (strcmp(cp, "status") == 0) {
@@ -993,10 +1028,10 @@ menu_callback(Widget widget, enum menu_items val, caddr_t call_data)
 	  	ctw_get_selection((CtwWidget) cur_ctw->f_ctw);
 	  	break;
 	  case FONT_SMALLER:
-	  	font_smaller();
+	  	cmd_font_smaller();
 		break;
 	  case FONT_LARGER:
-	  	font_larger();
+	  	cmd_font_larger();
 		break;
 
 	  case SNAP_HISTORY:

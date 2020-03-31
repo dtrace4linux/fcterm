@@ -184,6 +184,14 @@ typedef struct ctw_part {
 	char		*ttyname;
 	int		prompting;	/* For detecting shell prompts. */
 	int		c_disabled_update;
+
+	/***********************************************/
+	/*   Asciitext				       */
+	/***********************************************/
+	char		*c_asciitext_fn;
+	FILE		*c_asciitext_fp;
+	struct timeval	c_asciitext_start;
+
 	/***********************************************/
 	/*   Graph list.			       */
 	/***********************************************/
