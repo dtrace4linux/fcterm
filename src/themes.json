@@ -1,103 +1,1573 @@
 {
 "source": "http://terminal.sexy",
 
-"Atelierforest (dark)":
+"3024 (dark)":
 {
-	"by": "Chris Kempson",
-	"background-color": "#1d1f21",
-	"foreground-color": "#c5c8c6",
-	"cursor-color":     "#c5c8c6",
-	"color-palette-overrides": ["#1d1f21","#cc342b","#198844","#fba922","#3971ed","#a36ac7","#3971ed","#c5c8c6","#969896","#cc342b","#198844","#fba922","#3971ed","#a36ac7","#3971ed","#ffffff"]
-},
-
-"Atelierforest (light)":
-{
-	"by": "Chris Kempson",
-	"background-color": "#f1efee",
-	"foreground-color": "#68615e",
-	"cursor-color":     "#68615e",
-	"color-palette-overrides": 
-		["#1b1918","#f22c40","#5ab738","#d5911a","#407ee7","#6666ea","#00ad9c","#a8a19f","#766e6b","#f22c40","#5ab738","#d5911a","#407ee7","#6666ea","#00ad9c","#f1efee"]
-},
-
-"Atelierheath (dark)":
-{
-	"by": "Chris Kempson",
-	"background-color": "#1b181b",
-	"foreground-color": "#ab9bab",
-	"cursor-color":     "#ab9bab",
-	"color-palette-overrides": 
-		["#1b181b","#ca402b","#379a37","#bb8a35","#516aec","#7b59c0","#159393","#ab9bab","#776977","#ca402b","#379a37","#bb8a35","#516aec","#7b59c0","#159393","#f7f3f7"]
-},
-
-"Atelierheath (light)":
-{
-	"by": "Chris Kempson",
-	"background-color": "#f7f3f7",
-	"foreground-color": "#695d69",
-	"cursor-color":     "#695d69",
-	"color-palette-overrides": 
-		["#1b181b","#ca402b","#379a37","#bb8a35","#516aec","#7b59c0","#159393","#ab9bab","#776977","#ca402b","#379a37","#bb8a35","#516aec","#7b59c0","#159393","#f7f3f7"]
-},
-
-"Atelierlakeside (dark)":
-{
-	"by": "Chris Kempson",
-	"background-color": "#f7f3f7",
-	"foreground-color": "#695d69",
-	"cursor-color":     "#695d69",
-	"color-palette-overrides": 
-		["#1b181b","#ca402b","#379a37","#bb8a35","#516aec","#7b59c0","#159393","#ab9bab","#776977","#ca402b","#379a37","#bb8a35","#516aec","#7b59c0","#159393","#f7f3f7"]
-},
-
-"Atelierlakeside (light)":
-{
-	"by": "Chris Kempson",
-	"background-color": "#161b1d",
-	"foreground-color": "#7ea2b4",
-	"cursor-color":     "#7ea2b4",
-	"color-palette-overrides": 
-		["#161b1d","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#7ea2b4","#5a7b8c","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#ebf8ff"]
-},
-
-"Atelierseaside (dark)":
-{
-	"by": "Chris Kempson",
-	"background-color": "#161b1d",
-	"foreground-color": "#7ea2b4",
-	"cursor-color":     "#7ea2b4",
-	"color-palette-overrides": 
-		["#161b1d","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#7ea2b4","#5a7b8c","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#ebf8ff"]
-},
-
-"Atelierseaside (light)":
-{
-	"by": "Chris Kempson",
-	"background-color": "#161b1d",
-	"foreground-color": "#7ea2b4",
-	"cursor-color":     "#7ea2b4",
-	"color-palette-overrides": 
-		["#161b1d","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#7ea2b4","#5a7b8c","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#ebf8ff"]
-},
-
-"Bespin (dark)":
-{
-	"by": "Chris Kempson",
-	"background-color": "#161b1d",
-	"foreground-color": "#7ea2b4",
-	"cursor-color":     "#7ea2b4",
-	"color-palette-overrides": 
-		["#161b1d","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#7ea2b4","#5a7b8c","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#ebf8ff"]
-},
-
-"Bespin (light)":
-{
-	"by": "Chris Kempson",
-	"background-color": "#161b1d",
-	"foreground-color": "#7ea2b4",
-	"cursor-color":     "#7ea2b4",
-	"color-palette-overrides": 
-		["#161b1d","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#7ea2b4","#5a7b8c","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#ebf8ff"]
+	"author": "Chris Kempson",
+	"filename": "base16/3024.dark.json",
+	"background-color": "#090300",
+	"foreground-color": "#a5a2a2",
+	"color-palette-overrides":
+		["#090300", "#db2d20", "#01a252", "#fded02", "#01a0e4", "#a16a94", "#b5e4f4", "#a5a2a2", "#5c5855", "#db2d20", "#01a252", "#fded02", "#01a0e4", "#a16a94", "#b5e4f4", "#f7f7f7"]
 }
 
+,"3024 (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/3024.light.json",
+	"background-color": "#f7f7f7",
+	"foreground-color": "#4a4543",
+	"color-palette-overrides":
+		["#090300", "#db2d20", "#01a252", "#fded02", "#01a0e4", "#a16a94", "#b5e4f4", "#a5a2a2", "#5c5855", "#db2d20", "#01a252", "#fded02", "#01a0e4", "#a16a94", "#b5e4f4", "#f7f7f7"]
+}
+
+,"Ashes (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/ashes.dark.json",
+	"background-color": "#1c2023",
+	"foreground-color": "#c7ccd1",
+	"color-palette-overrides":
+		["#1c2023", "#c7ae95", "#95c7ae", "#aec795", "#ae95c7", "#c795ae", "#95aec7", "#c7ccd1", "#747c84", "#c7ae95", "#95c7ae", "#aec795", "#ae95c7", "#c795ae", "#95aec7", "#f3f4f5"]
+}
+
+,"Ashes (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/ashes.light.json",
+	"background-color": "#f3f4f5",
+	"foreground-color": "#565e65",
+	"color-palette-overrides":
+		["#1c2023", "#c7ae95", "#95c7ae", "#aec795", "#ae95c7", "#c795ae", "#95aec7", "#c7ccd1", "#747c84", "#c7ae95", "#95c7ae", "#aec795", "#ae95c7", "#c795ae", "#95aec7", "#f3f4f5"]
+}
+
+,"Atelierdune (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/atelierdune.dark.json",
+	"background-color": "#20201d",
+	"foreground-color": "#a6a28c",
+	"color-palette-overrides":
+		["#20201d", "#d73737", "#60ac39", "#cfb017", "#6684e1", "#b854d4", "#1fad83", "#a6a28c", "#7d7a68", "#d73737", "#60ac39", "#cfb017", "#6684e1", "#b854d4", "#1fad83", "#fefbec"]
+}
+
+,"Atelierdune (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/atelierdune.light.json",
+	"background-color": "#fefbec",
+	"foreground-color": "#6e6b5e",
+	"color-palette-overrides":
+		["#20201d", "#d73737", "#60ac39", "#cfb017", "#6684e1", "#b854d4", "#1fad83", "#a6a28c", "#7d7a68", "#d73737", "#60ac39", "#cfb017", "#6684e1", "#b854d4", "#1fad83", "#fefbec"]
+}
+
+,"Atelierforest (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/atelierforest.dark.json",
+	"background-color": "#1b1918",
+	"foreground-color": "#a8a19f",
+	"color-palette-overrides":
+		["#1b1918", "#f22c40", "#5ab738", "#d5911a", "#407ee7", "#6666ea", "#00ad9c", "#a8a19f", "#766e6b", "#f22c40", "#5ab738", "#d5911a", "#407ee7", "#6666ea", "#00ad9c", "#f1efee"]
+}
+
+,"Atelierforest (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/atelierforest.light.json",
+	"background-color": "#f1efee",
+	"foreground-color": "#68615e",
+	"color-palette-overrides":
+		["#1b1918", "#f22c40", "#5ab738", "#d5911a", "#407ee7", "#6666ea", "#00ad9c", "#a8a19f", "#766e6b", "#f22c40", "#5ab738", "#d5911a", "#407ee7", "#6666ea", "#00ad9c", "#f1efee"]
+}
+
+,"Atelierheath (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/atelierheath.dark.json",
+	"background-color": "#1b181b",
+	"foreground-color": "#ab9bab",
+	"color-palette-overrides":
+		["#1b181b", "#ca402b", "#379a37", "#bb8a35", "#516aec", "#7b59c0", "#159393", "#ab9bab", "#776977", "#ca402b", "#379a37", "#bb8a35", "#516aec", "#7b59c0", "#159393", "#f7f3f7"]
+}
+
+,"Atelierheath (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/atelierheath.light.json",
+	"background-color": "#f7f3f7",
+	"foreground-color": "#695d69",
+	"color-palette-overrides":
+		["#1b181b", "#ca402b", "#379a37", "#bb8a35", "#516aec", "#7b59c0", "#159393", "#ab9bab", "#776977", "#ca402b", "#379a37", "#bb8a35", "#516aec", "#7b59c0", "#159393", "#f7f3f7"]
+}
+
+,"Atelierlakeside (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/atelierlakeside.dark.json",
+	"background-color": "#161b1d",
+	"foreground-color": "#7ea2b4",
+	"color-palette-overrides":
+		["#161b1d", "#d22d72", "#568c3b", "#8a8a0f", "#257fad", "#5d5db1", "#2d8f6f", "#7ea2b4", "#5a7b8c", "#d22d72", "#568c3b", "#8a8a0f", "#257fad", "#5d5db1", "#2d8f6f", "#ebf8ff"]
+}
+
+,"Atelierlakeside (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/atelierlakeside.light.json",
+	"background-color": "#ebf8ff",
+	"foreground-color": "#516d7b",
+	"color-palette-overrides":
+		["#161b1d", "#d22d72", "#568c3b", "#8a8a0f", "#257fad", "#5d5db1", "#2d8f6f", "#7ea2b4", "#5a7b8c", "#d22d72", "#568c3b", "#8a8a0f", "#257fad", "#5d5db1", "#2d8f6f", "#ebf8ff"]
+}
+
+,"Atelierseaside (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/atelierseaside.dark.json",
+	"background-color": "#131513",
+	"foreground-color": "#8ca68c",
+	"color-palette-overrides":
+		["#131513", "#e6193c", "#29a329", "#c3c322", "#3d62f5", "#ad2bee", "#1999b3", "#8ca68c", "#687d68", "#e6193c", "#29a329", "#c3c322", "#3d62f5", "#ad2bee", "#1999b3", "#f0fff0"]
+}
+
+,"Atelierseaside (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/atelierseaside.light.json",
+	"background-color": "#f0fff0",
+	"foreground-color": "#5e6e5e",
+	"color-palette-overrides":
+		["#131513", "#e6193c", "#29a329", "#c3c322", "#3d62f5", "#ad2bee", "#1999b3", "#8ca68c", "#687d68", "#e6193c", "#29a329", "#c3c322", "#3d62f5", "#ad2bee", "#1999b3", "#f0fff0"]
+}
+
+,"Belge":
+{
+	"author": "",
+	"filename": "xcolors.net/belge.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#252525", "#ef6769", "#a6e22e", "#fd971f", "#6495ed", "#deb887", "#b0c4de", "#dbdcdc", "#454545", "#fc7ca5", "#b6e354", "#fd971f", "#87ceeb", "#996600", "#87ceeb", "#fdfdfd"]
+}
+
+,"Bespin (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/bespin.dark.json",
+	"background-color": "#28211c",
+	"foreground-color": "#8a8986",
+	"color-palette-overrides":
+		["#28211c", "#cf6a4c", "#54be0d", "#f9ee98", "#5ea6ea", "#9b859d", "#afc4db", "#8a8986", "#666666", "#cf6a4c", "#54be0d", "#f9ee98", "#5ea6ea", "#9b859d", "#afc4db", "#baae9e"]
+}
+
+,"Bespin (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/bespin.light.json",
+	"background-color": "#baae9e",
+	"foreground-color": "#5e5d5c",
+	"color-palette-overrides":
+		["#28211c", "#cf6a4c", "#54be0d", "#f9ee98", "#5ea6ea", "#9b859d", "#afc4db", "#8a8986", "#666666", "#cf6a4c", "#54be0d", "#f9ee98", "#5ea6ea", "#9b859d", "#afc4db", "#baae9e"]
+}
+
+,"Bitmute":
+{
+	"author": "",
+	"filename": "xcolors.net/bitmute.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#282828", "#b76969", "#719d72", "#909858", "#68668f", "#966894", "#688891", "#8e8e8e", "#494949", "#b87e7e", "#839d84", "#919864", "#73718f", "#987397", "#758c93", "#aeaeae"]
+}
+
+,"Bleh-1":
+{
+	"author": "",
+	"filename": "xcolors.net/bleh-1.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#666666", "#996578", "#889965", "#998565", "#657a99", "#8b6599", "#65998d", "#a5a5a4", "#8c847f", "#bd4b76", "#95b548", "#bd814b", "#4c83bf", "#a04bbd", "#4dbda8", "#848484"]
+}
+
+,"Brewer (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/brewer.dark.json",
+	"background-color": "#0c0d0e",
+	"foreground-color": "#b7b8b9",
+	"color-palette-overrides":
+		["#0c0d0e", "#e31a1c", "#31a354", "#dca060", "#3182bd", "#756bb1", "#80b1d3", "#b7b8b9", "#737475", "#e31a1c", "#31a354", "#dca060", "#3182bd", "#756bb1", "#80b1d3", "#fcfdfe"]
+}
+
+,"Brewer (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/brewer.light.json",
+	"background-color": "#fcfdfe",
+	"foreground-color": "#515253",
+	"color-palette-overrides":
+		["#0c0d0e", "#e31a1c", "#31a354", "#dca060", "#3182bd", "#756bb1", "#80b1d3", "#b7b8b9", "#737475", "#e31a1c", "#31a354", "#dca060", "#3182bd", "#756bb1", "#80b1d3", "#fcfdfe"]
+}
+
+,"Canvased Pastel":
+{
+	"author": "dkeg",
+	"filename": "xcolors.net/dkeg - canvasedpastel.json",
+	"background-color": "#170f0d",
+	"foreground-color": "#746c48",
+	"color-palette-overrides":
+		["#26251c", "#323027", "#3d4339", "#443b2c", "#534d35", "#646756", "#7b8574", "#837b61", "#999f91", "#9b9773", "#b2b08c", "#c4bb8c", "#c4b67a", "#cfc995", "#d3d4b6", "#d6d3ac"]
+}
+
+,"Catch Me If You Can":
+{
+	"author": "dkeg",
+	"filename": "xcolors.net/dkeg - catchmeifyoucan.json",
+	"background-color": "#170f0d",
+	"foreground-color": "#f9f9f9",
+	"color-palette-overrides":
+		["#130f0c", "#604c38", "#8d7f85", "#907256", "#aa8d70", "#b9a38d", "#c4bfbf", "#c4ae99", "#c69f77", "#cab9a8", "#d5c6b8", "#dcd1c7", "#e0e0e2", "#e4dad2", "#eae3dc", "#f6f2f0"]
+}
+
+,"Chalk (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/chalk.dark.json",
+	"background-color": "#151515",
+	"foreground-color": "#d0d0d0",
+	"color-palette-overrides":
+		["#151515", "#fb9fb1", "#acc267", "#ddb26f", "#6fc2ef", "#e1a3ee", "#12cfc0", "#d0d0d0", "#505050", "#fb9fb1", "#acc267", "#ddb26f", "#6fc2ef", "#e1a3ee", "#12cfc0", "#f5f5f5"]
+}
+
+,"Chalk (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/chalk.light.json",
+	"background-color": "#f5f5f5",
+	"foreground-color": "#303030",
+	"color-palette-overrides":
+		["#151515", "#fb9fb1", "#acc267", "#ddb26f", "#6fc2ef", "#e1a3ee", "#12cfc0", "#d0d0d0", "#505050", "#fb9fb1", "#acc267", "#ddb26f", "#6fc2ef", "#e1a3ee", "#12cfc0", "#f5f5f5"]
+}
+
+,"City Streets":
+{
+	"author": "dkeg",
+	"filename": "xcolors.net/dkeg - citystreets.json",
+	"background-color": "#000000",
+	"foreground-color": "#d3d3d3",
+	"color-palette-overrides":
+		["#201e24", "#2d2b30", "#3f3d40", "#413c3e", "#423e41", "#4e4a4b", "#6e6765", "#837e81", "#837c78", "#89827d", "#a7a099", "#c2bec1", "#c3bcb2", "#cbc5ba", "#e3ddd2", "#efe8dc"]
+}
+
+,"Cloud":
+{
+	"author": "",
+	"filename": "xcolors.net/cloud.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#222827", "#d5a8e3", "#9c75dd", "#9898ae", "#654a96", "#625566", "#a9d1df", "#e6ebe5", "#5d6f74", "#cd749c", "#63b0b0", "#c0c0dd", "#5786bc", "#3f3442", "#849da2", "#d9d6cf"]
+}
+
+,"Codeschool (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/codeschool.dark.json",
+	"background-color": "#232c31",
+	"foreground-color": "#9ea7a6",
+	"color-palette-overrides":
+		["#232c31", "#2a5491", "#237986", "#a03b1e", "#484d79", "#c59820", "#b02f30", "#9ea7a6", "#3f4944", "#2a5491", "#237986", "#a03b1e", "#484d79", "#c59820", "#b02f30", "#b5d8f6"]
+}
+
+,"Codeschool (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/codeschool.light.json",
+	"background-color": "#b5d8f6",
+	"foreground-color": "#2a343a",
+	"color-palette-overrides":
+		["#232c31", "#2a5491", "#237986", "#a03b1e", "#484d79", "#c59820", "#b02f30", "#9ea7a6", "#3f4944", "#2a5491", "#237986", "#a03b1e", "#484d79", "#c59820", "#b02f30", "#b5d8f6"]
+}
+
+,"Color Star":
+{
+	"author": "dkeg",
+	"filename": "xcolors.net/dkeg - colorstar.json",
+	"background-color": "#000000",
+	"foreground-color": "#d3d3d3",
+	"color-palette-overrides":
+		["#03010f", "#503b43", "#353b64", "#8c2424", "#6067ac", "#624d19", "#7c83c0", "#9a600f", "#ab9e9e", "#b28930", "#bbada9", "#c37305", "#d0ae58", "#d7b559", "#f4e199", "#f6f4df"]
+}
+
+,"Colorful Colors":
+{
+	"author": "",
+	"filename": "xcolors.net/colorfulcolors.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#151515", "#ff8eaf", "#a6e25f", "#f8e578", "#a6e2f0", "#e85b92", "#5f868f", "#d5f1f2", "#696969", "#ed4c7a", "#a6e179", "#ffdf6b", "#79d2ff", "#bb5d79", "#87a8af", "#e2f1f6"]
+}
+
+,"Count Von Count":
+{
+	"author": "Baskerville",
+	"filename": "xcolors.net/Baskerville - Count Von Count.json",
+	"background-color": "#000000",
+	"foreground-color": "#919191",
+	"color-palette-overrides":
+		["#303030", "#c10023", "#a83334", "#b51d2c", "#8c4b46", "#7d534f", "#9a413d", "#c6c6c6", "#5e5e5e", "#ff8781", "#ffa095", "#ff948b", "#feb2aa", "#ebbbb5", "#ffaaa0", "#ffffff"]
+}
+
+,"DWM rob":
+{
+	"author": "",
+	"filename": "xcolors.net/dwmrob.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#151515", "#bf7979", "#97b26b", "#cdcda1", "#4a5463", "#9c3885", "#88aadd", "#ffffff", "#505450", "#f4a45f", "#c5f779", "#ffffaf", "#7d8794", "#e628ba", "#99ccff", "#dedede"]
+}
+
+,"Dark Ocean":
+{
+	"author": "DOOMICIDE",
+	"filename": "xcolors.net/DOOMICIDE darkocean.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#000000", "#571dc2", "#14db49", "#403d70", "#385a70", "#384894", "#4f3a5e", "#999999", "#38372c", "#7c54b0", "#a2e655", "#9c6f59", "#323f5c", "#5e6c99", "#667d77", "#ffffff"]
+}
+
+,"Dawn":
+{
+	"author": "Escapist",
+	"filename": "collection/dawn.json",
+	"background-color": "#181B20",
+	"foreground-color": "#9B9081",
+	"color-palette-overrides":
+		["#353535", "#744B40", "#6D6137", "#765636", "#61564B", "#6B4A49", "#435861", "#B3B3B3", "#5F5F5F", "#785850", "#6F6749", "#776049", "#696057", "#6F5A59", "#525F66", "#CDCDCD"]
+}
+
+,"Deafened":
+{
+	"author": "",
+	"filename": "xcolors.net/deafened.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#3d3e3d", "#755a5b", "#68755a", "#756e5a", "#5b6976", "#755b76", "#465457", "#ccccc6", "#5a5b5c", "#a37679", "#87a376", "#a39b76", "#758ba3", "#9f76a3", "#899ca1", "#f8f8f2"]
+}
+
+,"Default (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/default.dark.json",
+	"background-color": "#151515",
+	"foreground-color": "#d0d0d0",
+	"color-palette-overrides":
+		["#151515", "#ac4142", "#90a959", "#f4bf75", "#6a9fb5", "#aa759f", "#75b5aa", "#d0d0d0", "#505050", "#ac4142", "#90a959", "#f4bf75", "#6a9fb5", "#aa759f", "#75b5aa", "#f5f5f5"]
+}
+
+,"Default (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/default.light.json",
+	"background-color": "#f5f5f5",
+	"foreground-color": "#303030",
+	"color-palette-overrides":
+		["#151515", "#ac4142", "#90a959", "#f4bf75", "#6a9fb5", "#aa759f", "#75b5aa", "#d0d0d0", "#505050", "#ac4142", "#90a959", "#f4bf75", "#6a9fb5", "#aa759f", "#75b5aa", "#f5f5f5"]
+}
+
+,"Derp":
+{
+	"author": "",
+	"filename": "xcolors.net/derp.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#111111", "#d36265", "#aece91", "#e7e18c", "#5297cf", "#963c59", "#5e7175", "#bebebe", "#666666", "#ef8171", "#cfefb3", "#fff796", "#74b8ef", "#b85e7b", "#a3babf", "#ffffff"]
+}
+
+,"Digerati":
+{
+	"author": "",
+	"filename": "xcolors.net/digerati.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#303030", "#c03000", "#b1d631", "#fecf35", "#426870", "#6d506d", "#4bb5c1", "#e2e2e5", "#5f5f5f", "#ff3a78", "#a6cd07", "#b5c865", "#4a7781", "#ff3b77", "#4bb5c1", "#e2e2e5"]
+}
+
+,"Dotshare":
+{
+	"author": "",
+	"filename": "xcolors.net/dotshare.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#101010", "#e84f4f", "#b8d68c", "#e1aa5d", "#7dc1cf", "#9b64fb", "#6d878d", "#dddddd", "#404040", "#d23d3d", "#a0cf5d", "#f39d21", "#4e9fb1", "#8542ff", "#42717b", "#dddddd"]
+}
+
+,"Eighties (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/eighties.dark.json",
+	"background-color": "#2d2d2d",
+	"foreground-color": "#d3d0c8",
+	"color-palette-overrides":
+		["#2d2d2d", "#f2777a", "#99cc99", "#ffcc66", "#6699cc", "#cc99cc", "#66cccc", "#d3d0c8", "#747369", "#f2777a", "#99cc99", "#ffcc66", "#6699cc", "#cc99cc", "#66cccc", "#f2f0ec"]
+}
+
+,"Eighties (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/eighties.light.json",
+	"background-color": "#f2f0ec",
+	"foreground-color": "#515151",
+	"color-palette-overrides":
+		["#2d2d2d", "#f2777a", "#99cc99", "#ffcc66", "#6699cc", "#cc99cc", "#66cccc", "#d3d0c8", "#747369", "#f2777a", "#99cc99", "#ffcc66", "#6699cc", "#cc99cc", "#66cccc", "#f2f0ec"]
+}
+
+,"Eldorado dark":
+{
+	"author": "Baskerville",
+	"filename": "xcolors.net/Baskerville - Eldorado dark.json",
+	"background-color": "#292929",
+	"foreground-color": "#a2a2a2",
+	"color-palette-overrides":
+		["#4e4e4e", "#a9635d", "#468459", "#84763d", "#5879af", "#9c6594", "#008592", "#cfcfcf", "#777777", "#ffbbb2", "#9ddeaf", "#e0ce91", "#b3d1ff", "#fabdf0", "#79e0ed", "#ffffff"]
+}
+
+,"Embers (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/embers.dark.json",
+	"background-color": "#16130f",
+	"foreground-color": "#a39a90",
+	"color-palette-overrides":
+		["#16130f", "#826d57", "#57826d", "#6d8257", "#6d5782", "#82576d", "#576d82", "#a39a90", "#5a5047", "#826d57", "#57826d", "#6d8257", "#6d5782", "#82576d", "#576d82", "#dbd6d1"]
+}
+
+,"Embers (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/embers.light.json",
+	"background-color": "#dbd6d1",
+	"foreground-color": "#433b32",
+	"color-palette-overrides":
+		["#16130f", "#826d57", "#57826d", "#6d8257", "#6d5782", "#82576d", "#576d82", "#a39a90", "#5a5047", "#826d57", "#57826d", "#6d8257", "#6d5782", "#82576d", "#576d82", "#dbd6d1"]
+}
+
+,"Epiphany":
+{
+	"author": "",
+	"filename": "xcolors.net/epiphany.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#565656", "#ac4f4f", "#88ab77", "#d0d9ad", "#677088", "#cdcdb4", "#445362", "#ffffff", "#656565", "#e85555", "#8ccd6c", "#c5d67d", "#647396", "#cdb4c9", "#505b6c", "#c0c0c0"]
+}
+
+,"Eqie6":
+{
+	"author": "",
+	"filename": "xcolors.net/eqie6.json",
+	"background-color": "#111111",
+	"foreground-color": "#cccccc",
+	"color-palette-overrides":
+		["#222222", "#e84f4f", "#b7ce42", "#fea63c", "#66a9b9", "#b7416e", "#6d878d", "#cccccc", "#666666", "#d23d3d", "#bde077", "#ffe863", "#aaccbb", "#e16a98", "#42717b", "#ffffff"]
+}
+
+,"Erebus":
+{
+	"author": "",
+	"filename": "xcolors.net/erebus.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#757575", "#ff5f5f", "#de8a36", "#d78787", "#af5fd7", "#ff87d7", "#dea3e5", "#b8b8b8", "#b8b8b8", "#d78787", "#ff9f6f", "#ff5f5f", "#dea3e5", "#d7afaf", "#af5fd7", "#757575"]
+}
+
+,"Euphrasia":
+{
+	"author": "",
+	"filename": "xcolors.net/euphrasia.json",
+	"background-color": "#cfcfd9",
+	"foreground-color": "#1c2027",
+	"color-palette-overrides":
+		["#192033", "#a62a3e", "#38912b", "#b27d12", "#355c9a", "#7c4f9f", "#258f8f", "#77858c", "#666666", "#f04758", "#93c724", "#ddb62b", "#45a3e6", "#c953ef", "#60c6c8", "#c0c0c0"]
+}
+
+,"FarSide":
+{
+	"author": "Baskerville",
+	"filename": "xcolors.net/baskerville - FarSide.json",
+	"background-color": "#000000",
+	"foreground-color": "#919191",
+	"color-palette-overrides":
+		["#303030", "#a43261", "#006ca5", "#007086", "#6751a6", "#913e88", "#0061b1", "#c6c6c6", "#5e5e5e", "#ff9fc9", "#3bd6ff", "#00ddf4", "#d5b8ff", "#ffa7f6", "#93c9ff", "#ffffff"]
+}
+
+,"Fishbone":
+{
+	"author": "",
+	"filename": "xcolors.net/fishbone.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#293b3b", "#bf5357", "#41a551", "#aea64f", "#416ea5", "#bf6053", "#714da5", "#876868", "#344040", "#bf6367", "#51a55f", "#aea75d", "#5177a5", "#bf6e63", "#7859a5", "#876f6f"]
+}
+
+,"GJM":
+{
+	"author": "",
+	"filename": "xcolors.net/gjm.json",
+	"background-color": "#1c1c1c",
+	"foreground-color": "#c5c5c5",
+	"color-palette-overrides":
+		["#1c1c1c", "#ff005b", "#cee318", "#ffe755", "#048ac7", "#833c9f", "#0ac1cd", "#e5e5e5", "#666666", "#ff00a0", "#ccff00", "#ff9f00", "#48c6ff", "#be67e1", "#63e7f0", "#f3f3f3"]
+}
+
+,"Gnometerm":
+{
+	"author": "",
+	"filename": "xcolors.net/gnometerm.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#000000", "#cc0000", "#4e9a06", "#c4a000", "#3465a4", "#75507b", "#06989a", "#d3d7cf", "#555753", "#ef2929", "#8ae234", "#fce94f", "#729fcf", "#ad7fa8", "#34e2e2", "#eeeeec"]
+}
+
+,"Google (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/google.dark.json",
+	"background-color": "#1d1f21",
+	"foreground-color": "#c5c8c6",
+	"color-palette-overrides":
+		["#1d1f21", "#cc342b", "#198844", "#fba922", "#3971ed", "#a36ac7", "#3971ed", "#c5c8c6", "#969896", "#cc342b", "#198844", "#fba922", "#3971ed", "#a36ac7", "#3971ed", "#ffffff"]
+}
+
+,"Google (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/google.light.json",
+	"background-color": "#ffffff",
+	"foreground-color": "#373b41",
+	"color-palette-overrides":
+		["#1d1f21", "#cc342b", "#198844", "#fba922", "#3971ed", "#a36ac7", "#3971ed", "#c5c8c6", "#969896", "#cc342b", "#198844", "#fba922", "#3971ed", "#a36ac7", "#3971ed", "#ffffff"]
+}
+
+,"Gotham":
+{
+	"author": "whatyouhide",
+	"filename": "collection/gotham.json",
+	"background-color": "#0a0f14",
+	"foreground-color": "#98d1ce",
+	"color-palette-overrides":
+		["#0a0f14", "#c33027", "#26a98b", "#edb54b", "#195465", "#4e5165", "#33859d", "#98d1ce", "#10151b", "#d26939", "#081f2d", "#245361", "#093748", "#888ba5", "#599caa", "#d3ebe9"]
+}
+
+,"Grandshell":
+{
+	"author": "",
+	"filename": "xcolors.net/grandshell.json",
+	"background-color": "#000000",
+	"foreground-color": "#bebebe",
+	"color-palette-overrides":
+		["#000000", "#f25a5a", "#77bb33", "#efc334", "#5555dd", "#c350ff", "#5af2ee", "#bebebe", "#222222", "#ffbbbb", "#dcf692", "#f6df92", "#b2baf6", "#f09fff", "#5af2ee", "#eeeeee"]
+}
+
+,"Grayscale (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/grayscale.dark.json",
+	"background-color": "#101010",
+	"foreground-color": "#b9b9b9",
+	"color-palette-overrides":
+		["#101010", "#7c7c7c", "#8e8e8e", "#a0a0a0", "#686868", "#747474", "#868686", "#b9b9b9", "#525252", "#7c7c7c", "#8e8e8e", "#a0a0a0", "#686868", "#747474", "#868686", "#f7f7f7"]
+}
+
+,"Grayscale (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/grayscale.light.json",
+	"background-color": "#f7f7f7",
+	"foreground-color": "#464646",
+	"color-palette-overrides":
+		["#101010", "#7c7c7c", "#8e8e8e", "#a0a0a0", "#686868", "#747474", "#868686", "#b9b9b9", "#525252", "#7c7c7c", "#8e8e8e", "#a0a0a0", "#686868", "#747474", "#868686", "#f7f7f7"]
+}
+
+,"Greenscreen (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/greenscreen.dark.json",
+	"background-color": "#001100",
+	"foreground-color": "#00bb00",
+	"color-palette-overrides":
+		["#001100", "#007700", "#00bb00", "#007700", "#009900", "#00bb00", "#005500", "#00bb00", "#007700", "#007700", "#00bb00", "#007700", "#009900", "#00bb00", "#005500", "#00ff00"]
+}
+
+,"Greenscreen (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/greenscreen.light.json",
+	"background-color": "#00ff00",
+	"foreground-color": "#005500",
+	"color-palette-overrides":
+		["#001100", "#007700", "#00bb00", "#007700", "#009900", "#00bb00", "#005500", "#00bb00", "#007700", "#007700", "#00bb00", "#007700", "#009900", "#00bb00", "#005500", "#00ff00"]
+}
+
+,"Hybrid":
+{
+	"author": "",
+	"filename": "xcolors.net/hybrid.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#393939", "#da4939", "#9acc79", "#d0d26b", "#6d9cbe", "#9f5079", "#435d75", "#c2c2c2", "#474747", "#ff6c5c", "#8fb676", "#c8bc45", "#d0d0ff", "#a761c2", "#6e98a4", "#c2c2c2"]
+}
+
+,"Iiamblack":
+{
+	"author": "iiamblack",
+	"filename": "xcolors.net/iiamblack.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#393939", "#da4939", "#519f50", "#cc7833", "#6d9cbe", "#9f5079", "#435d75", "#dddddd", "#474747", "#ff6c5c", "#a5c261", "#bc9458", "#d0d0ff", "#a761c2", "#6e98a4", "#dddddd"]
+}
+
+,"Insignificato":
+{
+	"author": "",
+	"filename": "xcolors.net/insignificato.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#3d3e3d", "#755a5b", "#68755a", "#756e5a", "#5b6976", "#755b76", "#5b7674", "#808080", "#5a5b5c", "#a37679", "#87a376", "#a39b76", "#758ba3", "#9f76a3", "#75a3a1", "#aeafb0"]
+}
+
+,"Invisibone":
+{
+	"author": "Baskerville",
+	"filename": "collection/invisibone.json",
+	"background-color": "#232323",
+	"foreground-color": "#A0A0A0",
+	"color-palette-overrides":
+		["#303030", "#D370A3", "#6D9E3F", "#B58858", "#6095C5", "#AC7BDE", "#3BA275", "#CFCFCF", "#686868", "#FFA7DA", "#A3D572", "#EFBD8B", "#98CBFE", "#E5B0FF", "#75DAA9", "#FFFFFF"]
+}
+
+,"Isotope (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/isotope.dark.json",
+	"background-color": "#000000",
+	"foreground-color": "#d0d0d0",
+	"color-palette-overrides":
+		["#000000", "#ff0000", "#33ff00", "#ff0099", "#0066ff", "#cc00ff", "#00ffff", "#d0d0d0", "#808080", "#ff0000", "#33ff00", "#ff0099", "#0066ff", "#cc00ff", "#00ffff", "#ffffff"]
+}
+
+,"Isotope (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/isotope.light.json",
+	"background-color": "#ffffff",
+	"foreground-color": "#606060",
+	"color-palette-overrides":
+		["#000000", "#ff0000", "#33ff00", "#ff0099", "#0066ff", "#cc00ff", "#00ffff", "#d0d0d0", "#808080", "#ff0000", "#33ff00", "#ff0099", "#0066ff", "#cc00ff", "#00ffff", "#ffffff"]
+}
+
+,"Ivory Dark":
+{
+	"author": "Baskerville",
+	"filename": "xcolors.net/baskerville - ivory dark.json",
+	"background-color": "#2d2c28",
+	"foreground-color": "#a4a6ab",
+	"color-palette-overrides":
+		["#5b5955", "#c4756e", "#559a6a", "#9b8a4b", "#6a8dca", "#b577ac", "#019baa", "#dbdde2", "#707277", "#f6a299", "#82c896", "#cab775", "#98bbfb", "#e5a4db", "#53cad9", "#f7f9ff"]
+}
+
+,"Ivory Light":
+{
+	"author": "Baskerville",
+	"filename": "xcolors.net/baskerville-ivorylight.json",
+	"background-color": "#fef9ec",
+	"foreground-color": "#6d727e",
+	"color-palette-overrides":
+		["#c5c1b4", "#e75c58", "#00a250", "#a08a00", "#208ffb", "#d160c4", "#00a4c1", "#3e424d", "#a1a6b2", "#b22b31", "#007427", "#715f00", "#0065ca", "#a03196", "#007693", "#282c36"]
+}
+
+,"JWR dark":
+{
+	"author": "",
+	"filename": "xcolors.net/jwr-dark.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#333333", "#8c4665", "#287373", "#7c7c99", "#395573", "#5e468c", "#31658c", "#899ca1", "#3d3d3d", "#bf4d80", "#53a6a6", "#9e9ecb", "#477ab3", "#7e62b3", "#6096bf", "#c0c0c0"]
+}
+
+,"Jason Wryan":
+{
+	"author": "",
+	"filename": "xcolors.net/jasonwryan.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#222222", "#9e5641", "#6c7e55", "#caaf2b", "#4c8ea1", "#956d9d", "#7c9aa6", "#909090", "#454545", "#cc896d", "#7db37d", "#bfb556", "#6bc1d0", "#c18fcb", "#8fadbf", "#ffffff"]
+}
+
+,"Kasugano":
+{
+	"author": "Kori Ayakashi",
+	"filename": "collection/kasugano.json",
+	"background-color": "#1b1b1b",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#3D3D3D", "#6673BF", "#3EA290", "#B0EAD9", "#31658C", "#596196", "#8292B2", "#C8CACC", "#4D4D4D", "#899AFF", "#52AD91", "#98C9BB", "#477AB3", "#7882BF", "#95A7CC", "#EDEFF2"]
+}
+
+,"Light White":
+{
+	"author": "Gutterslob",
+	"filename": "xcolors.net/Gutterslob lightwhite.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#808080", "#c48980", "#8da862", "#b29b7a", "#809bc4", "#aa88b2", "#82adad", "#bfbfbf", "#9c9c9c", "#a15048", "#4b7508", "#916f27", "#567cb0", "#964e8f", "#4e848a", "#9c9c9c"]
+}
+
+,"Londontube (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/londontube.dark.json",
+	"background-color": "#231f20",
+	"foreground-color": "#d9d8d8",
+	"color-palette-overrides":
+		["#231f20", "#ee2e24", "#00853e", "#ffd204", "#009ddc", "#98005d", "#85cebc", "#d9d8d8", "#737171", "#ee2e24", "#00853e", "#ffd204", "#009ddc", "#98005d", "#85cebc", "#ffffff"]
+}
+
+,"Londontube (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/londontube.light.json",
+	"background-color": "#ffffff",
+	"foreground-color": "#5a5758",
+	"color-palette-overrides":
+		["#231f20", "#ee2e24", "#00853e", "#ffd204", "#009ddc", "#98005d", "#85cebc", "#d9d8d8", "#737171", "#ee2e24", "#00853e", "#ffd204", "#009ddc", "#98005d", "#85cebc", "#ffffff"]
+}
+
+,"Lost Woods":
+{
+	"author": "Baskerville",
+	"filename": "xcolors.net/baskerville - lost woods.json",
+	"background-color": "#000000",
+	"foreground-color": "#919191",
+	"color-palette-overrides":
+		["#303030", "#a13a38", "#00715d", "#006f32", "#a43261", "#913e88", "#007086", "#c6c6c6", "#5e5e5e", "#ffa59a", "#24dfc4", "#73db95", "#ff9fc9", "#ffa7f6", "#00ddf4", "#ffffff"]
+}
+
+,"Low Contrast":
+{
+	"author": "Muzieca",
+	"filename": "xcolors.net/Muzieca lowcontrast.json",
+	"background-color": "#3c3b37",
+	"foreground-color": "#93a1a1",
+	"color-palette-overrides":
+		["#5f5f5f", "#d96468", "#a2d964", "#d9c964", "#64a2d9", "#9a64d9", "#64d9d5", "#989898", "#828282", "#d98f93", "#b8d98f", "#d9cf8f", "#8f99d9", "#b08fd9", "#8fd9d5", "#c5c5c5"]
+}
+
+,"Lumifoo":
+{
+	"author": "Gutterslob",
+	"filename": "xcolors.net/gutterslob - lumifoo.json",
+	"background-color": "#1e2021",
+	"foreground-color": "#888a8c",
+	"color-palette-overrides":
+		["#515151", "#bf6382", "#65a446", "#ad8a43", "#6b85c2", "#9e6bb8", "#5c9d88", "#919191", "#707172", "#eaaec2", "#aed49b", "#d4c3a0", "#afc4e9", "#d2b1e2", "#a4d0c1", "#d0d0d0"]
+}
+
+,"Marrakesh (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/marrakesh.dark.json",
+	"background-color": "#201602",
+	"foreground-color": "#948e48",
+	"color-palette-overrides":
+		["#201602", "#c35359", "#18974e", "#a88339", "#477ca1", "#8868b3", "#75a738", "#948e48", "#6c6823", "#c35359", "#18974e", "#a88339", "#477ca1", "#8868b3", "#75a738", "#faf0a5"]
+}
+
+,"Marrakesh (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/marrakesh.light.json",
+	"background-color": "#faf0a5",
+	"foreground-color": "#5f5b17",
+	"color-palette-overrides":
+		["#201602", "#c35359", "#18974e", "#a88339", "#477ca1", "#8868b3", "#75a738", "#948e48", "#6c6823", "#c35359", "#18974e", "#a88339", "#477ca1", "#8868b3", "#75a738", "#faf0a5"]
+}
+
+,"Mashup Colors":
+{
+	"author": "user 77",
+	"filename": "xcolors.net/user 77 - Mashup colors.json",
+	"background-color": "#171717",
+	"foreground-color": "#b2a191",
+	"color-palette-overrides":
+		["#202020", "#bf3f34", "#707d22", "#bf7a29", "#627a92", "#75507b", "#757978", "#b2a191", "#404040", "#ff6c5f", "#b8ca4b", "#c7a551", "#95b9de", "#ad7fa8", "#9fa590", "#e8d0c3"]
+}
+
+,"Material":
+{
+	"author": "",
+	"filename": "xcolors.net/material.json",
+	"background-color": "#263238",
+	"foreground-color": "#eceff1",
+	"color-palette-overrides":
+		["#263238", "#ff9800", "#8bc34a", "#ffc107", "#03a9f4", "#e91e63", "#009688", "#cfd8dc", "#37474f", "#ffa74d", "#9ccc65", "#ffa000", "#81d4fa", "#ad1457", "#26a69a", "#eceff1"]
+}
+
+,"Matrix":
+{
+	"author": "OK100",
+	"filename": "xcolors.net/OK100 - Matrix.json",
+	"background-color": "#000000",
+	"foreground-color": "#00cc00",
+	"color-palette-overrides":
+		["#000000", "#55ff55", "#00cc00", "#00cc00", "#005500", "#55ff55", "#00cc00", "#00cc00", "#000000", "#55ff55", "#55ff55", "#55ff55", "#005500", "#55ff55", "#55ff55", "#00cc00"]
+}
+
+,"Mikado":
+{
+	"author": "",
+	"filename": "xcolors.net/mikado.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#322a2c", "#a04363", "#9b9329", "#bf7a29", "#6a8c8c", "#856774", "#757978", "#bcbcaf", "#46423b", "#ae837a", "#b4aa30", "#c7a551", "#74999e", "#9c818e", "#9fa590", "#c1c4bc"]
+}
+
+,"Mikazuki":
+{
+	"author": "",
+	"filename": "xcolors.net/mikazuki.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#2a1d17", "#da1657", "#3ea250", "#e3d33d", "#3ea290", "#ff850d", "#8c16da", "#e9e9e9", "#4f362b", "#da4375", "#6cb87a", "#e3da84", "#8ca8a3", "#ffa64f", "#a167c7", "#fdfdfd"]
+}
+
+,"Mocha (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/mocha.dark.json",
+	"background-color": "#3b3228",
+	"foreground-color": "#d0c8c6",
+	"color-palette-overrides":
+		["#3b3228", "#cb6077", "#beb55b", "#f4bc87", "#8ab3b5", "#a89bb9", "#7bbda4", "#d0c8c6", "#7e705a", "#cb6077", "#beb55b", "#f4bc87", "#8ab3b5", "#a89bb9", "#7bbda4", "#f5eeeb"]
+}
+
+,"Mocha (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/mocha.light.json",
+	"background-color": "#f5eeeb",
+	"foreground-color": "#645240",
+	"color-palette-overrides":
+		["#3b3228", "#cb6077", "#beb55b", "#f4bc87", "#8ab3b5", "#a89bb9", "#7bbda4", "#d0c8c6", "#7e705a", "#cb6077", "#beb55b", "#f4bc87", "#8ab3b5", "#a89bb9", "#7bbda4", "#f5eeeb"]
+}
+
+,"Mono":
+{
+	"author": "Muzieca",
+	"filename": "xcolors.net/Muzieca mono.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#090909", "#181818", "#272727", "#393939", "#484848", "#595959", "#707070", "#818181"]
+}
+
+,"Mono Theme":
+{
+	"author": "",
+	"filename": "xcolors.net/monotheme.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#000000", "#6b6b6b", "#c4c4c4", "#b3b3b3", "#999999", "#717171", "#8a8a8a", "#b5cabb", "#202020", "#464646", "#f8f8f8", "#eeeeee", "#7c7c7c", "#adadad", "#c0c0c0", "#99ac9e"]
+}
+
+,"Monokai":
+{
+	"author": "Cacodaimon",
+	"filename": "collection/monokai.json",
+	"background-color": "#272822",
+	"foreground-color": "#f1ebeb",
+	"color-palette-overrides":
+		["#48483e", "#dc2566", "#8fc029", "#d4c96e", "#55bcce", "#9358fe", "#56b7a5", "#acada1", "#76715e", "#fa2772", "#a7e22e", "#e7db75", "#66d9ee", "#ae82ff", "#66efd5", "#cfd0c2"]
+}
+
+,"Monokai (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/monokai.dark.json",
+	"background-color": "#272822",
+	"foreground-color": "#f8f8f2",
+	"color-palette-overrides":
+		["#272822", "#f92672", "#a6e22e", "#f4bf75", "#66d9ef", "#ae81ff", "#a1efe4", "#f8f8f2", "#75715e", "#f92672", "#a6e22e", "#f4bf75", "#66d9ef", "#ae81ff", "#a1efe4", "#f9f8f5"]
+}
+
+,"Monokai (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/monokai.light.json",
+	"background-color": "#f9f8f5",
+	"foreground-color": "#49483e",
+	"color-palette-overrides":
+		["#272822", "#f92672", "#a6e22e", "#f4bf75", "#66d9ef", "#ae81ff", "#a1efe4", "#f8f8f2", "#75715e", "#f92672", "#a6e22e", "#f4bf75", "#66d9ef", "#ae81ff", "#a1efe4", "#f9f8f5"]
+}
+
+,"Mostly Bright":
+{
+	"author": "m83",
+	"filename": "collection/mostly-bright.json",
+	"background-color": "#F3F3F3",
+	"foreground-color": "#707070",
+	"color-palette-overrides":
+		["#D3D3D3", "#EF6B7B", "#A1D569", "#F59335", "#4EC2E8", "#FEC7CD", "#95C1C0", "#707070", "#B3B3B3", "#ED5466", "#AFDB80", "#F59335", "#5DC7EA", "#D2A4B4", "#75A1A0", "#909090"]
+}
+
+,"Muse":
+{
+	"author": "",
+	"filename": "xcolors.net/Muse.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#2e3436", "#a31604", "#447241", "#c1951a", "#425387", "#965d98", "#06989a", "#d3d7cf", "#555753", "#c60001", "#27a343", "#d5a30e", "#4a5a8d", "#893c8c", "#12bccb", "#eeeeec"]
+}
+
+,"Nancy":
+{
+	"author": "",
+	"filename": "xcolors.net/nancy.json",
+	"background-color": "#010101",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#1b1d1e", "#f92672", "#82b414", "#fd971f", "#4e82aa", "#8c54fe", "#465457", "#ccccc6", "#505354", "#ff5995", "#b6e354", "#feed6c", "#0c73c2", "#9e6ffe", "#899ca1", "#f8f8f2"]
+}
+
+,"Nature Suede":
+{
+	"author": "Gslob",
+	"filename": "xcolors.net/Gslob nature-suede.json",
+	"background-color": "#170f0d",
+	"foreground-color": "#746c48",
+	"color-palette-overrides":
+		["#392925", "#98724c", "#908f32", "#aa964c", "#7b854e", "#6b5644", "#5c5142", "#c8b55b", "#544b2e", "#af652f", "#c3c13d", "#c8b55b", "#70a16c", "#98724c", "#778725", "#e4dc8c"]
+}
+
+,"Navy and Ivory":
+{
+	"author": "hal",
+	"filename": "collection/navy-and-ivory.json",
+	"background-color": "#021b21",
+	"foreground-color": "#e8dfd6",
+	"color-palette-overrides":
+		["#032c36", "#c2454e", "#7cbf9e", "#8a7a63", "#2e3340", "#ff5879", "#44b5b1", "#f2f1b9", "#065f73", "#ef5847", "#a2d9b1", "#beb090", "#61778d", "#ff99a1", "#9ed9d8", "#f6f6c9"]
+}
+
+,"Neon":
+{
+	"author": "",
+	"filename": "xcolors.net/neon.json",
+	"background-color": "#171717",
+	"foreground-color": "#f8f8f8",
+	"color-palette-overrides":
+		["#171717", "#d81765", "#97d01a", "#ffa800", "#16b1fb", "#ff2491", "#0fdcb6", "#ebebeb", "#38252c", "#ff0000", "#76b639", "#e1a126", "#289cd5", "#ff2491", "#0a9b81", "#f8f8f8"]
+}
+
+,"Nucolors":
+{
+	"author": "",
+	"filename": "xcolors.net/nucolors.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#393939", "#ff9f95", "#e2ffc7", "#ffffb9", "#a8ceea", "#e2b5cc", "#c2efff", "#dddddd", "#474747", "#ff8d80", "#dbffb3", "#ffbe64", "#7eb6ff", "#e296ff", "#9ce9ff", "#dddddd"]
+}
+
+,"Nudge":
+{
+	"author": "",
+	"filename": "xcolors.net/nudge.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#658280", "#822f5d", "#184a31", "#9d4500", "#304465", "#330801", "#175552", "#110005", "#8ca8a6", "#a24b76", "#28634d", "#9d5823", "#415c77", "#532706", "#3a6868", "#330801"]
+}
+
+,"Numix Darkest":
+{
+	"author": "",
+	"filename": "xcolors.net/NumixDarkest.json",
+	"background-color": "#282828",
+	"foreground-color": "#a2a2a2",
+	"color-palette-overrides":
+		["#555555", "#9c3528", "#61bc3b", "#f3b43a", "#0d68a8", "#744560", "#288e9c", "#a2a2a2", "#888888", "#d64937", "#86df5d", "#fdd75a", "#0f75bd", "#9e5e83", "#37c3d6", "#f9f9f9"]
+}
+
+,"Ocean (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/ocean.dark.json",
+	"background-color": "#2b303b",
+	"foreground-color": "#c0c5ce",
+	"color-palette-overrides":
+		["#2b303b", "#bf616a", "#a3be8c", "#ebcb8b", "#8fa1b3", "#b48ead", "#96b5b4", "#c0c5ce", "#65737e", "#bf616a", "#a3be8c", "#ebcb8b", "#8fa1b3", "#b48ead", "#96b5b4", "#eff1f5"]
+}
+
+,"Ocean (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/ocean.light.json",
+	"background-color": "#eff1f5",
+	"foreground-color": "#4f5b66",
+	"color-palette-overrides":
+		["#2b303b", "#bf616a", "#a3be8c", "#ebcb8b", "#8fa1b3", "#b48ead", "#96b5b4", "#c0c5ce", "#65737e", "#bf616a", "#a3be8c", "#ebcb8b", "#8fa1b3", "#b48ead", "#96b5b4", "#eff1f5"]
+}
+
+,"Orangish":
+{
+	"author": "",
+	"filename": "xcolors.net/orangish.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#251f1f", "#eb4509", "#94e76b", "#ffac18", "#46aede", "#e32c57", "#d6dbac", "#efefef", "#5e5e5e", "#eb4509", "#95e76b", "#ffac18", "#46aede", "#e32c57", "#d6dbac", "#efefef"]
+}
+
+,"Panels":
+{
+	"author": "dkeg",
+	"filename": "xcolors.net/dkeg - panels.json",
+	"background-color": "#000000",
+	"foreground-color": "#d3d3d3",
+	"color-palette-overrides":
+		["#191927", "#282f5e", "#2b4593", "#344276", "#4e3a4f", "#61372f", "#6b484c", "#744537", "#905749", "#94431c", "#9f582a", "#a38687", "#e1750f", "#eaaf25", "#fa8e08", "#fca806"]
+}
+
+,"Paraiso (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/paraiso.dark.json",
+	"background-color": "#2f1e2e",
+	"foreground-color": "#a39e9b",
+	"color-palette-overrides":
+		["#2f1e2e", "#ef6155", "#48b685", "#fec418", "#06b6ef", "#815ba4", "#5bc4bf", "#a39e9b", "#776e71", "#ef6155", "#48b685", "#fec418", "#06b6ef", "#815ba4", "#5bc4bf", "#e7e9db"]
+}
+
+,"Paraiso (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/paraiso.light.json",
+	"background-color": "#e7e9db",
+	"foreground-color": "#4f424c",
+	"color-palette-overrides":
+		["#2f1e2e", "#ef6155", "#48b685", "#fec418", "#06b6ef", "#815ba4", "#5bc4bf", "#a39e9b", "#776e71", "#ef6155", "#48b685", "#fec418", "#06b6ef", "#815ba4", "#5bc4bf", "#e7e9db"]
+}
+
+,"Parker Brothers":
+{
+	"author": "",
+	"filename": "xcolors.net/parker_brothers.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#322a2c", "#79220e", "#344b1b", "#b45b00", "#434045", "#5c1e25", "#394745", "#ae8842", "#46423b", "#aa261f", "#76550f", "#b57f02", "#908862", "#624a35", "#393e38", "#a59058"]
+}
+
+,"Pastel White":
+{
+	"author": "Muzieca",
+	"filename": "xcolors.net/Muzieca pastel white.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#646e5b", "#db7464", "#a7e160", "#dbd560", "#69b2d6", "#a073d6", "#69e1d3", "#9ea894", "#88927e", "#dba08f", "#bde18b", "#dbda8b", "#95a9d6", "#b59fd6", "#95e1d2", "#c9d0c2"]
+}
+
+,"Phrak1":
+{
+	"author": "",
+	"filename": "xcolors.net/phrak1.json",
+	"background-color": "#000000",
+	"foreground-color": "#a8a8a8",
+	"color-palette-overrides":
+		["#000000", "#a80000", "#00a800", "#a85400", "#0000a8", "#a800a8", "#00a8a8", "#a8a8a8", "#545054", "#f85450", "#50fc50", "#f8fc50", "#5054f8", "#f854f8", "#50fcf8", "#f8fcf8"]
+}
+
+,"Pretty and Pastel":
+{
+	"author": "IWAFU",
+	"filename": "collection/pretty-and-pastel.json",
+	"background-color": "#151515",
+	"foreground-color": "#888888",
+	"color-palette-overrides":
+		["#292929", "#CF6A4C", "#19CB00", "#FAD07A", "#8197BF", "#8787AF", "#668799", "#888888", "#525252", "#FF9D80", "#23FD00", "#FFEFBF", "#ACCAFF", "#C4C4FF", "#80BFAF", "#E8E8D3"]
+}
+
+,"Pulp":
+{
+	"author": "",
+	"filename": "xcolors.net/pulp.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#86817e", "#d75756", "#688c7d", "#ffb365", "#68778c", "#fdb3b2", "#86abd9", "#f7f8f2", "#86817e", "#a63a3a", "#688c7d", "#ffb365", "#68778c", "#8c686a", "#86abd9", "#f7f8f2"]
+}
+
+,"Railscasts (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/railscasts.dark.json",
+	"background-color": "#2b2b2b",
+	"foreground-color": "#e6e1dc",
+	"color-palette-overrides":
+		["#2b2b2b", "#da4939", "#a5c261", "#ffc66d", "#6d9cbe", "#b6b3eb", "#519f50", "#e6e1dc", "#5a647e", "#da4939", "#a5c261", "#ffc66d", "#6d9cbe", "#b6b3eb", "#519f50", "#f9f7f3"]
+}
+
+,"Railscasts (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/railscasts.light.json",
+	"background-color": "#f9f7f3",
+	"foreground-color": "#3a4055",
+	"color-palette-overrides":
+		["#2b2b2b", "#da4939", "#a5c261", "#ffc66d", "#6d9cbe", "#b6b3eb", "#519f50", "#e6e1dc", "#5a647e", "#da4939", "#a5c261", "#ffc66d", "#6d9cbe", "#b6b3eb", "#519f50", "#f9f7f3"]
+}
+
+,"Rasi":
+{
+	"author": "",
+	"filename": "xcolors.net/rasi.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#1b1d1e", "#f92672", "#82b414", "#fd971f", "#4e82aa", "#8c54fe", "#465457", "#ccccc6", "#505354", "#ff5995", "#b6e354", "#feed6c", "#0c73c2", "#9e6ffe", "#899ca1", "#f8f8f2"]
+}
+
+,"Red Phoenix":
+{
+	"author": "dkeg",
+	"filename": "xcolors.net/dkeg - redphoenix.json",
+	"background-color": "#111111",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#131313", "#2d2d2d", "#4c3a3d", "#4e4e4e", "#6f6f6f", "#909090", "#aaa998", "#b1b1b1", "#d1d1d1", "#d2c3ad", "#df9767", "#e1e1e1", "#ededed", "#ed4b19", "#f2361e", "#fa390f"]
+}
+
+,"Rezza":
+{
+	"author": "",
+	"filename": "xcolors.net/rezza.json",
+	"background-color": "#222222",
+	"foreground-color": "#dddddd",
+	"color-palette-overrides":
+		["#191919", "#803232", "#5b762f", "#aa9943", "#324c80", "#706c9a", "#92b19e", "#ffffff", "#252525", "#982b2b", "#89b83f", "#efef60", "#2b4f98", "#826ab1", "#a1cdcd", "#dddddd"]
+}
+
+,"Rydgel":
+{
+	"author": "",
+	"filename": "xcolors.net/rydgel.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#303430", "#bf7979", "#97b26b", "#cdcdc1", "#86a2be", "#d9b798", "#a1b5cd", "#ffffff", "#cdb5cd", "#f4a45f", "#c5f779", "#ffffed", "#98afd9", "#d7d998", "#a1b5cd", "#dedede"]
+}
+
+,"SOS":
+{
+	"author": "Rooster",
+	"filename": "xcolors.net/Rooster - SOS.json",
+	"background-color": "#373b43",
+	"foreground-color": "#78796f",
+	"color-palette-overrides":
+		["#373b43", "#fdcd39", "#fbfd59", "#deac40", "#afb171", "#b387e7", "#63e860", "#efdecb", "#373b43", "#fdcd39", "#fbfd59", "#deac40", "#afb171", "#b387e7", "#63e860", "#efdecb"]
+}
+
+,"Sex Colors":
+{
+	"author": "",
+	"filename": "xcolors.net/sexcolors.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#252525", "#ff9f95", "#a6e22e", "#fd971f", "#435e87", "#789ec6", "#5e7175", "#dbdcdc", "#454545", "#ff8d80", "#b6e354", "#fd971f", "#587aa4", "#46a4ff", "#a3babf", "#fdfdfd"]
+}
+
+,"Shapeshifter (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/shapeshifter.dark.json",
+	"background-color": "#000000",
+	"foreground-color": "#ababab",
+	"color-palette-overrides":
+		["#000000", "#e92f2f", "#0ed839", "#dddd13", "#3b48e3", "#f996e2", "#23edda", "#ababab", "#343434", "#e92f2f", "#0ed839", "#dddd13", "#3b48e3", "#f996e2", "#23edda", "#f9f9f9"]
+}
+
+,"Shapeshifter (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/shapeshifter.light.json",
+	"background-color": "#f9f9f9",
+	"foreground-color": "#102015",
+	"color-palette-overrides":
+		["#000000", "#e92f2f", "#0ed839", "#dddd13", "#3b48e3", "#f996e2", "#23edda", "#ababab", "#343434", "#e92f2f", "#0ed839", "#dddd13", "#3b48e3", "#f996e2", "#23edda", "#f9f9f9"]
+}
+
+,"Shic":
+{
+	"author": "",
+	"filename": "xcolors.net/shic.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#494949", "#b9716e", "#588f7a", "#aaa857", "#a0c3c0", "#735e74", "#695935", "#b1b1b1", "#484848", "#8f5a58", "#326f58", "#c7c575", "#507f7c", "#a387a6", "#927c4b", "#c7c7c7"]
+}
+
+,"Simple Rainbow":
+{
+	"author": "",
+	"filename": "xcolors.net/simple_rainbow.json",
+	"background-color": "#575757",
+	"foreground-color": "#dcdccc",
+	"color-palette-overrides":
+		["#666666", "#ff8278", "#bde077", "#eadc84", "#77bee0", "#dd91f3", "#ffc178", "#dddddd", "#888888", "#ff8278", "#bde077", "#eadc84", "#77bee0", "#dd91f3", "#ffc178", "#cccccc"]
+}
+
+,"Solarized (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/solarized.dark.json",
+	"background-color": "#002b36",
+	"foreground-color": "#93a1a1",
+	"color-palette-overrides":
+		["#002b36", "#dc322f", "#859900", "#b58900", "#268bd2", "#6c71c4", "#2aa198", "#93a1a1", "#657b83", "#dc322f", "#859900", "#b58900", "#268bd2", "#6c71c4", "#2aa198", "#fdf6e3"]
+}
+
+,"Solarized (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/solarized.light.json",
+	"background-color": "#fdf6e3",
+	"foreground-color": "#586e75",
+	"color-palette-overrides":
+		["#002b36", "#dc322f", "#859900", "#b58900", "#268bd2", "#6c71c4", "#2aa198", "#93a1a1", "#657b83", "#dc322f", "#859900", "#b58900", "#268bd2", "#6c71c4", "#2aa198", "#fdf6e3"]
+}
+
+,"Splurge":
+{
+	"author": "",
+	"filename": "xcolors.net/splurge.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#4a4b4a", "#d7699a", "#80d468", "#d7a169", "#6985d7", "#c86ad4", "#6fccd1", "#dbdcdc", "#696969", "#f5a2b5", "#a3f2a0", "#f5cda2", "#a2c1f5", "#d2a2f5", "#a0e9f2", "#fdfdfd"]
+}
+
+,"Swayr":
+{
+	"author": "",
+	"filename": "xcolors.net/swayr.json",
+	"background-color": "#1c1709",
+	"foreground-color": "#c2b9a1",
+	"color-palette-overrides":
+		["#1c1709", "#8e4317", "#787200", "#945c00", "#315094", "#5c2e40", "#00617d", "#c2b9a1", "#4f4939", "#f07935", "#d9d138", "#ffab26", "#8aa9ed", "#ff8cb8", "#43bfe0", "#f2e8c9"]
+}
+
+,"Sweet Love":
+{
+	"author": "Boroshlawa",
+	"filename": "collection/sweetlove.json",
+	"background-color": "#1F1F1F",
+	"foreground-color": "#C0B18B",
+	"color-palette-overrides":
+		["#4A3637", "#D17B49", "#7B8748", "#AF865A", "#535C5C", "#775759", "#6D715E", "#C0B18B", "#402E2E", "#AC5D2F", "#647035", "#8F6840", "#444B4B", "#614445", "#585C49", "#978965"]
+}
+
+,"Tango":
+{
+	"author": "",
+	"filename": "xcolors.net/tango.json",
+	"background-color": "#000000",
+	"foreground-color": "#babdb6",
+	"color-palette-overrides":
+		["#2e3436", "#cc0000", "#4e9a06", "#c4a000", "#3465a4", "#75507b", "#06989a", "#d3d7cf", "#555753", "#ef2929", "#8ae234", "#fce94f", "#729fcf", "#ad7fa8", "#34e2e2", "#eeeeec"]
+}
+
+,"Tangoesque":
+{
+	"author": "",
+	"filename": "xcolors.net/tangoesque.json",
+	"background-color": "#000000",
+	"foreground-color": "#aaaaaa",
+	"color-palette-overrides":
+		["#202020", "#ff6565", "#93d44f", "#eab93d", "#204a87", "#ce5c00", "#89b6e2", "#cccccc", "#606060", "#ff8d8d", "#c8e7a8", "#ffc123", "#3465a4", "#f57900", "#46a4ff", "#ffffff"]
+}
+
+,"Tartan":
+{
+	"author": "",
+	"filename": "xcolors.net/Tartan.json",
+	"background-color": "#2b2b2b",
+	"foreground-color": "#dedede",
+	"color-palette-overrides":
+		["#2e3436", "#cc0000", "#4e9a06", "#c4a000", "#3465a4", "#75507b", "#06989a", "#d3d7cf", "#555753", "#ef2929", "#8ae234", "#fce94f", "#729fcf", "#ad7fa8", "#34e2e2", "#eeeeec"]
+}
+
+,"Teva":
+{
+	"author": "dkeg",
+	"filename": "xcolors.net/dkeg - teva.json",
+	"background-color": "#170f0d",
+	"foreground-color": "#746c48",
+	"color-palette-overrides":
+		["#191f31", "#282e39", "#303844", "#3b444a", "#3c4435", "#4e534f", "#5d5d35", "#66695d", "#706d56", "#8b7852", "#909581", "#91703a", "#948658", "#a19662", "#ad9152", "#c6a13f"]
+}
+
+,"Tomorrow (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/tomorrow.dark.json",
+	"background-color": "#1d1f21",
+	"foreground-color": "#c5c8c6",
+	"color-palette-overrides":
+		["#1d1f21", "#cc6666", "#b5bd68", "#f0c674", "#81a2be", "#b294bb", "#8abeb7", "#c5c8c6", "#969896", "#cc6666", "#b5bd68", "#f0c674", "#81a2be", "#b294bb", "#8abeb7", "#ffffff"]
+}
+
+,"Tomorrow (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/tomorrow.light.json",
+	"background-color": "#ffffff",
+	"foreground-color": "#373b41",
+	"color-palette-overrides":
+		["#1d1f21", "#cc6666", "#b5bd68", "#f0c674", "#81a2be", "#b294bb", "#8abeb7", "#c5c8c6", "#969896", "#cc6666", "#b5bd68", "#f0c674", "#81a2be", "#b294bb", "#8abeb7", "#ffffff"]
+}
+
+,"Trim Yer Beard":
+{
+	"author": "franksn",
+	"filename": "collection/trim-yer-beard.json",
+	"background-color": "#191716",
+	"foreground-color": "#DABA8B",
+	"color-palette-overrides":
+		["#0F0E0D", "#845336", "#57553C", "#A17E3E", "#43454F", "#604848", "#5C6652", "#A18B62", "#383332", "#8C4F4A", "#898471", "#C8B491", "#65788F", "#755E4A", "#718062", "#BC9D66"]
+}
+
+,"Twilight (dark)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/twilight.dark.json",
+	"background-color": "#1e1e1e",
+	"foreground-color": "#a7a7a7",
+	"color-palette-overrides":
+		["#1e1e1e", "#cf6a4c", "#8f9d6a", "#f9ee98", "#7587a6", "#9b859d", "#afc4db", "#a7a7a7", "#5f5a60", "#cf6a4c", "#8f9d6a", "#f9ee98", "#7587a6", "#9b859d", "#afc4db", "#ffffff"]
+}
+
+,"Twilight (light)":
+{
+	"author": "Chris Kempson",
+	"filename": "base16/twilight.light.json",
+	"background-color": "#ffffff",
+	"foreground-color": "#464b50",
+	"color-palette-overrides":
+		["#1e1e1e", "#cf6a4c", "#8f9d6a", "#f9ee98", "#7587a6", "#9b859d", "#afc4db", "#a7a7a7", "#5f5a60", "#cf6a4c", "#8f9d6a", "#f9ee98", "#7587a6", "#9b859d", "#afc4db", "#ffffff"]
+}
+
+,"Unsifted Wheat":
+{
+	"author": "dkeg",
+	"filename": "xcolors.net/dkeg - unsiftedwheat.json",
+	"background-color": "#111111",
+	"foreground-color": "#d3d3d3",
+	"color-palette-overrides":
+		["#382c2f", "#48393a", "#65534d", "#79665a", "#836e5e", "#8e7766", "#917781", "#9a846d", "#ac9377", "#baa17e", "#bca282", "#c1a67e", "#cfb48e", "#d1baa3", "#dfc39b", "#eed8c4"]
+}
+
+,"VWbug":
+{
+	"author": "dkeg",
+	"filename": "xcolors.net/dkeg - vwbug.json",
+	"background-color": "#170f0d",
+	"foreground-color": "#746c48",
+	"color-palette-overrides":
+		["#261e26", "#312c38", "#4d353b", "#503b43", "#57403e", "#665453", "#6e5450", "#8e7266", "#906756", "#927e7e", "#ad6042", "#b48b6f", "#c4ab98", "#d9c9b6", "#e7ddd1", "#faf7f2"]
+}
+
+,"Vacuous 2":
+{
+	"author": "hal",
+	"filename": "collection/vacuous2.json",
+	"background-color": "#101010",
+	"foreground-color": "#d2c5bc",
+	"color-palette-overrides":
+		["#202020", "#b91e2e", "#81957c", "#f9bb80", "#356579", "#2d2031", "#0b3452", "#909090", "#606060", "#d14548", "#a7b79a", "#fae3a0", "#7491a1", "#87314e", "#0f829d", "#fff0f0"]
+}
+
+,"VisiBlue":
+{
+	"author": "",
+	"filename": "xcolors.net/Visiblue.json",
+	"background-color": "#000000",
+	"foreground-color": "#666699",
+	"color-palette-overrides":
+		["#333366", "#6666cc", "#0099cc", "#3366cc", "#006699", "#0066ff", "#669999", "#99cccc", "#333399", "#9999ff", "#00ccff", "#6699ff", "#0099cc", "#0099ff", "#66cccc", "#ccffff"]
+}
+
+,"VisiBone":
+{
+	"author": "",
+	"filename": "xcolors.net/visibone.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#666666", "#cc6666", "#66cc99", "#cc9966", "#6699cc", "#cc6699", "#66cccc", "#cccccc", "#999999", "#ff9999", "#99ffcc", "#ffcc99", "#99ccff", "#ff99cc", "#99ffff", "#ffffff"]
+}
+
+,"Visibone Alt. 2":
+{
+	"author": "Gutterslob",
+	"filename": "collection/visibone-alt-2.json",
+	"background-color": "#333333",
+	"foreground-color": "#CCCCCC",
+	"color-palette-overrides":
+		["#666666", "#CC6699", "#99CC66", "#CC9966", "#6699CC", "#9966CC", "#66CC99", "#CCCCCC", "#999999", "#FF99CC", "#CCFF99", "#FFCC99", "#99CCFF", "#CC99FF", "#99FFCC", "#FFFFFF"]
+}
+
+,"X::DotShare":
+{
+	"author": "crshd",
+	"filename": "collection/x-dotshare.json",
+	"background-color": "#151515",
+	"foreground-color": "#D7D0C7",
+	"color-palette-overrides":
+		["#101010", "#E84F4F", "#B8D68C", "#E1AA5D", "#7DC1CF", "#9B64FB", "#6D878D", "#DDDDDD", "#404040", "#D23D3D", "#A0CF5D", "#F39D21", "#4E9FB1", "#8542FF", "#42717B", "#DDDDDD"]
+}
+
+,"X::Erosion":
+{
+	"author": "earsplit",
+	"filename": "collection/x-erosion.json",
+	"background-color": "#181512",
+	"foreground-color": "#BEA492",
+	"color-palette-overrides":
+		["#332D29", "#8C644C", "#746C48", "#908A66", "#646A6D", "#605655", "#4B5C5E", "#504339", "#817267", "#9F7155", "#857B52", "#9C956E", "#71777A", "#656565", "#556D70", "#9A875F"]
+}
+
+,"Yousai":
+{
+	"author": "Kori",
+	"filename": "collection/yousai.json",
+	"background-color": "#F5E7DE",
+	"foreground-color": "#34302D",
+	"color-palette-overrides":
+		["#666661", "#992E2E", "#4C3226", "#A67C53", "#4C7399", "#BF9986", "#D97742", "#34302D", "#7F7F7A", "#B23636", "#664233", "#BF8F60", "#5986B2", "#D9AE98", "#F2854A", "#4C4742"]
+}
+
+,"aikofog":
+{
+	"author": "Gutterslob",
+	"filename": "xcolors.net/Gutterslob - aikofog.json",
+	"background-color": "#f1eee9",
+	"foreground-color": "#b2b3b8",
+	"color-palette-overrides":
+		["#757475", "#936a6f", "#668462", "#7f7b62", "#6e7291", "#846887", "#637e7b", "#9a9a9a", "#4a4a4a", "#d76572", "#4fae42", "#a8981f", "#7782cf", "#b754c4", "#2ea89a", "#c4c4c4"]
+}
+
+,"astromouse":
+{
+	"author": "",
+	"filename": "xcolors.net/astromouse.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#1c1c1c", "#d770af", "#9acc79", "#d0d26b", "#77b6c5", "#a488d9", "#7fcab3", "#8d8d8d", "#3d3a3a", "#d28abf", "#8fb676", "#c8bc45", "#8fa7b9", "#bd89de", "#6ec2a8", "#dad3d3"]
+}
+
+,"hund":
+{
+	"author": "hund",
+	"filename": "collection/hund.json",
+	"background-color": "#161616",
+	"foreground-color": "#FFFFFF",
+	"color-palette-overrides":
+		["#222222", "#E84F4F", "#B7CE42", "#FEA63C", "#66AABB", "#B7416E", "#6D878D", "#DDDDDD", "#666666", "#D23D3D", "#BDE077", "#FFE863", "#AACCBB", "#E16A98", "#42717B", "#CCCCCC"]
+}
+
+,"jmbi":
+{
+	"author": "jmbi",
+	"filename": "collection/jmbi.json",
+	"background-color": "#1e1e1e",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#5A7260", "#8F423C", "#BBBB88", "#F9D25B", "#E0BA69", "#709289", "#D13516", "#EFE2E0", "#8DA691", "#EEAA88", "#CCC68D", "#EEDD99", "#C9B957", "#FFCBAB", "#C25431", "#F9F1ED"]
+}
+
+,"s3r0 modified":
+{
+	"author": "earsplit",
+	"filename": "collection/s3r0-modified.json",
+	"background-color": "#1F1F1F",
+	"foreground-color": "#C0B18B",
+	"color-palette-overrides":
+		["#4A3637", "#D17B49", "#7B8748", "#AF865A", "#535C5C", "#775759", "#6D715E", "#C0B18B", "#4A3637", "#D17B49", "#7B8748", "#AF865A", "#535C5C", "#775759", "#6D715E", "#C0B18B"]
+}
+
+,"theme2":
+{
+	"author": "",
+	"filename": "xcolors.net/theme2.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#191919", "#eb3d51", "#66b61a", "#d98e1d", "#23ffa8", "#ff00da", "#68a783", "#eaeaea", "#484848", "#be6262", "#4b8a10", "#e5d95e", "#23aaff", "#ab005b", "#bbcd81", "#bbbbbb"]
+}
+
+,"thwump":
+{
+	"author": "",
+	"filename": "xcolors.net/thwump.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#202020", "#a07070", "#70a070", "#a0a070", "#7070a0", "#a070a0", "#70a0a0", "#a0a0a0", "#505050", "#d07070", "#70d070", "#d0d070", "#7070d0", "#d070d0", "#70d0d0", "#f0f0f0"]
+}
+
+,"tlh":
+{
+	"author": "",
+	"filename": "xcolors.net/tlh.json",
+	"background-color": "#101010",
+	"foreground-color": "#66ff66",
+	"color-palette-overrides":
+		["#1c1c1c", "#d81860", "#60ff60", "#f9fd75", "#4695c8", "#a78edb", "#43afce", "#f3ebe2", "#4d4d4d", "#f00060", "#70ff70", "#f9fd80", "#5a9dc8", "#b29fdb", "#69b8ce", "#eeeeee"]
+}
+
+,"zenburn":
+{
+	"author": "",
+	"filename": "xcolors.net/zenburn.json",
+	"background-color": "#000000",
+	"foreground-color": "#ffffff",
+	"color-palette-overrides":
+		["#1e2320", "#705050", "#60b48a", "#dfaf8f", "#506070", "#dc8cc3", "#8cd0d3", "#dcdccc", "#709080", "#dca3a3", "#c3bf9f", "#f0dfaf", "#94bff3", "#ec93d3", "#93e0e3", "#ffffff"]
+}
 }

@@ -42,8 +42,11 @@ sub main
 		next if "$item" eq 'source';
 #		print "$item\n";
 		my $name = $item;
-		$name =~ s/ /_/g;
+		$name =~ s/[-. :]/_/g;
 		$name =~ s/[()]//g;
+		if ($name =~ /^[0-9]/) {
+			$name = "name_$name";
+		}
 		$names{$name} = $item;
 		my $pal = $info->{$item}->{"color-palette-overrides"};
 		print $ofh "static char *$name\[] = {\n";
