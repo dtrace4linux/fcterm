@@ -51,6 +51,13 @@ sub main
 		my $pal = $info->{$item}->{"color-palette-overrides"};
 		print $ofh "static char *$name\[] = {\n";
 		my $i = 0;
+		print $ofh "  /* background */ \"",
+			$info->{$item}->{"background-color"}, 
+			"\",\n";
+		print $ofh "  /* foreground */ \"",
+			$info->{$item}->{"foreground-color"}, 
+			"\",\n";
+
 		foreach my $c (@$pal) {
 			#$c =~ s/#/0x/;
 			printf $ofh "  /* %2d */ \"$c\",\n", $i++;

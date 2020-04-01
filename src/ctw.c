@@ -370,8 +370,8 @@ static XtResource resources[] = {
 	  offset(geometry), XtRString, ""},
 	{ XtNgridLineColor, XtCGridLineColor, XtRPixel, sizeof(unsigned long),
 	  offset(gridLine_color), XtRString, "#303050"},
-	{ XtNcursorColor, XtCCursorColor, XtRPixel, sizeof(unsigned long),
-	  offset(cursor_color), XtRString, "red"},
+//	{ XtNcursorColor, XtCCursorColor, XtRPixel, sizeof(unsigned long),
+//	  offset(cursor_color), XtRString, "red"},
 	{ XtNhiliteBackground, XtCHiliteBackground, XtRPixel, sizeof(unsigned long),
 	  offset(hilite_bg), XtRString, "RoyalBlue"},
 	{ XtNhiliteForeground, XtCHiliteForeground, XtRPixel, sizeof(unsigned long),
@@ -7152,16 +7152,25 @@ setup_x11_colors(CtwWidget new, Display *dpy)
 	extern char *theme;
 	extern struct map themes[];
 
+	default_depth = DefaultDepth(dpy, DefaultScreen(dpy));
+
 	if (theme) {
+		static char buf[BUFSIZ];
+
 		for (i = 0; themes[i].name; i++) {
 			char **tbl = (char **) themes[i].value;
 
 			if (strcmp(themes[i].name, theme) != 0) {
 				continue;
 		 		}
-			for (i = 0; tbl[i]; i++) {
-				color_tbl[i] = tbl[i];
+			for (i = 2; tbl[i]; i++) {
+				color_tbl[i-2] = tbl[i];
 				}
+
+			snprintf(buf, sizeof buf, "CTW_THEME=%s\n", theme);
+			putenv(buf);
+
+			new->ctw.cursor_color = alloc_color_pixel(dpy, default_depth, tbl[1]);
 			break;
 			}
 		}
@@ -7170,7 +7179,6 @@ setup_x11_colors(CtwWidget new, Display *dpy)
 	/*   set  up  the  flag  saying whether we're  */
 	/*   running on mono or color screen.	       */
 	/***********************************************/
-	default_depth = DefaultDepth(dpy, DefaultScreen(dpy));
 	if (default_depth == 1 || getenv("CRMONO") != (char *) NULL) {
 		color_names = mono_tbl;
 		is_color = FALSE;

@@ -1,4 +1,6 @@
 static char *name_3024_dark[] = {
+  /* background */ "#090300",
+  /* foreground */ "#a5a2a2",
   /*  0 */ "#090300",
   /*  1 */ "#db2d20",
   /*  2 */ "#01a252",
@@ -18,6 +20,8 @@ static char *name_3024_dark[] = {
   0
 };
 static char *name_3024_light[] = {
+  /* background */ "#f7f7f7",
+  /* foreground */ "#4a4543",
   /*  0 */ "#090300",
   /*  1 */ "#db2d20",
   /*  2 */ "#01a252",
@@ -37,6 +41,8 @@ static char *name_3024_light[] = {
   0
 };
 static char *Ashes_dark[] = {
+  /* background */ "#1c2023",
+  /* foreground */ "#c7ccd1",
   /*  0 */ "#1c2023",
   /*  1 */ "#c7ae95",
   /*  2 */ "#95c7ae",
@@ -56,6 +62,8 @@ static char *Ashes_dark[] = {
   0
 };
 static char *Ashes_light[] = {
+  /* background */ "#f3f4f5",
+  /* foreground */ "#565e65",
   /*  0 */ "#1c2023",
   /*  1 */ "#c7ae95",
   /*  2 */ "#95c7ae",
@@ -75,6 +83,8 @@ static char *Ashes_light[] = {
   0
 };
 static char *Atelierdune_dark[] = {
+  /* background */ "#20201d",
+  /* foreground */ "#a6a28c",
   /*  0 */ "#20201d",
   /*  1 */ "#d73737",
   /*  2 */ "#60ac39",
@@ -94,6 +104,8 @@ static char *Atelierdune_dark[] = {
   0
 };
 static char *Atelierdune_light[] = {
+  /* background */ "#fefbec",
+  /* foreground */ "#6e6b5e",
   /*  0 */ "#20201d",
   /*  1 */ "#d73737",
   /*  2 */ "#60ac39",
@@ -113,6 +125,8 @@ static char *Atelierdune_light[] = {
   0
 };
 static char *Atelierforest_dark[] = {
+  /* background */ "#1b1918",
+  /* foreground */ "#a8a19f",
   /*  0 */ "#1b1918",
   /*  1 */ "#f22c40",
   /*  2 */ "#5ab738",
@@ -132,6 +146,8 @@ static char *Atelierforest_dark[] = {
   0
 };
 static char *Atelierforest_light[] = {
+  /* background */ "#f1efee",
+  /* foreground */ "#68615e",
   /*  0 */ "#1b1918",
   /*  1 */ "#f22c40",
   /*  2 */ "#5ab738",
@@ -151,6 +167,8 @@ static char *Atelierforest_light[] = {
   0
 };
 static char *Atelierheath_dark[] = {
+  /* background */ "#1b181b",
+  /* foreground */ "#ab9bab",
   /*  0 */ "#1b181b",
   /*  1 */ "#ca402b",
   /*  2 */ "#379a37",
@@ -170,6 +188,8 @@ static char *Atelierheath_dark[] = {
   0
 };
 static char *Atelierheath_light[] = {
+  /* background */ "#f7f3f7",
+  /* foreground */ "#695d69",
   /*  0 */ "#1b181b",
   /*  1 */ "#ca402b",
   /*  2 */ "#379a37",
@@ -189,6 +209,8 @@ static char *Atelierheath_light[] = {
   0
 };
 static char *Atelierlakeside_dark[] = {
+  /* background */ "#161b1d",
+  /* foreground */ "#7ea2b4",
   /*  0 */ "#161b1d",
   /*  1 */ "#d22d72",
   /*  2 */ "#568c3b",
@@ -208,6 +230,8 @@ static char *Atelierlakeside_dark[] = {
   0
 };
 static char *Atelierlakeside_light[] = {
+  /* background */ "#ebf8ff",
+  /* foreground */ "#516d7b",
   /*  0 */ "#161b1d",
   /*  1 */ "#d22d72",
   /*  2 */ "#568c3b",
@@ -227,6 +251,8 @@ static char *Atelierlakeside_light[] = {
   0
 };
 static char *Atelierseaside_dark[] = {
+  /* background */ "#131513",
+  /* foreground */ "#8ca68c",
   /*  0 */ "#131513",
   /*  1 */ "#e6193c",
   /*  2 */ "#29a329",
@@ -246,6 +272,8 @@ static char *Atelierseaside_dark[] = {
   0
 };
 static char *Atelierseaside_light[] = {
+  /* background */ "#f0fff0",
+  /* foreground */ "#5e6e5e",
   /*  0 */ "#131513",
   /*  1 */ "#e6193c",
   /*  2 */ "#29a329",
@@ -265,6 +293,8 @@ static char *Atelierseaside_light[] = {
   0
 };
 static char *Belge[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#252525",
   /*  1 */ "#ef6769",
   /*  2 */ "#a6e22e",
@@ -284,6 +314,8 @@ static char *Belge[] = {
   0
 };
 static char *Bespin_dark[] = {
+  /* background */ "#28211c",
+  /* foreground */ "#8a8986",
   /*  0 */ "#28211c",
   /*  1 */ "#cf6a4c",
   /*  2 */ "#54be0d",
@@ -303,6 +335,8 @@ static char *Bespin_dark[] = {
   0
 };
 static char *Bespin_light[] = {
+  /* background */ "#baae9e",
+  /* foreground */ "#5e5d5c",
   /*  0 */ "#28211c",
   /*  1 */ "#cf6a4c",
   /*  2 */ "#54be0d",
@@ -322,6 +356,8 @@ static char *Bespin_light[] = {
   0
 };
 static char *Bitmute[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#282828",
   /*  1 */ "#b76969",
   /*  2 */ "#719d72",
@@ -341,6 +377,8 @@ static char *Bitmute[] = {
   0
 };
 static char *Bleh_1[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#666666",
   /*  1 */ "#996578",
   /*  2 */ "#889965",
@@ -360,6 +398,8 @@ static char *Bleh_1[] = {
   0
 };
 static char *Brewer_dark[] = {
+  /* background */ "#0c0d0e",
+  /* foreground */ "#b7b8b9",
   /*  0 */ "#0c0d0e",
   /*  1 */ "#e31a1c",
   /*  2 */ "#31a354",
@@ -379,6 +419,8 @@ static char *Brewer_dark[] = {
   0
 };
 static char *Brewer_light[] = {
+  /* background */ "#fcfdfe",
+  /* foreground */ "#515253",
   /*  0 */ "#0c0d0e",
   /*  1 */ "#e31a1c",
   /*  2 */ "#31a354",
@@ -398,6 +440,8 @@ static char *Brewer_light[] = {
   0
 };
 static char *Canvased_Pastel[] = {
+  /* background */ "#170f0d",
+  /* foreground */ "#746c48",
   /*  0 */ "#26251c",
   /*  1 */ "#323027",
   /*  2 */ "#3d4339",
@@ -417,6 +461,8 @@ static char *Canvased_Pastel[] = {
   0
 };
 static char *Catch_Me_If_You_Can[] = {
+  /* background */ "#170f0d",
+  /* foreground */ "#f9f9f9",
   /*  0 */ "#130f0c",
   /*  1 */ "#604c38",
   /*  2 */ "#8d7f85",
@@ -436,6 +482,8 @@ static char *Catch_Me_If_You_Can[] = {
   0
 };
 static char *Chalk_dark[] = {
+  /* background */ "#151515",
+  /* foreground */ "#d0d0d0",
   /*  0 */ "#151515",
   /*  1 */ "#fb9fb1",
   /*  2 */ "#acc267",
@@ -455,6 +503,8 @@ static char *Chalk_dark[] = {
   0
 };
 static char *Chalk_light[] = {
+  /* background */ "#f5f5f5",
+  /* foreground */ "#303030",
   /*  0 */ "#151515",
   /*  1 */ "#fb9fb1",
   /*  2 */ "#acc267",
@@ -474,6 +524,8 @@ static char *Chalk_light[] = {
   0
 };
 static char *City_Streets[] = {
+  /* background */ "#000000",
+  /* foreground */ "#d3d3d3",
   /*  0 */ "#201e24",
   /*  1 */ "#2d2b30",
   /*  2 */ "#3f3d40",
@@ -493,6 +545,8 @@ static char *City_Streets[] = {
   0
 };
 static char *Cloud[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#222827",
   /*  1 */ "#d5a8e3",
   /*  2 */ "#9c75dd",
@@ -512,6 +566,8 @@ static char *Cloud[] = {
   0
 };
 static char *Codeschool_dark[] = {
+  /* background */ "#232c31",
+  /* foreground */ "#9ea7a6",
   /*  0 */ "#232c31",
   /*  1 */ "#2a5491",
   /*  2 */ "#237986",
@@ -531,6 +587,8 @@ static char *Codeschool_dark[] = {
   0
 };
 static char *Codeschool_light[] = {
+  /* background */ "#b5d8f6",
+  /* foreground */ "#2a343a",
   /*  0 */ "#232c31",
   /*  1 */ "#2a5491",
   /*  2 */ "#237986",
@@ -550,6 +608,8 @@ static char *Codeschool_light[] = {
   0
 };
 static char *Color_Star[] = {
+  /* background */ "#000000",
+  /* foreground */ "#d3d3d3",
   /*  0 */ "#03010f",
   /*  1 */ "#503b43",
   /*  2 */ "#353b64",
@@ -569,6 +629,8 @@ static char *Color_Star[] = {
   0
 };
 static char *Colorful_Colors[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#151515",
   /*  1 */ "#ff8eaf",
   /*  2 */ "#a6e25f",
@@ -588,6 +650,8 @@ static char *Colorful_Colors[] = {
   0
 };
 static char *Count_Von_Count[] = {
+  /* background */ "#000000",
+  /* foreground */ "#919191",
   /*  0 */ "#303030",
   /*  1 */ "#c10023",
   /*  2 */ "#a83334",
@@ -607,6 +671,8 @@ static char *Count_Von_Count[] = {
   0
 };
 static char *DWM_rob[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#151515",
   /*  1 */ "#bf7979",
   /*  2 */ "#97b26b",
@@ -626,6 +692,8 @@ static char *DWM_rob[] = {
   0
 };
 static char *Dark_Ocean[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#000000",
   /*  1 */ "#571dc2",
   /*  2 */ "#14db49",
@@ -645,6 +713,8 @@ static char *Dark_Ocean[] = {
   0
 };
 static char *Dawn[] = {
+  /* background */ "#181B20",
+  /* foreground */ "#9B9081",
   /*  0 */ "#353535",
   /*  1 */ "#744B40",
   /*  2 */ "#6D6137",
@@ -664,6 +734,8 @@ static char *Dawn[] = {
   0
 };
 static char *Deafened[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#3d3e3d",
   /*  1 */ "#755a5b",
   /*  2 */ "#68755a",
@@ -683,6 +755,8 @@ static char *Deafened[] = {
   0
 };
 static char *Default_dark[] = {
+  /* background */ "#151515",
+  /* foreground */ "#d0d0d0",
   /*  0 */ "#151515",
   /*  1 */ "#ac4142",
   /*  2 */ "#90a959",
@@ -702,6 +776,8 @@ static char *Default_dark[] = {
   0
 };
 static char *Default_light[] = {
+  /* background */ "#f5f5f5",
+  /* foreground */ "#303030",
   /*  0 */ "#151515",
   /*  1 */ "#ac4142",
   /*  2 */ "#90a959",
@@ -721,6 +797,8 @@ static char *Default_light[] = {
   0
 };
 static char *Derp[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#111111",
   /*  1 */ "#d36265",
   /*  2 */ "#aece91",
@@ -740,6 +818,8 @@ static char *Derp[] = {
   0
 };
 static char *Digerati[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#303030",
   /*  1 */ "#c03000",
   /*  2 */ "#b1d631",
@@ -759,6 +839,8 @@ static char *Digerati[] = {
   0
 };
 static char *Dotshare[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#101010",
   /*  1 */ "#e84f4f",
   /*  2 */ "#b8d68c",
@@ -778,6 +860,8 @@ static char *Dotshare[] = {
   0
 };
 static char *Eighties_dark[] = {
+  /* background */ "#2d2d2d",
+  /* foreground */ "#d3d0c8",
   /*  0 */ "#2d2d2d",
   /*  1 */ "#f2777a",
   /*  2 */ "#99cc99",
@@ -797,6 +881,8 @@ static char *Eighties_dark[] = {
   0
 };
 static char *Eighties_light[] = {
+  /* background */ "#f2f0ec",
+  /* foreground */ "#515151",
   /*  0 */ "#2d2d2d",
   /*  1 */ "#f2777a",
   /*  2 */ "#99cc99",
@@ -816,6 +902,8 @@ static char *Eighties_light[] = {
   0
 };
 static char *Eldorado_dark[] = {
+  /* background */ "#292929",
+  /* foreground */ "#a2a2a2",
   /*  0 */ "#4e4e4e",
   /*  1 */ "#a9635d",
   /*  2 */ "#468459",
@@ -835,6 +923,8 @@ static char *Eldorado_dark[] = {
   0
 };
 static char *Embers_dark[] = {
+  /* background */ "#16130f",
+  /* foreground */ "#a39a90",
   /*  0 */ "#16130f",
   /*  1 */ "#826d57",
   /*  2 */ "#57826d",
@@ -854,6 +944,8 @@ static char *Embers_dark[] = {
   0
 };
 static char *Embers_light[] = {
+  /* background */ "#dbd6d1",
+  /* foreground */ "#433b32",
   /*  0 */ "#16130f",
   /*  1 */ "#826d57",
   /*  2 */ "#57826d",
@@ -873,6 +965,8 @@ static char *Embers_light[] = {
   0
 };
 static char *Epiphany[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#565656",
   /*  1 */ "#ac4f4f",
   /*  2 */ "#88ab77",
@@ -892,6 +986,8 @@ static char *Epiphany[] = {
   0
 };
 static char *Eqie6[] = {
+  /* background */ "#111111",
+  /* foreground */ "#cccccc",
   /*  0 */ "#222222",
   /*  1 */ "#e84f4f",
   /*  2 */ "#b7ce42",
@@ -911,6 +1007,8 @@ static char *Eqie6[] = {
   0
 };
 static char *Erebus[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#757575",
   /*  1 */ "#ff5f5f",
   /*  2 */ "#de8a36",
@@ -930,6 +1028,8 @@ static char *Erebus[] = {
   0
 };
 static char *Euphrasia[] = {
+  /* background */ "#cfcfd9",
+  /* foreground */ "#1c2027",
   /*  0 */ "#192033",
   /*  1 */ "#a62a3e",
   /*  2 */ "#38912b",
@@ -949,6 +1049,8 @@ static char *Euphrasia[] = {
   0
 };
 static char *FarSide[] = {
+  /* background */ "#000000",
+  /* foreground */ "#919191",
   /*  0 */ "#303030",
   /*  1 */ "#a43261",
   /*  2 */ "#006ca5",
@@ -968,6 +1070,8 @@ static char *FarSide[] = {
   0
 };
 static char *Fishbone[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#293b3b",
   /*  1 */ "#bf5357",
   /*  2 */ "#41a551",
@@ -987,6 +1091,8 @@ static char *Fishbone[] = {
   0
 };
 static char *GJM[] = {
+  /* background */ "#1c1c1c",
+  /* foreground */ "#c5c5c5",
   /*  0 */ "#1c1c1c",
   /*  1 */ "#ff005b",
   /*  2 */ "#cee318",
@@ -1006,6 +1112,8 @@ static char *GJM[] = {
   0
 };
 static char *Gnometerm[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#000000",
   /*  1 */ "#cc0000",
   /*  2 */ "#4e9a06",
@@ -1025,6 +1133,8 @@ static char *Gnometerm[] = {
   0
 };
 static char *Google_dark[] = {
+  /* background */ "#1d1f21",
+  /* foreground */ "#c5c8c6",
   /*  0 */ "#1d1f21",
   /*  1 */ "#cc342b",
   /*  2 */ "#198844",
@@ -1044,6 +1154,8 @@ static char *Google_dark[] = {
   0
 };
 static char *Google_light[] = {
+  /* background */ "#ffffff",
+  /* foreground */ "#373b41",
   /*  0 */ "#1d1f21",
   /*  1 */ "#cc342b",
   /*  2 */ "#198844",
@@ -1063,6 +1175,8 @@ static char *Google_light[] = {
   0
 };
 static char *Gotham[] = {
+  /* background */ "#0a0f14",
+  /* foreground */ "#98d1ce",
   /*  0 */ "#0a0f14",
   /*  1 */ "#c33027",
   /*  2 */ "#26a98b",
@@ -1082,6 +1196,8 @@ static char *Gotham[] = {
   0
 };
 static char *Grandshell[] = {
+  /* background */ "#000000",
+  /* foreground */ "#bebebe",
   /*  0 */ "#000000",
   /*  1 */ "#f25a5a",
   /*  2 */ "#77bb33",
@@ -1101,6 +1217,8 @@ static char *Grandshell[] = {
   0
 };
 static char *Grayscale_dark[] = {
+  /* background */ "#101010",
+  /* foreground */ "#b9b9b9",
   /*  0 */ "#101010",
   /*  1 */ "#7c7c7c",
   /*  2 */ "#8e8e8e",
@@ -1120,6 +1238,8 @@ static char *Grayscale_dark[] = {
   0
 };
 static char *Grayscale_light[] = {
+  /* background */ "#f7f7f7",
+  /* foreground */ "#464646",
   /*  0 */ "#101010",
   /*  1 */ "#7c7c7c",
   /*  2 */ "#8e8e8e",
@@ -1139,6 +1259,8 @@ static char *Grayscale_light[] = {
   0
 };
 static char *Greenscreen_dark[] = {
+  /* background */ "#001100",
+  /* foreground */ "#00bb00",
   /*  0 */ "#001100",
   /*  1 */ "#007700",
   /*  2 */ "#00bb00",
@@ -1158,6 +1280,8 @@ static char *Greenscreen_dark[] = {
   0
 };
 static char *Greenscreen_light[] = {
+  /* background */ "#00ff00",
+  /* foreground */ "#005500",
   /*  0 */ "#001100",
   /*  1 */ "#007700",
   /*  2 */ "#00bb00",
@@ -1177,6 +1301,8 @@ static char *Greenscreen_light[] = {
   0
 };
 static char *Hybrid[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#393939",
   /*  1 */ "#da4939",
   /*  2 */ "#9acc79",
@@ -1196,6 +1322,8 @@ static char *Hybrid[] = {
   0
 };
 static char *Iiamblack[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#393939",
   /*  1 */ "#da4939",
   /*  2 */ "#519f50",
@@ -1215,6 +1343,8 @@ static char *Iiamblack[] = {
   0
 };
 static char *Insignificato[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#3d3e3d",
   /*  1 */ "#755a5b",
   /*  2 */ "#68755a",
@@ -1234,6 +1364,8 @@ static char *Insignificato[] = {
   0
 };
 static char *Invisibone[] = {
+  /* background */ "#232323",
+  /* foreground */ "#A0A0A0",
   /*  0 */ "#303030",
   /*  1 */ "#D370A3",
   /*  2 */ "#6D9E3F",
@@ -1253,6 +1385,8 @@ static char *Invisibone[] = {
   0
 };
 static char *Isotope_dark[] = {
+  /* background */ "#000000",
+  /* foreground */ "#d0d0d0",
   /*  0 */ "#000000",
   /*  1 */ "#ff0000",
   /*  2 */ "#33ff00",
@@ -1272,6 +1406,8 @@ static char *Isotope_dark[] = {
   0
 };
 static char *Isotope_light[] = {
+  /* background */ "#ffffff",
+  /* foreground */ "#606060",
   /*  0 */ "#000000",
   /*  1 */ "#ff0000",
   /*  2 */ "#33ff00",
@@ -1291,6 +1427,8 @@ static char *Isotope_light[] = {
   0
 };
 static char *Ivory_Dark[] = {
+  /* background */ "#2d2c28",
+  /* foreground */ "#a4a6ab",
   /*  0 */ "#5b5955",
   /*  1 */ "#c4756e",
   /*  2 */ "#559a6a",
@@ -1310,6 +1448,8 @@ static char *Ivory_Dark[] = {
   0
 };
 static char *Ivory_Light[] = {
+  /* background */ "#fef9ec",
+  /* foreground */ "#6d727e",
   /*  0 */ "#c5c1b4",
   /*  1 */ "#e75c58",
   /*  2 */ "#00a250",
@@ -1329,6 +1469,8 @@ static char *Ivory_Light[] = {
   0
 };
 static char *JWR_dark[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#333333",
   /*  1 */ "#8c4665",
   /*  2 */ "#287373",
@@ -1348,6 +1490,8 @@ static char *JWR_dark[] = {
   0
 };
 static char *Jason_Wryan[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#222222",
   /*  1 */ "#9e5641",
   /*  2 */ "#6c7e55",
@@ -1367,6 +1511,8 @@ static char *Jason_Wryan[] = {
   0
 };
 static char *Kasugano[] = {
+  /* background */ "#1b1b1b",
+  /* foreground */ "#ffffff",
   /*  0 */ "#3D3D3D",
   /*  1 */ "#6673BF",
   /*  2 */ "#3EA290",
@@ -1386,6 +1532,8 @@ static char *Kasugano[] = {
   0
 };
 static char *Light_White[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#808080",
   /*  1 */ "#c48980",
   /*  2 */ "#8da862",
@@ -1405,6 +1553,8 @@ static char *Light_White[] = {
   0
 };
 static char *Londontube_dark[] = {
+  /* background */ "#231f20",
+  /* foreground */ "#d9d8d8",
   /*  0 */ "#231f20",
   /*  1 */ "#ee2e24",
   /*  2 */ "#00853e",
@@ -1424,6 +1574,8 @@ static char *Londontube_dark[] = {
   0
 };
 static char *Londontube_light[] = {
+  /* background */ "#ffffff",
+  /* foreground */ "#5a5758",
   /*  0 */ "#231f20",
   /*  1 */ "#ee2e24",
   /*  2 */ "#00853e",
@@ -1443,6 +1595,8 @@ static char *Londontube_light[] = {
   0
 };
 static char *Lost_Woods[] = {
+  /* background */ "#000000",
+  /* foreground */ "#919191",
   /*  0 */ "#303030",
   /*  1 */ "#a13a38",
   /*  2 */ "#00715d",
@@ -1462,6 +1616,8 @@ static char *Lost_Woods[] = {
   0
 };
 static char *Low_Contrast[] = {
+  /* background */ "#3c3b37",
+  /* foreground */ "#93a1a1",
   /*  0 */ "#5f5f5f",
   /*  1 */ "#d96468",
   /*  2 */ "#a2d964",
@@ -1481,6 +1637,8 @@ static char *Low_Contrast[] = {
   0
 };
 static char *Lumifoo[] = {
+  /* background */ "#1e2021",
+  /* foreground */ "#888a8c",
   /*  0 */ "#515151",
   /*  1 */ "#bf6382",
   /*  2 */ "#65a446",
@@ -1500,6 +1658,8 @@ static char *Lumifoo[] = {
   0
 };
 static char *Marrakesh_dark[] = {
+  /* background */ "#201602",
+  /* foreground */ "#948e48",
   /*  0 */ "#201602",
   /*  1 */ "#c35359",
   /*  2 */ "#18974e",
@@ -1519,6 +1679,8 @@ static char *Marrakesh_dark[] = {
   0
 };
 static char *Marrakesh_light[] = {
+  /* background */ "#faf0a5",
+  /* foreground */ "#5f5b17",
   /*  0 */ "#201602",
   /*  1 */ "#c35359",
   /*  2 */ "#18974e",
@@ -1538,6 +1700,8 @@ static char *Marrakesh_light[] = {
   0
 };
 static char *Mashup_Colors[] = {
+  /* background */ "#171717",
+  /* foreground */ "#b2a191",
   /*  0 */ "#202020",
   /*  1 */ "#bf3f34",
   /*  2 */ "#707d22",
@@ -1557,6 +1721,8 @@ static char *Mashup_Colors[] = {
   0
 };
 static char *Material[] = {
+  /* background */ "#263238",
+  /* foreground */ "#eceff1",
   /*  0 */ "#263238",
   /*  1 */ "#ff9800",
   /*  2 */ "#8bc34a",
@@ -1576,6 +1742,8 @@ static char *Material[] = {
   0
 };
 static char *Matrix[] = {
+  /* background */ "#000000",
+  /* foreground */ "#00cc00",
   /*  0 */ "#000000",
   /*  1 */ "#55ff55",
   /*  2 */ "#00cc00",
@@ -1595,6 +1763,8 @@ static char *Matrix[] = {
   0
 };
 static char *Mikado[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#322a2c",
   /*  1 */ "#a04363",
   /*  2 */ "#9b9329",
@@ -1614,6 +1784,8 @@ static char *Mikado[] = {
   0
 };
 static char *Mikazuki[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#2a1d17",
   /*  1 */ "#da1657",
   /*  2 */ "#3ea250",
@@ -1633,6 +1805,8 @@ static char *Mikazuki[] = {
   0
 };
 static char *Mocha_dark[] = {
+  /* background */ "#3b3228",
+  /* foreground */ "#d0c8c6",
   /*  0 */ "#3b3228",
   /*  1 */ "#cb6077",
   /*  2 */ "#beb55b",
@@ -1652,6 +1826,8 @@ static char *Mocha_dark[] = {
   0
 };
 static char *Mocha_light[] = {
+  /* background */ "#f5eeeb",
+  /* foreground */ "#645240",
   /*  0 */ "#3b3228",
   /*  1 */ "#cb6077",
   /*  2 */ "#beb55b",
@@ -1671,6 +1847,8 @@ static char *Mocha_light[] = {
   0
 };
 static char *Mono[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#000000",
   /*  1 */ "#111111",
   /*  2 */ "#222222",
@@ -1690,6 +1868,8 @@ static char *Mono[] = {
   0
 };
 static char *Mono_Theme[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#000000",
   /*  1 */ "#6b6b6b",
   /*  2 */ "#c4c4c4",
@@ -1709,6 +1889,8 @@ static char *Mono_Theme[] = {
   0
 };
 static char *Monokai[] = {
+  /* background */ "#272822",
+  /* foreground */ "#f1ebeb",
   /*  0 */ "#48483e",
   /*  1 */ "#dc2566",
   /*  2 */ "#8fc029",
@@ -1728,6 +1910,8 @@ static char *Monokai[] = {
   0
 };
 static char *Monokai_dark[] = {
+  /* background */ "#272822",
+  /* foreground */ "#f8f8f2",
   /*  0 */ "#272822",
   /*  1 */ "#f92672",
   /*  2 */ "#a6e22e",
@@ -1747,6 +1931,8 @@ static char *Monokai_dark[] = {
   0
 };
 static char *Monokai_light[] = {
+  /* background */ "#f9f8f5",
+  /* foreground */ "#49483e",
   /*  0 */ "#272822",
   /*  1 */ "#f92672",
   /*  2 */ "#a6e22e",
@@ -1766,6 +1952,8 @@ static char *Monokai_light[] = {
   0
 };
 static char *Mostly_Bright[] = {
+  /* background */ "#F3F3F3",
+  /* foreground */ "#707070",
   /*  0 */ "#D3D3D3",
   /*  1 */ "#EF6B7B",
   /*  2 */ "#A1D569",
@@ -1785,6 +1973,8 @@ static char *Mostly_Bright[] = {
   0
 };
 static char *Muse[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#2e3436",
   /*  1 */ "#a31604",
   /*  2 */ "#447241",
@@ -1804,6 +1994,8 @@ static char *Muse[] = {
   0
 };
 static char *Nancy[] = {
+  /* background */ "#010101",
+  /* foreground */ "#ffffff",
   /*  0 */ "#1b1d1e",
   /*  1 */ "#f92672",
   /*  2 */ "#82b414",
@@ -1823,6 +2015,8 @@ static char *Nancy[] = {
   0
 };
 static char *Nature_Suede[] = {
+  /* background */ "#170f0d",
+  /* foreground */ "#746c48",
   /*  0 */ "#392925",
   /*  1 */ "#98724c",
   /*  2 */ "#908f32",
@@ -1842,6 +2036,8 @@ static char *Nature_Suede[] = {
   0
 };
 static char *Navy_and_Ivory[] = {
+  /* background */ "#021b21",
+  /* foreground */ "#e8dfd6",
   /*  0 */ "#032c36",
   /*  1 */ "#c2454e",
   /*  2 */ "#7cbf9e",
@@ -1861,6 +2057,8 @@ static char *Navy_and_Ivory[] = {
   0
 };
 static char *Neon[] = {
+  /* background */ "#171717",
+  /* foreground */ "#f8f8f8",
   /*  0 */ "#171717",
   /*  1 */ "#d81765",
   /*  2 */ "#97d01a",
@@ -1880,6 +2078,8 @@ static char *Neon[] = {
   0
 };
 static char *Nucolors[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#393939",
   /*  1 */ "#ff9f95",
   /*  2 */ "#e2ffc7",
@@ -1899,6 +2099,8 @@ static char *Nucolors[] = {
   0
 };
 static char *Nudge[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#658280",
   /*  1 */ "#822f5d",
   /*  2 */ "#184a31",
@@ -1918,6 +2120,8 @@ static char *Nudge[] = {
   0
 };
 static char *Numix_Darkest[] = {
+  /* background */ "#282828",
+  /* foreground */ "#a2a2a2",
   /*  0 */ "#555555",
   /*  1 */ "#9c3528",
   /*  2 */ "#61bc3b",
@@ -1937,6 +2141,8 @@ static char *Numix_Darkest[] = {
   0
 };
 static char *Ocean_dark[] = {
+  /* background */ "#2b303b",
+  /* foreground */ "#c0c5ce",
   /*  0 */ "#2b303b",
   /*  1 */ "#bf616a",
   /*  2 */ "#a3be8c",
@@ -1956,6 +2162,8 @@ static char *Ocean_dark[] = {
   0
 };
 static char *Ocean_light[] = {
+  /* background */ "#eff1f5",
+  /* foreground */ "#4f5b66",
   /*  0 */ "#2b303b",
   /*  1 */ "#bf616a",
   /*  2 */ "#a3be8c",
@@ -1975,6 +2183,8 @@ static char *Ocean_light[] = {
   0
 };
 static char *Orangish[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#251f1f",
   /*  1 */ "#eb4509",
   /*  2 */ "#94e76b",
@@ -1994,6 +2204,8 @@ static char *Orangish[] = {
   0
 };
 static char *Panels[] = {
+  /* background */ "#000000",
+  /* foreground */ "#d3d3d3",
   /*  0 */ "#191927",
   /*  1 */ "#282f5e",
   /*  2 */ "#2b4593",
@@ -2013,6 +2225,8 @@ static char *Panels[] = {
   0
 };
 static char *Paraiso_dark[] = {
+  /* background */ "#2f1e2e",
+  /* foreground */ "#a39e9b",
   /*  0 */ "#2f1e2e",
   /*  1 */ "#ef6155",
   /*  2 */ "#48b685",
@@ -2032,6 +2246,8 @@ static char *Paraiso_dark[] = {
   0
 };
 static char *Paraiso_light[] = {
+  /* background */ "#e7e9db",
+  /* foreground */ "#4f424c",
   /*  0 */ "#2f1e2e",
   /*  1 */ "#ef6155",
   /*  2 */ "#48b685",
@@ -2051,6 +2267,8 @@ static char *Paraiso_light[] = {
   0
 };
 static char *Parker_Brothers[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#322a2c",
   /*  1 */ "#79220e",
   /*  2 */ "#344b1b",
@@ -2070,6 +2288,8 @@ static char *Parker_Brothers[] = {
   0
 };
 static char *Pastel_White[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#646e5b",
   /*  1 */ "#db7464",
   /*  2 */ "#a7e160",
@@ -2089,6 +2309,8 @@ static char *Pastel_White[] = {
   0
 };
 static char *Phrak1[] = {
+  /* background */ "#000000",
+  /* foreground */ "#a8a8a8",
   /*  0 */ "#000000",
   /*  1 */ "#a80000",
   /*  2 */ "#00a800",
@@ -2108,6 +2330,8 @@ static char *Phrak1[] = {
   0
 };
 static char *Pretty_and_Pastel[] = {
+  /* background */ "#151515",
+  /* foreground */ "#888888",
   /*  0 */ "#292929",
   /*  1 */ "#CF6A4C",
   /*  2 */ "#19CB00",
@@ -2127,6 +2351,8 @@ static char *Pretty_and_Pastel[] = {
   0
 };
 static char *Pulp[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#86817e",
   /*  1 */ "#d75756",
   /*  2 */ "#688c7d",
@@ -2146,6 +2372,8 @@ static char *Pulp[] = {
   0
 };
 static char *Railscasts_dark[] = {
+  /* background */ "#2b2b2b",
+  /* foreground */ "#e6e1dc",
   /*  0 */ "#2b2b2b",
   /*  1 */ "#da4939",
   /*  2 */ "#a5c261",
@@ -2165,6 +2393,8 @@ static char *Railscasts_dark[] = {
   0
 };
 static char *Railscasts_light[] = {
+  /* background */ "#f9f7f3",
+  /* foreground */ "#3a4055",
   /*  0 */ "#2b2b2b",
   /*  1 */ "#da4939",
   /*  2 */ "#a5c261",
@@ -2184,6 +2414,8 @@ static char *Railscasts_light[] = {
   0
 };
 static char *Rasi[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#1b1d1e",
   /*  1 */ "#f92672",
   /*  2 */ "#82b414",
@@ -2203,6 +2435,8 @@ static char *Rasi[] = {
   0
 };
 static char *Red_Phoenix[] = {
+  /* background */ "#111111",
+  /* foreground */ "#ffffff",
   /*  0 */ "#131313",
   /*  1 */ "#2d2d2d",
   /*  2 */ "#4c3a3d",
@@ -2222,6 +2456,8 @@ static char *Red_Phoenix[] = {
   0
 };
 static char *Rezza[] = {
+  /* background */ "#222222",
+  /* foreground */ "#dddddd",
   /*  0 */ "#191919",
   /*  1 */ "#803232",
   /*  2 */ "#5b762f",
@@ -2241,6 +2477,8 @@ static char *Rezza[] = {
   0
 };
 static char *Rydgel[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#303430",
   /*  1 */ "#bf7979",
   /*  2 */ "#97b26b",
@@ -2260,6 +2498,8 @@ static char *Rydgel[] = {
   0
 };
 static char *SOS[] = {
+  /* background */ "#373b43",
+  /* foreground */ "#78796f",
   /*  0 */ "#373b43",
   /*  1 */ "#fdcd39",
   /*  2 */ "#fbfd59",
@@ -2279,6 +2519,8 @@ static char *SOS[] = {
   0
 };
 static char *Sex_Colors[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#252525",
   /*  1 */ "#ff9f95",
   /*  2 */ "#a6e22e",
@@ -2298,6 +2540,8 @@ static char *Sex_Colors[] = {
   0
 };
 static char *Shapeshifter_dark[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ababab",
   /*  0 */ "#000000",
   /*  1 */ "#e92f2f",
   /*  2 */ "#0ed839",
@@ -2317,6 +2561,8 @@ static char *Shapeshifter_dark[] = {
   0
 };
 static char *Shapeshifter_light[] = {
+  /* background */ "#f9f9f9",
+  /* foreground */ "#102015",
   /*  0 */ "#000000",
   /*  1 */ "#e92f2f",
   /*  2 */ "#0ed839",
@@ -2336,6 +2582,8 @@ static char *Shapeshifter_light[] = {
   0
 };
 static char *Shic[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#494949",
   /*  1 */ "#b9716e",
   /*  2 */ "#588f7a",
@@ -2355,6 +2603,8 @@ static char *Shic[] = {
   0
 };
 static char *Simple_Rainbow[] = {
+  /* background */ "#575757",
+  /* foreground */ "#dcdccc",
   /*  0 */ "#666666",
   /*  1 */ "#ff8278",
   /*  2 */ "#bde077",
@@ -2374,6 +2624,8 @@ static char *Simple_Rainbow[] = {
   0
 };
 static char *Solarized_dark[] = {
+  /* background */ "#002b36",
+  /* foreground */ "#93a1a1",
   /*  0 */ "#002b36",
   /*  1 */ "#dc322f",
   /*  2 */ "#859900",
@@ -2393,6 +2645,8 @@ static char *Solarized_dark[] = {
   0
 };
 static char *Solarized_light[] = {
+  /* background */ "#fdf6e3",
+  /* foreground */ "#586e75",
   /*  0 */ "#002b36",
   /*  1 */ "#dc322f",
   /*  2 */ "#859900",
@@ -2412,6 +2666,8 @@ static char *Solarized_light[] = {
   0
 };
 static char *Splurge[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#4a4b4a",
   /*  1 */ "#d7699a",
   /*  2 */ "#80d468",
@@ -2431,6 +2687,8 @@ static char *Splurge[] = {
   0
 };
 static char *Swayr[] = {
+  /* background */ "#1c1709",
+  /* foreground */ "#c2b9a1",
   /*  0 */ "#1c1709",
   /*  1 */ "#8e4317",
   /*  2 */ "#787200",
@@ -2450,6 +2708,8 @@ static char *Swayr[] = {
   0
 };
 static char *Sweet_Love[] = {
+  /* background */ "#1F1F1F",
+  /* foreground */ "#C0B18B",
   /*  0 */ "#4A3637",
   /*  1 */ "#D17B49",
   /*  2 */ "#7B8748",
@@ -2469,6 +2729,8 @@ static char *Sweet_Love[] = {
   0
 };
 static char *Tango[] = {
+  /* background */ "#000000",
+  /* foreground */ "#babdb6",
   /*  0 */ "#2e3436",
   /*  1 */ "#cc0000",
   /*  2 */ "#4e9a06",
@@ -2488,6 +2750,8 @@ static char *Tango[] = {
   0
 };
 static char *Tangoesque[] = {
+  /* background */ "#000000",
+  /* foreground */ "#aaaaaa",
   /*  0 */ "#202020",
   /*  1 */ "#ff6565",
   /*  2 */ "#93d44f",
@@ -2507,6 +2771,8 @@ static char *Tangoesque[] = {
   0
 };
 static char *Tartan[] = {
+  /* background */ "#2b2b2b",
+  /* foreground */ "#dedede",
   /*  0 */ "#2e3436",
   /*  1 */ "#cc0000",
   /*  2 */ "#4e9a06",
@@ -2526,6 +2792,8 @@ static char *Tartan[] = {
   0
 };
 static char *Teva[] = {
+  /* background */ "#170f0d",
+  /* foreground */ "#746c48",
   /*  0 */ "#191f31",
   /*  1 */ "#282e39",
   /*  2 */ "#303844",
@@ -2545,6 +2813,8 @@ static char *Teva[] = {
   0
 };
 static char *Tomorrow_dark[] = {
+  /* background */ "#1d1f21",
+  /* foreground */ "#c5c8c6",
   /*  0 */ "#1d1f21",
   /*  1 */ "#cc6666",
   /*  2 */ "#b5bd68",
@@ -2564,6 +2834,8 @@ static char *Tomorrow_dark[] = {
   0
 };
 static char *Tomorrow_light[] = {
+  /* background */ "#ffffff",
+  /* foreground */ "#373b41",
   /*  0 */ "#1d1f21",
   /*  1 */ "#cc6666",
   /*  2 */ "#b5bd68",
@@ -2583,6 +2855,8 @@ static char *Tomorrow_light[] = {
   0
 };
 static char *Trim_Yer_Beard[] = {
+  /* background */ "#191716",
+  /* foreground */ "#DABA8B",
   /*  0 */ "#0F0E0D",
   /*  1 */ "#845336",
   /*  2 */ "#57553C",
@@ -2602,6 +2876,8 @@ static char *Trim_Yer_Beard[] = {
   0
 };
 static char *Twilight_dark[] = {
+  /* background */ "#1e1e1e",
+  /* foreground */ "#a7a7a7",
   /*  0 */ "#1e1e1e",
   /*  1 */ "#cf6a4c",
   /*  2 */ "#8f9d6a",
@@ -2621,6 +2897,8 @@ static char *Twilight_dark[] = {
   0
 };
 static char *Twilight_light[] = {
+  /* background */ "#ffffff",
+  /* foreground */ "#464b50",
   /*  0 */ "#1e1e1e",
   /*  1 */ "#cf6a4c",
   /*  2 */ "#8f9d6a",
@@ -2640,6 +2918,8 @@ static char *Twilight_light[] = {
   0
 };
 static char *Unsifted_Wheat[] = {
+  /* background */ "#111111",
+  /* foreground */ "#d3d3d3",
   /*  0 */ "#382c2f",
   /*  1 */ "#48393a",
   /*  2 */ "#65534d",
@@ -2659,6 +2939,8 @@ static char *Unsifted_Wheat[] = {
   0
 };
 static char *VWbug[] = {
+  /* background */ "#170f0d",
+  /* foreground */ "#746c48",
   /*  0 */ "#261e26",
   /*  1 */ "#312c38",
   /*  2 */ "#4d353b",
@@ -2678,6 +2960,8 @@ static char *VWbug[] = {
   0
 };
 static char *Vacuous_2[] = {
+  /* background */ "#101010",
+  /* foreground */ "#d2c5bc",
   /*  0 */ "#202020",
   /*  1 */ "#b91e2e",
   /*  2 */ "#81957c",
@@ -2697,6 +2981,8 @@ static char *Vacuous_2[] = {
   0
 };
 static char *VisiBlue[] = {
+  /* background */ "#000000",
+  /* foreground */ "#666699",
   /*  0 */ "#333366",
   /*  1 */ "#6666cc",
   /*  2 */ "#0099cc",
@@ -2716,6 +3002,8 @@ static char *VisiBlue[] = {
   0
 };
 static char *VisiBone[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#666666",
   /*  1 */ "#cc6666",
   /*  2 */ "#66cc99",
@@ -2735,6 +3023,8 @@ static char *VisiBone[] = {
   0
 };
 static char *Visibone_Alt__2[] = {
+  /* background */ "#333333",
+  /* foreground */ "#CCCCCC",
   /*  0 */ "#666666",
   /*  1 */ "#CC6699",
   /*  2 */ "#99CC66",
@@ -2754,6 +3044,8 @@ static char *Visibone_Alt__2[] = {
   0
 };
 static char *X__DotShare[] = {
+  /* background */ "#151515",
+  /* foreground */ "#D7D0C7",
   /*  0 */ "#101010",
   /*  1 */ "#E84F4F",
   /*  2 */ "#B8D68C",
@@ -2773,6 +3065,8 @@ static char *X__DotShare[] = {
   0
 };
 static char *X__Erosion[] = {
+  /* background */ "#181512",
+  /* foreground */ "#BEA492",
   /*  0 */ "#332D29",
   /*  1 */ "#8C644C",
   /*  2 */ "#746C48",
@@ -2792,6 +3086,8 @@ static char *X__Erosion[] = {
   0
 };
 static char *Yousai[] = {
+  /* background */ "#F5E7DE",
+  /* foreground */ "#34302D",
   /*  0 */ "#666661",
   /*  1 */ "#992E2E",
   /*  2 */ "#4C3226",
@@ -2811,6 +3107,8 @@ static char *Yousai[] = {
   0
 };
 static char *aikofog[] = {
+  /* background */ "#f1eee9",
+  /* foreground */ "#b2b3b8",
   /*  0 */ "#757475",
   /*  1 */ "#936a6f",
   /*  2 */ "#668462",
@@ -2830,6 +3128,8 @@ static char *aikofog[] = {
   0
 };
 static char *astromouse[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#1c1c1c",
   /*  1 */ "#d770af",
   /*  2 */ "#9acc79",
@@ -2849,6 +3149,8 @@ static char *astromouse[] = {
   0
 };
 static char *hund[] = {
+  /* background */ "#161616",
+  /* foreground */ "#FFFFFF",
   /*  0 */ "#222222",
   /*  1 */ "#E84F4F",
   /*  2 */ "#B7CE42",
@@ -2868,6 +3170,8 @@ static char *hund[] = {
   0
 };
 static char *jmbi[] = {
+  /* background */ "#1e1e1e",
+  /* foreground */ "#ffffff",
   /*  0 */ "#5A7260",
   /*  1 */ "#8F423C",
   /*  2 */ "#BBBB88",
@@ -2887,6 +3191,8 @@ static char *jmbi[] = {
   0
 };
 static char *s3r0_modified[] = {
+  /* background */ "#1F1F1F",
+  /* foreground */ "#C0B18B",
   /*  0 */ "#4A3637",
   /*  1 */ "#D17B49",
   /*  2 */ "#7B8748",
@@ -2906,6 +3212,8 @@ static char *s3r0_modified[] = {
   0
 };
 static char *theme2[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#191919",
   /*  1 */ "#eb3d51",
   /*  2 */ "#66b61a",
@@ -2925,6 +3233,8 @@ static char *theme2[] = {
   0
 };
 static char *thwump[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#202020",
   /*  1 */ "#a07070",
   /*  2 */ "#70a070",
@@ -2944,6 +3254,8 @@ static char *thwump[] = {
   0
 };
 static char *tlh[] = {
+  /* background */ "#101010",
+  /* foreground */ "#66ff66",
   /*  0 */ "#1c1c1c",
   /*  1 */ "#d81860",
   /*  2 */ "#60ff60",
@@ -2963,6 +3275,8 @@ static char *tlh[] = {
   0
 };
 static char *zenburn[] = {
+  /* background */ "#000000",
+  /* foreground */ "#ffffff",
   /*  0 */ "#1e2320",
   /*  1 */ "#705050",
   /*  2 */ "#60b48a",
