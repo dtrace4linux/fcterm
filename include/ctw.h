@@ -255,6 +255,11 @@ typedef struct XEvent {
 
 extern WidgetClass ctwWidgetClass;
 
+struct map {
+	char *name;
+	char *value;
+	};
+
 /**********************************************************************/
 /*   Attributes of each character.				      */
 /**********************************************************************/

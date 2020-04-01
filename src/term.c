@@ -77,6 +77,7 @@ int	sun_function_keys = -1;
 int	debug;
 int	auto_switch;
 char	*tmpdir = "/var/tmp";
+char	*theme;
 int	verbose;
 volatile XtSignalId xchild_id;
 volatile int	child_flag;
@@ -566,6 +567,33 @@ do_switches(int argc, char **argv)
 			}
 		if (strcmp(cp, "group") == 0) {
 			do_group = !no;
+			continue;
+			}
+		if (strcmp(cp, "theme") == 0) {
+			extern struct map themes[];
+			extern int num_themes;
+			char	*cp1;
+
+			if (++i >= argc) {
+				printf("Themes available:\n");
+				printf("\n");
+				for (i = 0; themes[i].name; i++) {
+					printf("  %2d) %s\n", i, themes[i].name);
+					}
+				exit(0);
+				}
+
+			cp1 = argv[i++];
+			if (isdigit(*cp1)) {
+				int n = atoi(cp1);
+				if (n < 0 || n >= num_themes) {
+					printf("Theme: %d: out of range (0..%d)\n", n, num_themes);
+					}
+				else
+					theme = themes[n].name;
+				}
+			else
+				theme = cp1;
 			continue;
 			}
 		if (strcmp(cp, "verbose") == 0) {

@@ -1,0 +1,103 @@
+{
+"source": "http://terminal.sexy",
+
+"Atelierforest (dark)":
+{
+	"by": "Chris Kempson",
+	"background-color": "#1d1f21",
+	"foreground-color": "#c5c8c6",
+	"cursor-color":     "#c5c8c6",
+	"color-palette-overrides": ["#1d1f21","#cc342b","#198844","#fba922","#3971ed","#a36ac7","#3971ed","#c5c8c6","#969896","#cc342b","#198844","#fba922","#3971ed","#a36ac7","#3971ed","#ffffff"]
+},
+
+"Atelierforest (light)":
+{
+	"by": "Chris Kempson",
+	"background-color": "#f1efee",
+	"foreground-color": "#68615e",
+	"cursor-color":     "#68615e",
+	"color-palette-overrides": 
+		["#1b1918","#f22c40","#5ab738","#d5911a","#407ee7","#6666ea","#00ad9c","#a8a19f","#766e6b","#f22c40","#5ab738","#d5911a","#407ee7","#6666ea","#00ad9c","#f1efee"]
+},
+
+"Atelierheath (dark)":
+{
+	"by": "Chris Kempson",
+	"background-color": "#1b181b",
+	"foreground-color": "#ab9bab",
+	"cursor-color":     "#ab9bab",
+	"color-palette-overrides": 
+		["#1b181b","#ca402b","#379a37","#bb8a35","#516aec","#7b59c0","#159393","#ab9bab","#776977","#ca402b","#379a37","#bb8a35","#516aec","#7b59c0","#159393","#f7f3f7"]
+},
+
+"Atelierheath (light)":
+{
+	"by": "Chris Kempson",
+	"background-color": "#f7f3f7",
+	"foreground-color": "#695d69",
+	"cursor-color":     "#695d69",
+	"color-palette-overrides": 
+		["#1b181b","#ca402b","#379a37","#bb8a35","#516aec","#7b59c0","#159393","#ab9bab","#776977","#ca402b","#379a37","#bb8a35","#516aec","#7b59c0","#159393","#f7f3f7"]
+},
+
+"Atelierlakeside (dark)":
+{
+	"by": "Chris Kempson",
+	"background-color": "#f7f3f7",
+	"foreground-color": "#695d69",
+	"cursor-color":     "#695d69",
+	"color-palette-overrides": 
+		["#1b181b","#ca402b","#379a37","#bb8a35","#516aec","#7b59c0","#159393","#ab9bab","#776977","#ca402b","#379a37","#bb8a35","#516aec","#7b59c0","#159393","#f7f3f7"]
+},
+
+"Atelierlakeside (light)":
+{
+	"by": "Chris Kempson",
+	"background-color": "#161b1d",
+	"foreground-color": "#7ea2b4",
+	"cursor-color":     "#7ea2b4",
+	"color-palette-overrides": 
+		["#161b1d","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#7ea2b4","#5a7b8c","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#ebf8ff"]
+},
+
+"Atelierseaside (dark)":
+{
+	"by": "Chris Kempson",
+	"background-color": "#161b1d",
+	"foreground-color": "#7ea2b4",
+	"cursor-color":     "#7ea2b4",
+	"color-palette-overrides": 
+		["#161b1d","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#7ea2b4","#5a7b8c","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#ebf8ff"]
+},
+
+"Atelierseaside (light)":
+{
+	"by": "Chris Kempson",
+	"background-color": "#161b1d",
+	"foreground-color": "#7ea2b4",
+	"cursor-color":     "#7ea2b4",
+	"color-palette-overrides": 
+		["#161b1d","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#7ea2b4","#5a7b8c","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#ebf8ff"]
+},
+
+"Bespin (dark)":
+{
+	"by": "Chris Kempson",
+	"background-color": "#161b1d",
+	"foreground-color": "#7ea2b4",
+	"cursor-color":     "#7ea2b4",
+	"color-palette-overrides": 
+		["#161b1d","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#7ea2b4","#5a7b8c","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#ebf8ff"]
+},
+
+"Bespin (light)":
+{
+	"by": "Chris Kempson",
+	"background-color": "#161b1d",
+	"foreground-color": "#7ea2b4",
+	"cursor-color":     "#7ea2b4",
+	"color-palette-overrides": 
+		["#161b1d","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#7ea2b4","#5a7b8c","#d22d72","#568c3b","#8a8a0f","#257fad","#5d5db1","#2d8f6f","#ebf8ff"]
+}
+
+}

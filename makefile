@@ -22,6 +22,7 @@ OBJ=	\
 	$(OBJDIR)/ctw.o \
 	$(OBJDIR)/rotate.o \
 	$(OBJDIR)/scrbar.o \
+	$(OBJDIR)/themes.o \
 	$(OBJDIR)/usage.o
 
 all:
@@ -96,6 +97,10 @@ $(OBJDIR)/rotate.o:	src/rotate.c
 	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/rotate.o src/rotate.c
 $(OBJDIR)/scrbar.o:	src/scrbar.c include/scrbar.h include/scrbarP.h
 	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/scrbar.o src/scrbar.c
+src/themes.c: mkthemes.pl src/themes.json
+	mkthemes.pl
+$(OBJDIR)/themes.o:	src/themes.c src/themes.json
+	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/themes.o src/themes.c
 $(OBJDIR)/usage.o:	src/usage.c
 	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/usage.o src/usage.c
 src/usage.c: src/usage.txt makefile

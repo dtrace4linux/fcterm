@@ -7125,7 +7125,7 @@ alloc_color_pixel(Display *dpy, int default_depth, char *color)
 		}
 	return exact_def.pixel;
 }
-static  int
+static int
 setup_x11_colors(CtwWidget new, Display *dpy)
 {
 	static int is_color;
@@ -7149,7 +7149,22 @@ setup_x11_colors(CtwWidget new, Display *dpy)
 		};
 	char	**color_names = color_tbl;
 	char	*color;
+	extern char *theme;
+	extern struct map themes[];
 
+	if (theme) {
+		for (i = 0; themes[i].name; i++) {
+			char **tbl = (char **) themes[i].value;
+
+			if (strcmp(themes[i].name, theme) != 0) {
+				continue;
+		 		}
+			for (i = 0; tbl[i]; i++) {
+				color_tbl[i] = tbl[i];
+				}
+			break;
+			}
+		}
 	/***********************************************/
 	/*   If  we've  got  a  mono-only screen then  */
 	/*   set  up  the  flag  saying whether we're  */
@@ -7990,6 +8005,8 @@ int
 ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
 {	FILE	*fp;
 	char	buf[BUFSIZ];
+	Pixel fg = ctw->ctw.x11_colors[ctw->ctw.attr.vb_fcolor];
+	Pixel bg = ctw->ctw.x11_colors[ctw->ctw.attr.vb_bcolor];
 
 	switch (cmd) {
 	  case 1:
@@ -8009,8 +8026,11 @@ ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
 			ctw->ctw.columns, ctw->ctw.rows, time(NULL));
 		fprintf(fp, " \"title\": \"Demo\", \"env: {\"");
 		fprintf(fp, "\"TERM\": \"%s\", ", getenv("TERM"));
-		fprintf(fp, "\"SHELL\": \"%s\", ", getenv("SHELL"));
-		fprintf(fp, "}}\n");
+		fprintf(fp, "\"SHELL\": \"%s\"", getenv("SHELL"));
+		fprintf(fp, "}, ");
+		fprintf(fp, "\"theme\": { \"fg\": \"#%06x\", \"bg\": \"#%06x\"}",
+			(unsigned) fg, (unsigned) bg);
+		fprintf(fp, "}\n");
 		gettimeofday(&ctw->ctw.c_asciitext_start, NULL);
 		break;
 

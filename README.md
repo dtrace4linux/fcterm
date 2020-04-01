@@ -21,9 +21,12 @@ but also, merging in the key desirable features. FCTerm supports
 - infinite scrollback
 - searching
 - multi window mode
+- asciitext session recording
 
 The original code was built for the X11/Athena widgets, which have
 long since been deprecated; a version was built for Motif, but, that too
 has been deprecated. So, it runs with its own toolkit, which is
 crude (ie the right-menu popup menu).
+
+Use "fcterm -help" and "fcterm help" to see the interactive commands.
 

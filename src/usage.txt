@@ -14,6 +14,9 @@ fcterm [-isc | -sco] [standard X11 options]
   -spill  	  Enable infinite log spilling
   +/-sf		  +sf => disable sun function keys
   		  -sf => enable Sun Function keys.
+  -theme [name | nn]
+                  Use a different colored theme. Omit name/nn to
+		  see list of themes. 
   -ut		  Inhibit utmp entry.
   -tmpdir <dir>   Directory to store logfiles. Default is /tmp/$USER.
   -verbose	  Verbose debug messages.
