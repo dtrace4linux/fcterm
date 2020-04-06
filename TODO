@@ -1,4 +1,6 @@
 fcterm
-1. system monitor graphic
+1. system monitor graphic ; run custom status script (eg wan.sh)
 2. handle "more" line wrapping?
 3. nodraw during restart/recovery
+4. auto termtosvg mode
+5. if in svg mode, we may need to downsize input buffer - more granular.

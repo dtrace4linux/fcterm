@@ -78,8 +78,8 @@ sub usage
 	print $msg if $msg;
 
 	print <<EOF;
-Some help...
-Usage:
+mktheme2.pl -- convert terminal.sexy json files to ctw format.
+Usage: mktheme2.pl <list of filenames>
 
 Switches:
 

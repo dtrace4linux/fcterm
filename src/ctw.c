@@ -560,6 +560,7 @@ int	*(*XftDrawStringUtf8_ptr)();
 # if !defined(verify)
 void verify(CtwWidget ctw);
 # endif
+static void ctw_log_asciicast2(CtwWidget ctw);
 static void ctw_log_string(CtwWidget ctw, char *str, int len);
 void group_enable(int n);
 void	zoom_window();
@@ -1483,10 +1484,14 @@ Destroy(CtwWidget ctw)
 		wheel_timer = 0;
 		}
 
-	if (ctw->ctw.c_asciitext_fp) {
-		chk_free_ptr((void **) &ctw->ctw.c_asciitext_fn);
-		fclose(ctw->ctw.c_asciitext_fp);
-		ctw->ctw.c_asciitext_fp = NULL;
+	if (ctw->ctw.c_asciicast_fp) {
+		chk_free_ptr((void **) &ctw->ctw.c_asciicast_fn);
+		fclose(ctw->ctw.c_asciicast_fp);
+		if (ctw->ctw.c_asciicast_fp2) {
+			fclose(ctw->ctw.c_asciicast_fp2);
+			}
+		ctw->ctw.c_asciicast_fp = NULL;
+		ctw->ctw.c_asciicast_fp2 = NULL;
 		}
 
 	graph_destroy(ctw);
@@ -7571,6 +7576,8 @@ ctw_add_string(CtwWidget ctw, char *str, int len)
 
 	if (ctw->ctw.flags[CTW_SPEED] >= 100) {
 		ctw_add_string2(ctw, str, len);
+
+		ctw_log_asciicast2(ctw);
 		return;
 		}
 
@@ -7580,6 +7587,8 @@ ctw_add_string(CtwWidget ctw, char *str, int len)
 		t = (100 - ctw->ctw.flags[CTW_SPEED]) * 20000 / 100;
 	while (len-- > 0) {
 		ctw_add_string2(ctw, str++, 1);
+		ctw_log_asciicast2(ctw);
+
 		XFlush(XtDisplay(ctw));
 		ctw_usleep(t, ctw);
 		}
@@ -8011,25 +8020,33 @@ start_again:
 }
 int
 ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
-{	FILE	*fp;
+{	FILE	*fp, *fp1;
 	char	buf[BUFSIZ];
 	Pixel fg = ctw->ctw.x11_colors[ctw->ctw.attr.vb_fcolor];
 	Pixel bg = ctw->ctw.x11_colors[ctw->ctw.attr.vb_bcolor];
 
 	switch (cmd) {
 	  case 1:
-		if (ctw->ctw.c_asciitext_fp) {
+		if (ctw->ctw.c_asciicast_fp) {
 			printf("ctw: %s: already recording\n", fn);
 			return -1;
 		}
+		ctw->ctw.c_asciicast_frame = 0;
+
 		if ((fp = fopen(fn, "w")) == NULL) {
 			printf("ctw: %s - %s", fn, strerror(errno));
 			return -1;
 		}
-		ctw->ctw.c_asciitext_fn = chk_strdup(fn);
+		ctw->ctw.c_asciicast_fn = chk_strdup(fn);
+		snprintf(buf, sizeof buf, "%s.raw", fn);
+		if ((fp1 = fopen(buf, "w")) == NULL) {
+			printf("ctw: %s - %s", buf, strerror(errno));
+		}
+		ctw->ctw.c_asciicast_fp2 = fp1;
+
 		snprintf(buf, sizeof buf, "[ctw: recording: %s]\r\n", fn);
 		ctw_add_string2(ctw, buf, strlen(buf));
-		ctw->ctw.c_asciitext_fp = fp;
+		ctw->ctw.c_asciicast_fp = fp;
 		fprintf(fp, "{\"version\": 2, \"width\": %d, \"height\": %d, \"timestamp\":, %lu, ",
 			ctw->ctw.columns, ctw->ctw.rows, time(NULL));
 		fprintf(fp, " \"title\": \"Demo\", \"env: {\"");
@@ -8039,17 +8056,22 @@ ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
 		fprintf(fp, "\"theme\": { \"fg\": \"#%06x\", \"bg\": \"#%06x\"}",
 			(unsigned) fg, (unsigned) bg);
 		fprintf(fp, "}\n");
-		gettimeofday(&ctw->ctw.c_asciitext_start, NULL);
+		gettimeofday(&ctw->ctw.c_asciicast_start, NULL);
 		break;
 
 	  case 2:
-		if (ctw->ctw.c_asciitext_fp) {
-			snprintf(buf, sizeof buf, "[ctw: stopped: %s]\r\n", ctw->ctw.c_asciitext_fn);
+		if (ctw->ctw.c_asciicast_fp) {
+			snprintf(buf, sizeof buf, "[ctw: stopped: %s]\r\n", ctw->ctw.c_asciicast_fn);
 			ctw_add_string2(ctw, buf, strlen(buf));
-			chk_free_ptr((void **) &ctw->ctw.c_asciitext_fn);
+			chk_free_ptr((void **) &ctw->ctw.c_asciicast_fn);
 
-			fclose(ctw->ctw.c_asciitext_fp);
-			ctw->ctw.c_asciitext_fp = NULL;
+			fclose(ctw->ctw.c_asciicast_fp);
+			ctw->ctw.c_asciicast_fp = NULL;
+
+			if (ctw->ctw.c_asciicast_fp2) {
+				fclose(ctw->ctw.c_asciicast_fp2);
+				ctw->ctw.c_asciicast_fp2 = NULL;
+				}
 			}
 	  	break;
 	  }
@@ -8339,6 +8361,89 @@ ctw_label_lines(CtwWidget ctw, int flag)
 }
 
 /**********************************************************************/
+/*   Dump asciicast data to the cast file.			      */
+/**********************************************************************/
+static void
+ctw_log_asciicast(CtwWidget ctw, char *str, int len)
+{	int	i;
+
+	if (!ctw->ctw.c_asciicast_fp)
+		return;
+
+	struct timeval t;
+	struct timeval tdiff;
+	gettimeofday(&t, NULL);
+	timersub(&t, &ctw->ctw.c_asciicast_start, &tdiff);
+
+	fprintf(ctw->ctw.c_asciicast_fp, "[%ld.%06ld, \"o\", \"", 
+		tdiff.tv_sec, tdiff.tv_usec);
+	for (i = 0; i < len; i++) {
+		int ch = str[i];
+		if (ch == '\n')
+			fprintf(ctw->ctw.c_asciicast_fp, "\\n");
+		else if (ch == '\r')
+			fprintf(ctw->ctw.c_asciicast_fp, "\\r");
+		else if (ch == '"')
+			fprintf(ctw->ctw.c_asciicast_fp, "\\\"");
+		else if (ch < ' ' || ch >= 0x7f)
+			fprintf(ctw->ctw.c_asciicast_fp, "\\u%04x", ch);
+		else
+			fprintf(ctw->ctw.c_asciicast_fp, "%c", ch);
+		}
+	fprintf(ctw->ctw.c_asciicast_fp, "\"]\n");
+}
+/**********************************************************************/
+/*   After processing output, dump a frame to the frame file.	      */
+/**********************************************************************/
+static void
+ctw_log_asciicast2(CtwWidget ctw)
+{	int	line_no, c, i;
+	FILE	*fp = ctw->ctw.c_asciicast_fp2;
+	vbyte_t	*vp;
+
+	if (fp == NULL)
+		return;
+
+	struct timeval t;
+	struct timeval tdiff;
+	gettimeofday(&t, NULL);
+	timersub(&t, &ctw->ctw.c_asciicast_start, &tdiff);
+
+	if (ctw->ctw.c_asciicast_frame == 0) {
+		for (i = 0; i < MAX_COLORS; i++) {
+			fprintf(fp, "color %d: %06lx\n", i, 
+				ctw->ctw.x11_colors[i]);
+			}
+		}
+	fprintf(fp, "frame: %d time: %ld.%06ld rows: %d columns: %d\n",
+		ctw->ctw.c_asciicast_frame++,
+		tdiff.tv_sec, tdiff.tv_usec,
+		ctw->ctw.rows, ctw->ctw.columns);
+	for (line_no = 0; line_no < ctw->ctw.rows; line_no++) {
+		line_t *lp = dsp_get_row(ctw, line_no);
+		vp = lp->l_text;
+
+		for (c = 0; c < ctw->ctw.columns; ) {
+			for (i = c + 1; i < ctw->ctw.columns; i++) {
+				if (vp[i].vb_attr != vp[c].vb_attr ||
+				    vp[i].vb_fcolor != vp[c].vb_fcolor ||
+				    vp[i].vb_bcolor != vp[c].vb_bcolor)
+				    	break;
+				}
+			fprintf(fp, "%x.%x.%x.%x ",
+				vp->vb_attr,
+				vp->vb_fcolor,
+				vp->vb_bcolor,
+				i-c);
+			while (c < i) {
+				fprintf(fp, "%c", vp[c++].vb_byte);
+				}
+			}
+		fprintf(fp, "\n");
+		}
+
+}
+/**********************************************************************/
 /*   Log  the  PTY  output,  including  escape  sequences,  etc to a  */
 /*   rolling log file.						      */
 /**********************************************************************/
@@ -8353,32 +8458,10 @@ ctw_log_string(CtwWidget ctw, char *str, int len)
 	char	*name;
 	int	i;
 	
-	if (!ctw->ctw.c_logging_enabled)
+	if (!ctw->ctw.c_logging_enabled || len == 0)
 		return;
 
-	if (ctw->ctw.c_asciitext_fp) {
-		struct timeval t;
-		struct timeval tdiff;
-		gettimeofday(&t, NULL);
-		timersub(&t, &ctw->ctw.c_asciitext_start, &tdiff);
-
-		fprintf(ctw->ctw.c_asciitext_fp, "[%ld.%06ld, \"o\", \"", 
-			tdiff.tv_sec, tdiff.tv_usec);
-		for (i = 0; i < len; i++) {
-			int ch = str[i];
-			if (ch == '\n')
-				fprintf(ctw->ctw.c_asciitext_fp, "\\n");
-			else if (ch == '\r')
-				fprintf(ctw->ctw.c_asciitext_fp, "\\r");
-			else if (ch == '"')
-				fprintf(ctw->ctw.c_asciitext_fp, "\\\"");
-			else if (ch < ' ' || ch >= 0x7f)
-				fprintf(ctw->ctw.c_asciitext_fp, "\\u%04x", ch);
-			else
-				fprintf(ctw->ctw.c_asciitext_fp, "%c", ch);
-			}
-		fprintf(ctw->ctw.c_asciitext_fp, "\"]\n");
-	}
+	ctw_log_asciicast(ctw, str, len);
 
 	name = ctw->ctw.ttyname ? basename(ctw->ctw.ttyname) : "ZZ";
 	

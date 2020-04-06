@@ -188,9 +188,11 @@ typedef struct ctw_part {
 	/***********************************************/
 	/*   Asciitext				       */
 	/***********************************************/
-	char		*c_asciitext_fn;
-	FILE		*c_asciitext_fp;
-	struct timeval	c_asciitext_start;
+	char		*c_asciicast_fn;
+	FILE		*c_asciicast_fp;
+	FILE		*c_asciicast_fp2;
+	struct timeval	c_asciicast_start;
+	int		c_asciicast_frame;
 
 	/***********************************************/
 	/*   Graph list.			       */
