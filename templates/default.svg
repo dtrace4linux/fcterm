@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" 
+  xmlns:xlink="http://www.w3.org/1999/xlink" 
+  id="terminal" baseProfile="full" 
+  viewBox="0 0 $page_width $page_ht" 
+  width="$page_width" 
+  version="1.1">
+
+  <defs>
+  	<!-- rows: $rows columns: $columns -->
+	<style type="text/css" id="generated-style"><![CDATA[
+	    #screen {
+                font-family: 'DejaVu Sans Mono', monospace;
+                font-style: normal;
+                font-size: 14px;
+            }
+	    text {
+                dominant-baseline: text-before-edge;
+                white-space: pre;
+            }
+    
+            :root {
+                --animation-duration: ${t}ms;
+            }
+
+	    @keyframes roll {
+	        $transforms
+	    }
+
+	#screen_view {
+		animation-duration: ${t}ms;
+		animation-iteration-count: infinite;
+		animation-name: roll;
+		animation-timing-function: steps(1,end);
+		animation-fill-mode: forwards;
+		}
+
+]]></style>
+
+<style type="text/css" id="user-style">
+	.foreground {fill: #c5c5c5;}
+        .background {fill: #1c1c1c;}
+$colors
+	    \@keyframes progress-bar-animation {
+                from {
+                    transform: translate(0px, calc(100% - 5px)) scale(0, 1);
+                }
+                to {
+                    transform: translate(0px, calc(100% - 5px)) scale(1, 1);
+                }
+            }
+            #progress-bar {
+                animation-duration: var(--animation-duration);
+                animation-iteration-count: infinite;
+                animation-name: progress-bar-animation;
+                animation-timing-function: linear;
+                transform-origin: left;
+            }
+	    /*screen:hover {
+	    	animation-play-sate: paused;
+		}*/
+
+        </style>
+
+    </defs>
+
+<rect width="100%" height="100%" class="background"/>
+<svg id="screen" width="$page_width" height="$page_ht" 
+  viewBox="0 0 $page_width $page_ht" preserveAspectRatio="xMidYMin slice">
+  <rect class="background" height="100%" width="100%" x="0" y="0"/>
+  <defs>
+  <!-- defs1 -->
+$defs1
+  </defs>
+  <g id="screen_view">
+  <!-- defs2 -->
+$defs2
+  </g>
+</svg>
+    <rect id="progress-bar" width="100%" height="5" class="c1"/>
+</svg>
+

@@ -8415,10 +8415,11 @@ ctw_log_asciicast2(CtwWidget ctw)
 				ctw->ctw.x11_colors[i]);
 			}
 		}
-	fprintf(fp, "frame: %d time: %ld.%06ld rows: %d columns: %d\n",
+	fprintf(fp, "frame: %d time: %ld.%06ld rows: %d columns: %d csr: %d,%d\n",
 		ctw->ctw.c_asciicast_frame++,
 		tdiff.tv_sec, tdiff.tv_usec,
-		ctw->ctw.rows, ctw->ctw.columns);
+		ctw->ctw.rows, ctw->ctw.columns,
+		ctw->ctw.x, ctw->ctw.y);
 	for (line_no = 0; line_no < ctw->ctw.rows; line_no++) {
 		line_t *lp = dsp_get_row(ctw, line_no);
 		vp = lp->l_text;
