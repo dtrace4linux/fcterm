@@ -76,7 +76,7 @@ sub main
 	for (my $i = 0; $i <= $nf; $i++) {
 		my $pc = ($i * 100) / $nf;
 #		my $y = -$page_ht * $i;
-		my $y = -($i * 340);
+		my $y = -($i * $page_ht);
 		$transforms .= sprintf "%.3f%%{transform:translateY(${y}px)}\n", $pc;
 	}
 
@@ -90,6 +90,10 @@ sub main
 	my $x = 0;
 	my @frames;
 	my @frame;
+	my %finfo;
+	my $frame_no = 0;
+	my $row = 0;
+	my $col = 0;
 
 	while (<$fh>) {
 		chomp;
@@ -104,7 +108,11 @@ sub main
 				last if $opts{frames} && @frames > $opts{frames};
 			}
 print "$_\n";
-			$y = 0;
+			$row = 0;
+			$col = 0;
+			$frame_no++;
+			$finfo{$frame_no}{csr_x} = $csr_x;
+			$finfo{$frame_no}{csr_y} = $csr_y;
 			next;
 		}
 
@@ -132,6 +140,10 @@ print "$_\n";
 				} else {
 					$s .= $ch;
 				}
+#				if ($row == $csr_y && $col++ == $csr_x) {
+#					$line .= "<rect x=\"$x\" width=\"8\" style=\"fill:white; background:white;\"/>";
+#					$line .= "<text x=\"$x\" textLength=\"1\" style=\"fill:white; background:white;\">_</text>";
+#				}
 			}
 			if ($s =~ /[^ ]/) {
 				my $tl = $len * $fw;
@@ -144,6 +156,7 @@ print "$_\n";
 		}
 #print "line=$line\n";
 		push @frame, $line;
+		$row++;
 	}
 	push @frames, \@frame if @frame;
 
@@ -152,10 +165,11 @@ print "$_\n";
 	$y = 0;
 	my $sv = '';
 	my $defs1 = '';
-	my $frame_no = 0;
+	$frame_no = 0;
 	foreach my $lns (@frames) {
 		$y = $page_ht + $frame_no++ * $page_ht;
-		$sv .= "<g><rect x=\"0\" y='$y' width='8' height='$fht' class='foreground' />\n";
+		my $top_y = $y;
+		$sv .= "<g>";
 		foreach my $ln (@$lns) {
 			$sv .= "<use xlink:href='#g$f' y='$y'/>\n";
 			$y += $fht; #$rows * $fht;
@@ -164,6 +178,14 @@ print "$_\n";
 			$defs1 .= "</g>\n";
 			$f++;
 		}
+
+		###############################################
+		#   Display cursor at the right point of the  #
+		#   screen.				      #
+		###############################################
+		my $csr_x = $finfo{$frame_no}{csr_x} * $fw;
+		my $csr_y = $finfo{$frame_no}{csr_y} * $fht + $top_y;
+		$sv .= "<rect x=\"$csr_x\" y='$csr_y' width='8' height='$fht' class='foreground' />\n";
 		$sv .= "</g>\n";
 	}
 
