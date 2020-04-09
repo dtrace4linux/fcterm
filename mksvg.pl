@@ -2,6 +2,12 @@
 
 # $Header:$
 
+# TODO:
+#   scrolling frame
+#   background colors
+#   progress bar at bottom
+#   progress bar display/pause/rewind
+
 use strict;
 use warnings;
 
@@ -40,6 +46,8 @@ sub main
 	my $t = 0;
 	my $csr_x;
 	my $csr_y;
+	my $cursor_color;
+
 	while (<$fh>) {
 		chomp;
 		if (/^frame:.*time: ([0-9.]+) rows: (\d+) columns: (\d+) csr: (\d+),(\d+)/) {
@@ -51,6 +59,8 @@ sub main
 			$csr_y = $5;
 		} elsif (/^color (\d+): (.*)/) {
 			push @colors, $2;
+		} elsif (/^cursor (.*)/) {
+			$cursor_color = $1;
 		}
 	}
 	if ($nf == 0) {
@@ -62,6 +72,9 @@ sub main
 	my $fw = 8;
 	my $page_ht = $rows * $fht;
 	my $page_width = $columns * $fw;
+	my $progress_ht = 5;
+	my $view_ht = $page_ht + $progress_ht;
+
 	$t = int($t * 1000 * ($opts{slow} || 1));
 
 	my $tfh = new FileHandle("templates/default.svg");
@@ -91,13 +104,16 @@ sub main
 	my @frames;
 	my @frame;
 	my %finfo;
+	my %rects;
 	my $frame_no = 0;
 	my $row = 0;
 	my $col = 0;
+	my $g = 0;
 
 	while (<$fh>) {
 		chomp;
 		next if /^color/;
+		next if /^cursor/;
 		if (/^frame.* csr: (\d+),(\d+)/) {
 			$csr_x = $1;
 			$csr_y = $2;
@@ -127,7 +143,7 @@ print "$_\n";
 			my $code = substr($ln, $i, $j-$i);
 			$i = $j + 1;
 
-			my ($attr, $fg, $b, $len) = split(/[.]/, $code);
+			my ($attr, $fg, $bg, $len) = split(/[.]/, $code);
 			$len = hex($len);
 
 			my $s = '';
@@ -140,36 +156,36 @@ print "$_\n";
 				} else {
 					$s .= $ch;
 				}
-#				if ($row == $csr_y && $col++ == $csr_x) {
-#					$line .= "<rect x=\"$x\" width=\"8\" style=\"fill:white; background:white;\"/>";
-#					$line .= "<text x=\"$x\" textLength=\"1\" style=\"fill:white; background:white;\">_</text>";
-#				}
 			}
-			if ($s =~ /[^ ]/) {
-				my $tl = $len * $fw;
-				$line .= "<text x=\"$x\" textLength=\"$tl\" class=\"c$fg\">";
-				$line .= $s;
-				$line .= "</text>\n";
-			}
+			my $tl = $len * $fw;
+$rects{$frame_no} .= "<rect x=\"$x\" y=\"$y\" width=\"$tl\" height=\"$fht\" class=\"c$bg\"/>\n" if $bg;
+$rects{$frame_no} .= "<use xlink:href=\"#g$g\" y=\"$y\"/>\n";
+			$line .= "<text x=\"$x\" class=\"c$fg\">";
+			$line .= $s;
+			$line .= "</text>\n";
+
 			$i += $len;
 			$x += $len * $fw;
 		}
 #print "line=$line\n";
+$y += $fht;
 		push @frame, $line;
 		$row++;
+		$g++;
 	}
 	push @frames, \@frame if @frame;
 
 	my @flines;
 	my $f = 0;
+	$frame_no = 0;
 	$y = 0;
 	my $sv = '';
 	my $defs1 = '';
-	$frame_no = 0;
 	foreach my $lns (@frames) {
 		$y = $page_ht + $frame_no++ * $page_ht;
 		my $top_y = $y;
 		$sv .= "<g>";
+$sv .= $rects{$frame_no};
 		foreach my $ln (@$lns) {
 			$sv .= "<use xlink:href='#g$f' y='$y'/>\n";
 			$y += $fht; #$rows * $fht;
@@ -185,24 +201,28 @@ print "$_\n";
 		###############################################
 		my $csr_x = $finfo{$frame_no}{csr_x} * $fw;
 		my $csr_y = $finfo{$frame_no}{csr_y} * $fht + $top_y;
-		$sv .= "<rect x=\"$csr_x\" y='$csr_y' width='8' height='$fht' class='foreground' />\n";
+		$sv .= "<rect x=\"$csr_x\" y='$csr_y' width='8' height='$fht' class='cursor' />\n";
 		$sv .= "</g>\n";
 	}
 
 	###############################################
 	#   Generate output file.		      #
 	###############################################
+	$template =~ s/\$cursor/$cursor_color/g;
 	$template =~ s/\$rows/$rows/g;
 	$template =~ s/\$columns/$columns/g;
 	$template =~ s/\$page_width/$page_width/g;
+	$template =~ s/\$view_ht/$view_ht/g;
 	$template =~ s/\$page_ht/$page_ht/g;
 	$template =~ s/\$transforms/$transforms/g;
 	$template =~ s/\$colors/$colors/g;
 	$template =~ s/\$\{t}/$t/g;
 	$template =~ s/\$defs1/$defs1/g;
 	$template =~ s/\$defs2/$sv/g;
+	my $progress_y = $page_ht;
+	$template =~ s/\$progress_y/$progress_y/g;
 
-	print "Creating: /tmp/test.svg\n";
+	printf "Creating: /tmp/test.svg, size %d KB\n", length($template) / (1024);
 	my $ofh = new FileHandle(">/tmp/test.svg");
 	print $ofh $template;
 

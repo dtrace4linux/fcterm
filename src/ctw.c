@@ -370,8 +370,8 @@ static XtResource resources[] = {
 	  offset(geometry), XtRString, ""},
 	{ XtNgridLineColor, XtCGridLineColor, XtRPixel, sizeof(unsigned long),
 	  offset(gridLine_color), XtRString, "#303050"},
-//	{ XtNcursorColor, XtCCursorColor, XtRPixel, sizeof(unsigned long),
-//	  offset(cursor_color), XtRString, "red"},
+	{ XtNcursorColor, XtCCursorColor, XtRPixel, sizeof(unsigned long),
+	  offset(cursor_color), XtRString, "red"},
 	{ XtNhiliteBackground, XtCHiliteBackground, XtRPixel, sizeof(unsigned long),
 	  offset(hilite_bg), XtRString, "RoyalBlue"},
 	{ XtNhiliteForeground, XtCHiliteForeground, XtRPixel, sizeof(unsigned long),
@@ -8410,6 +8410,8 @@ ctw_log_asciicast2(CtwWidget ctw)
 	timersub(&t, &ctw->ctw.c_asciicast_start, &tdiff);
 
 	if (ctw->ctw.c_asciicast_frame == 0) {
+		fprintf(fp, "cursor %06lx\n",
+			ctw->ctw.cursor_color);
 		for (i = 0; i < MAX_COLORS; i++) {
 			fprintf(fp, "color %d: %06lx\n", i, 
 				ctw->ctw.x11_colors[i]);
