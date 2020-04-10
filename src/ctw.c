@@ -8061,7 +8061,7 @@ ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
 
 	  case 2:
 		if (ctw->ctw.c_asciicast_fp) {
-			snprintf(buf, sizeof buf, "[ctw: stopped: %s]\r\n", ctw->ctw.c_asciicast_fn);
+			snprintf(buf, sizeof buf, "ctw: recording stopped: output here:\r\n  %s\r\n", ctw->ctw.c_asciicast_fn);
 			ctw_add_string2(ctw, buf, strlen(buf));
 			chk_free_ptr((void **) &ctw->ctw.c_asciicast_fn);
 
@@ -8434,9 +8434,9 @@ ctw_log_asciicast2(CtwWidget ctw)
 				    	break;
 				}
 			fprintf(fp, "%x.%x.%x.%x ",
-				vp->vb_attr,
-				vp->vb_fcolor,
-				vp->vb_bcolor,
+				vp[c].vb_attr,
+				vp[c].vb_fcolor,
+				vp[c].vb_bcolor,
 				i-c);
 			while (c < i) {
 				fprintf(fp, "%c", vp[c++].vb_byte);

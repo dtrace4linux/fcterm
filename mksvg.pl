@@ -4,8 +4,7 @@
 
 # TODO:
 #   scrolling frame
-#   background colors
-#   progress bar at bottom
+#   bolded font?
 #   progress bar display/pause/rewind
 
 use strict;
@@ -145,6 +144,7 @@ print "$_\n";
 
 			my ($attr, $fg, $bg, $len) = split(/[.]/, $code);
 			$len = hex($len);
+			$attr = hex($attr);
 
 			my $s = '';
 			for (my $k = $i; $k < $i + $len; $k++) {
@@ -153,11 +153,27 @@ print "$_\n";
 					$s .= "&lt;";
 				} elsif ($ch eq '&') {
 					$s .= "&amp;";
+				} elsif ($attr & 0x10 && $ch eq 'l') {
+					$s .= "&#x250c;";
+				} elsif ($attr & 0x10 && $ch eq 'q') {
+					$s .= "&#x2500;";
+				} elsif ($attr & 0x10 && $ch eq 'x') {
+					$s .= "&#x2502;";
+				} elsif ($attr & 0x10 && $ch eq 'm') {
+					$s .= "&#x2514;";
+				} elsif ($attr & 0x10 && $ch eq 'k') {
+					$s .= "&#x2510;";
+				} elsif ($attr & 0x10 && $ch eq 'j') {
+					$s .= "&#x2518;";
+				} elsif (ord($ch) >= 0 && ord($ch) < 0x20) {
+					#$s .= sprintf("<$ch:%2x>", ord($ch));
+					$s .= " ";
 				} else {
 					$s .= $ch;
 				}
 			}
 			my $tl = $len * $fw;
+			my $rel_y = $row * $fht;
 $rects{$frame_no} .= "<rect x=\"$x\" y=\"$y\" width=\"$tl\" height=\"$fht\" class=\"c$bg\"/>\n" if $bg;
 $rects{$frame_no} .= "<use xlink:href=\"#g$g\" y=\"$y\"/>\n";
 			$line .= "<text x=\"$x\" class=\"c$fg\">";
@@ -167,8 +183,7 @@ $rects{$frame_no} .= "<use xlink:href=\"#g$g\" y=\"$y\"/>\n";
 			$i += $len;
 			$x += $len * $fw;
 		}
-#print "line=$line\n";
-$y += $fht;
+		$y += $fht;
 		push @frame, $line;
 		$row++;
 		$g++;
@@ -185,9 +200,8 @@ $y += $fht;
 		$y = $page_ht + $frame_no++ * $page_ht;
 		my $top_y = $y;
 		$sv .= "<g>";
-$sv .= $rects{$frame_no};
+		$sv .= $rects{$frame_no};
 		foreach my $ln (@$lns) {
-			$sv .= "<use xlink:href='#g$f' y='$y'/>\n";
 			$y += $fht; #$rows * $fht;
 			$defs1 .= "<g id='g$f'>\n";
 			$defs1 .= $ln;
