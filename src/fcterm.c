@@ -1278,7 +1278,10 @@ static int first_time = TRUE;
 	first_time = TRUE;
 
 	snprintf(verbuf, sizeof verbuf,
-		"Fcterm version v%d.%03d-b%d", MAJ_VERSION, MIN_VERSION, version_build_no);
+		"Fcterm version v%d.%03d-%d-b%d", 
+			MAJ_VERSION, MIN_VERSION, 
+			version_build_date_yyyymmdd,
+			version_build_no);
 
 	for (i = 0; msgs[i]; i++) {
 		msg = "\033[31;43m";

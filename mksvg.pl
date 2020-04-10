@@ -174,7 +174,7 @@ print "$_\n";
 			}
 			my $tl = $len * $fw;
 			my $rel_y = $row * $fht;
-$rects{$frame_no} .= "<rect x=\"$x\" y=\"$y\" width=\"$tl\" height=\"$fht\" class=\"c$bg\"/>\n" if $bg;
+			$rects{$frame_no} .= "<rect x=\"$x\" y=\"$y\" width=\"$tl\" height=\"$fht\" class=\"c$bg\"/>\n" if $bg;
 			$line .= "<text x=\"$x\" class=\"c$fg\">";
 			$line .= $s;
 			$line .= "</text>\n";
@@ -182,7 +182,7 @@ $rects{$frame_no} .= "<rect x=\"$x\" y=\"$y\" width=\"$tl\" height=\"$fht\" clas
 			$i += $len;
 			$x += $len * $fw;
 		}
-$rects{$frame_no} .= "<use xlink:href=\"#g$g\" y=\"$y\"/>\n";
+		$rects{$frame_no} .= "<use xlink:href=\"#g$g\" y=\"$y\"/>\n";
 		$y += $fht;
 		push @frame, $line;
 		$row++;
