@@ -311,6 +311,10 @@ Switches:
 		 default
 		 player
 
+Acknowledgements
+
+   Nicholas Bedos https://nbedos.github.io
+
 EOF
 
 	exit(defined($ret) ? $ret : 1);
