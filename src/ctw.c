@@ -8022,6 +8022,7 @@ int
 ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
 {	FILE	*fp, *fp1;
 	char	buf[BUFSIZ];
+	time_t	t = time(NULL);
 	Pixel fg = ctw->ctw.x11_colors[ctw->ctw.attr.vb_fcolor];
 	Pixel bg = ctw->ctw.x11_colors[ctw->ctw.attr.vb_bcolor];
 
@@ -8045,6 +8046,8 @@ ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
 		ctw->ctw.c_asciicast_fp2 = fp1;
 
 		snprintf(buf, sizeof buf, "[ctw: recording: %s]\r\n", fn);
+		ctw_add_string2(ctw, buf, strlen(buf));
+		strftime(buf, sizeof buf, "[Started: %Y%m%d %H:%M]\r\n", localtime(&t));
 		ctw_add_string2(ctw, buf, strlen(buf));
 		ctw->ctw.c_asciicast_fp = fp;
 		fprintf(fp, "{\"version\": 2, \"width\": %d, \"height\": %d, \"timestamp\":, %lu, ",

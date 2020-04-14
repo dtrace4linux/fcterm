@@ -34,6 +34,7 @@ sub main
 		'label',
 		'nohash',
 		'slow=s',
+		'template=s',
 		);
 
 	usage(0) if $opts{help};
@@ -46,6 +47,8 @@ sub main
 	if ($fn !~ /\.raw$/) {
 		$fn .= ".raw";
 	}
+
+	my $is_player = ($opts{template} || '') =~ /player/;
 
 	my $fh = new FileHandle($fn);
 	die "Cannot open $fn - $!" if !$fh;
@@ -82,12 +85,14 @@ sub main
 	my $fw = 8;
 	my $page_ht = $rows * $fht;
 	my $page_width = $columns * $fw;
-	my $progress_ht = 5;
+	my $progress_ht = 5 + ($is_player ? 100 : 0);
 	my $view_ht = $page_ht + $progress_ht;
 
 	$t = int($t * 1000 * ($opts{slow} || 1));
 
-	my $tfh = new FileHandle("templates/default.svg");
+	my $tfn = $opts{template} || "templates/defaults.svg";
+	my $tfh = new FileHandle($tfn);
+	die "Cannot open template: $tfn - $!" if !$tfh;
 	my $template = '';
 	while (<$tfh>) {
 		$template .= $_;
@@ -100,7 +105,11 @@ sub main
 #		my $pc = ($times[$i] / $duration) * 100;
 		my $pc = ($i * 100) / $nf;
 		my $y = -($i * $fht * $rows);
-		$transforms .= sprintf "%.3f%%{transform:translateY(${y}px)}\n", $pc;
+		if ($is_player) {
+			$transforms .= sprintf "{transform:'translate3D(0, ${y}px, 0)', easing: 'steps(1, end)'},\n";
+		} else {
+			$transforms .= sprintf "%.3f%%{transform:translateY(${y}px)}\n", $pc;
+		}
 	}
 
 	my $colors = '';
@@ -190,7 +199,7 @@ print "$_\n";
 			}
 			my $tl = $len * $fw;
 			$rects{$frame_no} .= "<rect x=\"$x\" y=\"$y\" width=\"$tl\" height=\"$fht\" class=\"c$bg\"/>\n" if $bg;
-			$line .= "<text x=\"$x\" class=\"c$fg\">";
+			$line .= "<text x=\"$x\" textLength=\"$tl\" class=\"c$fg\">";
 			$line .= $s;
 			$line .= "</text>\n";
 
@@ -244,7 +253,7 @@ print "$_\n";
 		###############################################
 		my $csr_x = $finfo{$frame_no}{csr_x} * $fw + $fw;
 		my $csr_y = $finfo{$frame_no}{csr_y} * $fht + $top_y;
-		$defs2 .= "<rect x=\"$csr_x\" y='$csr_y' width='8' height='$fht' class='cursor' />\n";
+		$defs2 .= "<rect x=\"$csr_x\" y='$csr_y' width='$fw' height='$fht' class='cursor' />\n";
 		$defs2 .= "</g>\n";
 	}
 

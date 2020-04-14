@@ -545,7 +545,7 @@ cmd_asciitext_record(CtwWidget ctw)
 		t = time(NULL);
 		strftime(buf2, sizeof buf2, "%Y%m%d-%H%M%S", localtime(&t));
 		snprintf(buf, sizeof buf, 
-			"/tmp/%s.record-%s.cast",
+			"/var/tmp/%s/record-%s.cast",
 			getenv("USER"), buf2);
 		fn = buf;
 		}
@@ -557,6 +557,7 @@ void
 cmd_asciitext_stop(CtwWidget ctw)
 {
 	ctw_asciitext_record(ctw, 2, NULL);
+	/* Auto create svg file. */
 }
 
 void
