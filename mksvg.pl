@@ -4,7 +4,6 @@
 
 # TODO:
 #   -label - needs bg color
-#   progress bar display/pause/rewind
 
 use strict;
 use warnings;
@@ -14,11 +13,14 @@ use FileHandle;
 use Getopt::Long;
 use IO::File;
 use POSIX;
+use FindBin;
 
 #######################################################################
 #   Command line switches.					      #
 #######################################################################
-my %opts;
+my %opts = (
+	template => "default",
+	);
 my @colors;
 my $rows;
 my $columns;
@@ -90,7 +92,10 @@ sub main
 
 	$t = int($t * 1000 * ($opts{slow} || 1));
 
-	my $tfn = $opts{template} || "templates/defaults.svg";
+	my $tfn = $opts{template};
+	if ($tfn !~ /\//) {
+		$tfn = "$FindBin::RealBin/templates/$tfn.svg";
+	}
 	my $tfh = new FileHandle($tfn);
 	die "Cannot open template: $tfn - $!" if !$tfh;
 	my $template = '';
@@ -301,6 +306,11 @@ Switches:
   -nohash        Dont hash the chunks of text - bigger output file, but
                  easier to debug.
   -slow NN       Slow down animation by this multiplier
+  -template      Select the style of generated SVG generated. Options are
+                 
+		 default
+		 player
+
 EOF
 
 	exit(defined($ret) ? $ret : 1);
