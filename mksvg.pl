@@ -32,6 +32,7 @@ sub main
 		'frames=s',
 		'help',
 		'label',
+		'nohash',
 		'slow=s',
 		);
 
@@ -39,6 +40,8 @@ sub main
 
 	my $fn = shift @ARGV;
 	usage(0) if !$fn;
+
+	my $hashed = $opts{nohash} ? 0 : 1;
 
 	if ($fn !~ /\.raw$/) {
 		$fn .= ".raw";
@@ -118,6 +121,9 @@ sub main
 	my $col = 0;
 	my $g = 0;
 
+	my %line_hash;
+	my $lh = 0;
+
 	while (<$fh>) {
 		chomp;
 		next if /^color/;
@@ -191,9 +197,15 @@ print "$_\n";
 			$i += $len;
 			$x += $len * $fw;
 		}
+		if (!defined($line_hash{$line})) {
+			$line_hash{$line} = $lh++;
+		}
+		$g = $line_hash{$line} if $hashed;
 		$rects{$frame_no} .= "<use xlink:href=\"#g$g\" y=\"$y\"/>\n";
 		$y += $fht;
-		$line .= "<text>                                    [frame $frame_no Time: $frame_time]</text>" if @frame == 0 && $opts{label};
+		if (@frame == 0 && $opts{label}) {
+			$line .= "<text>                                    [frame $frame_no Time: $frame_time]</text>";
+		}
 		push @frame, $line;
 		$row++;
 		$g++;
@@ -206,13 +218,20 @@ print "$_\n";
 	$y = 0;
 	my $defs2 = '';
 	my $defs1 = '';
+
+	if ($hashed) {
+		foreach my $k (sort(keys(%line_hash))) {
+			$defs1 .= "<g id='g$line_hash{$k}'>\n$k</g>\n";
+		}
+	}
+
 	foreach my $lns (@frames) {
 		$y = $page_ht + $frame_no++ * $page_ht;
 		my $top_y = $y;
 		$defs2 .= "<g>";
 		$defs2 .= $rects{$frame_no};
 		foreach my $ln (@$lns) {
-			$y += $fht; #$rows * $fht;
+			last if $hashed;
 			$defs1 .= "<g id='g$f'>\n";
 			$defs1 .= $ln;
 			$defs1 .= "</g>\n";
@@ -262,14 +281,16 @@ sub usage
 	print $msg if $msg;
 
 	print <<EOF;
-Some help...
-Usage:
+mksvg.pl -- create SVG/HTML session out of a terminal recording
+Usage: mksvg.pl [switches]
 
 Switches:
 
   -duration NN   Set animation duration to NN milliseconds.
   -frames NN     Only render the first N frames.
   -label         Put a frame marker on the top of each page.
+  -nohash        Dont hash the chunks of text - bigger output file, but
+                 easier to debug.
   -slow NN       Slow down animation by this multiplier
 EOF
 
