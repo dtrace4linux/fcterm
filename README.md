@@ -31,3 +31,6 @@ crude (ie the right-menu popup menu).
 
 Use "fcterm -help" and "fcterm help" to see the interactive commands.
 
+## Acknowledgements
+asciicast support - Nicholas Bedos https://nbedos.github.io
+
