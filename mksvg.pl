@@ -3,8 +3,7 @@
 # $Header:$
 
 # TODO:
-#   scrolling frame
-#   bolded font?
+#   -label - needs bg color
 #   progress bar display/pause/rewind
 
 use strict;
@@ -29,8 +28,10 @@ sub main
 	Getopt::Long::Configure('require_order');
 	Getopt::Long::Configure('no_ignore_case');
 	usage() unless GetOptions(\%opts,
+		'duration=s',
 		'frames=s',
 		'help',
+		'label',
 		'slow=s',
 		);
 
@@ -39,10 +40,15 @@ sub main
 	my $fn = shift @ARGV;
 	usage(0) if !$fn;
 
+	if ($fn !~ /\.raw$/) {
+		$fn .= ".raw";
+	}
+
 	my $fh = new FileHandle($fn);
 	die "Cannot open $fn - $!" if !$fh;
 	my $nf = 0;
 	my $t = 0;
+	my @times;
 	my $csr_x;
 	my $csr_y;
 	my $cursor_color;
@@ -56,6 +62,7 @@ sub main
 			$columns = $3;
 			$csr_x = $4;
 			$csr_y = $5;
+			push @times, $t;
 		} elsif (/^color (\d+): (.*)/) {
 			push @colors, $2;
 		} elsif (/^cursor (.*)/) {
@@ -67,7 +74,8 @@ sub main
 		exit(1);
 	}
 	print "Frames: $nf Time: $t\n";
-	my $fht = 14;
+	my $duration = $opts{duration} || $t;
+	my $fht = 17;
 	my $fw = 8;
 	my $page_ht = $rows * $fht;
 	my $page_width = $columns * $fw;
@@ -85,19 +93,20 @@ sub main
 
 
 	my $transforms = '';
-	for (my $i = 0; $i <= $nf; $i++) {
+	for (my $i = 0; $i < $nf; $i++) {
+#		my $pc = ($times[$i] / $duration) * 100;
 		my $pc = ($i * 100) / $nf;
-#		my $y = -$page_ht * $i;
-		my $y = -($i * $page_ht);
+		my $y = -($i * $fht * $rows);
 		$transforms .= sprintf "%.3f%%{transform:translateY(${y}px)}\n", $pc;
 	}
 
 	my $colors = '';
 	for (my $i = 0; $i < @colors; $i++) {
-		$colors .= sprintf "\t\t.c$i {fill: #$colors[$i];}\n";
+		$colors .= sprintf "\t.c$i {fill: #$colors[$i];}\n";
 	}
 
 	$fh = new FileHandle($fn);
+	my $frame_time;
 	my $y = 0;
 	my $x = 0;
 	my @frames;
@@ -113,9 +122,10 @@ sub main
 		chomp;
 		next if /^color/;
 		next if /^cursor/;
-		if (/^frame.* csr: (\d+),(\d+)/) {
-			$csr_x = $1;
-			$csr_y = $2;
+		if (/^frame.*time: ([^\s]*).* csr: (\d+),(\d+)/) {
+			$frame_time = $1;
+			$csr_x = $2;
+			$csr_y = $3;
 			if (@frame) {
 				push @frames, [@frame];
 #print "scalar: ", scalar(@frame), " frames=$opts{frames}\n";
@@ -173,7 +183,6 @@ print "$_\n";
 				}
 			}
 			my $tl = $len * $fw;
-			my $rel_y = $row * $fht;
 			$rects{$frame_no} .= "<rect x=\"$x\" y=\"$y\" width=\"$tl\" height=\"$fht\" class=\"c$bg\"/>\n" if $bg;
 			$line .= "<text x=\"$x\" class=\"c$fg\">";
 			$line .= $s;
@@ -184,6 +193,7 @@ print "$_\n";
 		}
 		$rects{$frame_no} .= "<use xlink:href=\"#g$g\" y=\"$y\"/>\n";
 		$y += $fht;
+		$line .= "<text>                                    [frame $frame_no Time: $frame_time]</text>" if @frame == 0 && $opts{label};
 		push @frame, $line;
 		$row++;
 		$g++;
@@ -194,13 +204,13 @@ print "$_\n";
 	my $f = 0;
 	$frame_no = 0;
 	$y = 0;
-	my $sv = '';
+	my $defs2 = '';
 	my $defs1 = '';
 	foreach my $lns (@frames) {
 		$y = $page_ht + $frame_no++ * $page_ht;
 		my $top_y = $y;
-		$sv .= "<g>";
-		$sv .= $rects{$frame_no};
+		$defs2 .= "<g>";
+		$defs2 .= $rects{$frame_no};
 		foreach my $ln (@$lns) {
 			$y += $fht; #$rows * $fht;
 			$defs1 .= "<g id='g$f'>\n";
@@ -213,10 +223,10 @@ print "$_\n";
 		#   Display cursor at the right point of the  #
 		#   screen.				      #
 		###############################################
-		my $csr_x = $finfo{$frame_no}{csr_x} * $fw;
+		my $csr_x = $finfo{$frame_no}{csr_x} * $fw + $fw;
 		my $csr_y = $finfo{$frame_no}{csr_y} * $fht + $top_y;
-		$sv .= "<rect x=\"$csr_x\" y='$csr_y' width='8' height='$fht' class='cursor' />\n";
-		$sv .= "</g>\n";
+		$defs2 .= "<rect x=\"$csr_x\" y='$csr_y' width='8' height='$fht' class='cursor' />\n";
+		$defs2 .= "</g>\n";
 	}
 
 	###############################################
@@ -232,7 +242,7 @@ print "$_\n";
 	$template =~ s/\$colors/$colors/g;
 	$template =~ s/\$\{t}/$t/g;
 	$template =~ s/\$defs1/$defs1/g;
-	$template =~ s/\$defs2/$sv/g;
+	$template =~ s/\$defs2/$defs2/g;
 	my $progress_y = $page_ht;
 	$template =~ s/\$progress_y/$progress_y/g;
 
@@ -257,7 +267,9 @@ Usage:
 
 Switches:
 
+  -duration NN   Set animation duration to NN milliseconds.
   -frames NN     Only render the first N frames.
+  -label         Put a frame marker on the top of each page.
   -slow NN       Slow down animation by this multiplier
 EOF
 

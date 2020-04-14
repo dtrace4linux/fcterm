@@ -36,7 +36,7 @@
 
 ]]></style>
 
-<style type="text/css" id="user-style">
+<style type="text/css">
 	.cursor {fill: #$cursor;}
 	.foreground {fill: #c5c5c5;}
         .background {fill: #1c1c1c;}

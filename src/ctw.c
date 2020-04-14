@@ -8423,7 +8423,7 @@ ctw_log_asciicast2(CtwWidget ctw)
 		ctw->ctw.rows, ctw->ctw.columns,
 		ctw->ctw.x, ctw->ctw.y);
 	for (line_no = 0; line_no < ctw->ctw.rows; line_no++) {
-		line_t *lp = dsp_get_row(ctw, line_no);
+		line_t *lp = dsp_get_row(ctw, line_no + dsp_get_top(ctw));
 		vp = lp->l_text;
 
 		for (c = 0; c < ctw->ctw.columns; ) {
@@ -8444,7 +8444,7 @@ ctw_log_asciicast2(CtwWidget ctw)
 			}
 		fprintf(fp, "\n");
 		}
-
+	fflush(fp);
 }
 /**********************************************************************/
 /*   Log  the  PTY  output,  including  escape  sequences,  etc to a  */
