@@ -73,7 +73,7 @@ $colors
 
 
 <svg id="screen" width="$page_width" height="$page_ht" 
-x="23" y="50"
+x="0" y="50"
   viewBox="0 0 $page_width $page_ht" preserveAspectRatio="xMidYMin slice">
   <rect class="c0" height="100%" width="100%" x="0" ry="4"/>
 <!-- -->

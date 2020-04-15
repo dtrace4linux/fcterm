@@ -8022,6 +8022,30 @@ start_again:
 		XtCallCallbacks((Widget) ctw, XtNtopCallback, (caddr_t) &reason);
 		}
 }
+static void
+ctw_asciitext_flash(CtwWidget ctw, int flash)
+{
+	Pixel def_fg = 0xff0000;
+	Pixel def_bg = 0xffffff;
+	Pixel fg;
+	Pixel bg;
+
+	if (!flash) {
+		fg = def_bg;
+		bg = 0x000000;
+		}
+	else if (time(NULL) & 1)
+		fg = def_fg, bg = def_bg;
+	else
+		fg = def_bg, bg = def_fg;
+
+	XSetForeground(XtDisplay(ctw), ctw->ctw.line_gc, fg);
+	XSetBackground(XtDisplay(ctw), ctw->ctw.line_gc, bg);
+	XDrawImageString(XtDisplay(ctw), XtWindow(ctw), ctw->ctw.line_gc, 
+		X_PIXEL(ctw, ctw->ctw.columns - 10),
+		Y_PIXEL(ctw, 0),
+		flash ? " REC " : "     ", 5);
+}		
 int
 ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
 {	FILE	*fp, *fp1;
@@ -8056,6 +8080,16 @@ ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
 			strftime(buf, sizeof buf, "[Started: %Y%m%d %H:%M]\r\n", localtime(&t));
 			ctw_add_string2(ctw, buf, strlen(buf));
 			}
+		else {
+			/***********************************************/
+			/*   Ensure  screen  is  clear  of  any turds  */
+			/*   before turning on recording.	       */
+			/***********************************************/
+			ctw->ctw.x = 0;
+			ctw->ctw.y = 0;
+		  	clear_screen(ctw);
+			}
+
 		ctw->ctw.c_asciicast_fp = fp;
 		fprintf(fp, "{\"version\": 2, \"width\": %d, \"height\": %d, \"timestamp\":, %lu, ",
 			ctw->ctw.columns, ctw->ctw.rows, time(NULL));
@@ -8082,6 +8116,7 @@ ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
 				fclose(ctw->ctw.c_asciicast_fp2);
 				ctw->ctw.c_asciicast_fp2 = NULL;
 				}
+			ctw_asciitext_flash(ctw, FALSE);
 			}
 	  	break;
 	  }
@@ -9264,6 +9299,13 @@ update_region(CtwWidget ctw, int start_line, int start_col, int end_line, int en
 
 		XSetClipMask(XtDisplay(ctw), gc, None);
 		}
+
+	/***********************************************/
+	/*   If in recording mode, show something.     */
+	/***********************************************/
+	if (ctw->ctw.c_asciicast_fp) {
+		ctw_asciitext_flash(ctw, TRUE);
+	}
 }
 static int
 ctw_usleep(int usecs, CtwWidget ctw)
