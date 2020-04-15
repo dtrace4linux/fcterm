@@ -110,6 +110,9 @@ Escape sequences:
    ESC [1943; <id> m   Create new screen.  
    ESC [1944 m   Font smaller
    ESC [1945 m   Font larger
+   ESC [1946 m   Record asciitext
+   ESC [1947 m   Stop asciitext recording
+   ESC [1948 m   Record-silent asciitext
    ESC [n;m r	Set scrolling region to lines n..m.
    ESC [n;m r	Set scrolling region.
    ESC [s	Saved cursor position.

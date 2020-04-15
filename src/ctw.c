@@ -123,6 +123,7 @@
 /*   ESC [1945 m   Font larger                                        */
 /*   ESC [1946 m   Record asciitext                                   */
 /*   ESC [1947 m   Stop asciitext recording                           */
+/*   ESC [1948 m   Record-silent asciitext                            */
 /*   ESC [n;m r	Set scrolling region to lines n..m.     	      */
 /*   ESC [n;m r	Set scrolling region.			      	      */
 /*   ESC [s	Saved cursor position.                  	      */
@@ -569,7 +570,7 @@ int	mysscanf(char *, char *, ...);
 void	show_map();
 void	cmd_font_smaller(void);
 void	cmd_font_larger(void);
-void	cmd_asciitext_record(CtwWidget);
+void	cmd_asciitext_record(CtwWidget, int);
 void	cmd_asciitext_stop(CtwWidget);
 static void show_status(CtwWidget ctw);
 static long map_rgb_to_visual_rgb(CtwWidget ctw, long rgb);
@@ -6926,10 +6927,13 @@ check_cursor:
 			  	cmd_font_larger();
 				break;
 			  case 1946:
-			  	cmd_asciitext_record(ctw);
+			  	cmd_asciitext_record(ctw, RECORD_NORMAL);
 				break;
 			  case 1947:
 			  	cmd_asciitext_stop(ctw);
+				break;
+			  case 1948:
+			  	cmd_asciitext_record(ctw, RECORD_SILENT);
 				break;
 			  }
 			}
@@ -8027,7 +8031,8 @@ ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
 	Pixel bg = ctw->ctw.x11_colors[ctw->ctw.attr.vb_bcolor];
 
 	switch (cmd) {
-	  case 1:
+	  case RECORD_NORMAL:
+	  case RECORD_SILENT:
 		if (ctw->ctw.c_asciicast_fp) {
 			printf("ctw: %s: already recording\n", fn);
 			return -1;
@@ -8045,10 +8050,12 @@ ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
 		}
 		ctw->ctw.c_asciicast_fp2 = fp1;
 
-		snprintf(buf, sizeof buf, "[ctw: recording: %s]\r\n", fn);
-		ctw_add_string2(ctw, buf, strlen(buf));
-		strftime(buf, sizeof buf, "[Started: %Y%m%d %H:%M]\r\n", localtime(&t));
-		ctw_add_string2(ctw, buf, strlen(buf));
+		if (cmd == RECORD_NORMAL) {
+			snprintf(buf, sizeof buf, "[ctw: recording: %s]\r\n", fn);
+			ctw_add_string2(ctw, buf, strlen(buf));
+			strftime(buf, sizeof buf, "[Started: %Y%m%d %H:%M]\r\n", localtime(&t));
+			ctw_add_string2(ctw, buf, strlen(buf));
+			}
 		ctw->ctw.c_asciicast_fp = fp;
 		fprintf(fp, "{\"version\": 2, \"width\": %d, \"height\": %d, \"timestamp\":, %lu, ",
 			ctw->ctw.columns, ctw->ctw.rows, time(NULL));
@@ -8062,7 +8069,7 @@ ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
 		gettimeofday(&ctw->ctw.c_asciicast_start, NULL);
 		break;
 
-	  case 2:
+	  case RECORD_STOP:
 		if (ctw->ctw.c_asciicast_fp) {
 			snprintf(buf, sizeof buf, "ctw: recording stopped: output here:\r\n  %s\r\n", ctw->ctw.c_asciicast_fn);
 			ctw_add_string2(ctw, buf, strlen(buf));

@@ -536,7 +536,7 @@ my_sscanf(char *str, int *x, int *y)
 }
 
 void
-cmd_asciitext_record(CtwWidget ctw)
+cmd_asciitext_record(CtwWidget ctw, int cmd)
 {	char	*fn = NULL;
 	char	buf[BUFSIZ];
 	char	buf2[BUFSIZ];
@@ -550,13 +550,13 @@ cmd_asciitext_record(CtwWidget ctw)
 		fn = buf;
 		}
 
-	ctw_asciitext_record(ctw, 1, fn);
+	ctw_asciitext_record(ctw, cmd, fn);
 }
 
 void
 cmd_asciitext_stop(CtwWidget ctw)
 {
-	ctw_asciitext_record(ctw, 2, NULL);
+	ctw_asciitext_record(ctw, RECORD_STOP, NULL);
 	/* Auto create svg file. */
 }
 
@@ -721,11 +721,13 @@ handle_commands(int i, int argc, char **argv)
 "                    changes.\n"
 "larger              Make font larger.\n"
 "minimap             Show minimap.\n"
-"record <filename>   Record asciitext v2\n"
+"record              Record asciitext v2 and generate SVG file\n"
+"record-silent       Same as \"record\" but dont add any output\n"
 "restore <filename>  Restore position from saved state.\n"
 "search              Display search prompt.\n"
 "smaller             Make font smaller.\n"
 "status              Show status.\n"
+"stop                Stop recording file and generate SVG playback\n"
 "zoom                Make window as tall as screen height\n"
 		;
 
@@ -755,6 +757,10 @@ handle_commands(int i, int argc, char **argv)
 			}
 		if (strcmp(cp, "record") == 0) {
 			printf("\033[1946m");
+			continue;
+			}
+		if (strcmp(cp, "record-silent") == 0) {
+			printf("\033[1948m");
 			continue;
 			}
 		if (strcmp(cp, "restore") == 0) {

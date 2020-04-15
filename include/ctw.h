@@ -433,6 +433,10 @@ void	ctw_add_string(CtwWidget, char *, int);
 /**********************************************************************/
 /*   Asciitext record/pause/stop				      */
 /**********************************************************************/
+# define RECORD_NORMAL	1
+# define RECORD_SILENT	2
+# define RECORD_STOP	3
+# define RECORD_PAUSE	4
 int	ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn);
 
 /**********************************************************************/
