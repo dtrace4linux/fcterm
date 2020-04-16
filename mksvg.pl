@@ -3,7 +3,7 @@
 # $Header:$
 
 # TODO:
-#   -label - needs bg color
+#   cursor positioning out byu (-1,-1)?
 
 use strict;
 use warnings;
@@ -18,70 +18,55 @@ use FindBin;
 #######################################################################
 #   Command line switches.					      #
 #######################################################################
-my %opts = (
-	template => "default",
-	);
+my %opts;
 my @colors;
 my $rows;
 my $columns;
 
-sub main
+my $nf = 0;
+my $t = 0;
+my @times;
+my $csr_x;
+my $csr_y;
+my $cursor_color;
+my $is_player;
+my $fn;
+my $hashed;
+
+sub encode
+{	my $attr = shift;
+	my $ch = shift;
+
+	if ($ch eq '<') {
+		return "&lt;";
+	} elsif ($ch eq '&') {
+		return "&amp;";
+	} elsif ($attr & 0x10 && $ch eq 'l') {
+		return "&#x250c;";
+	} elsif ($attr & 0x10 && $ch eq 'q') {
+		return "&#x2500;";
+	} elsif ($attr & 0x10 && $ch eq 'x') {
+		return "&#x2502;";
+	} elsif ($attr & 0x10 && $ch eq 'm') {
+		return "&#x2514;";
+	} elsif ($attr & 0x10 && $ch eq 'k') {
+		return "&#x2510;";
+	} elsif ($attr & 0x10 && $ch eq 'j') {
+		return "&#x2518;";
+	} elsif ($attr & 0x10 && $ch eq 'u') {
+		return "&#x2524;";
+	} elsif ($attr & 0x10 && $ch eq 't') {
+		return "&#x251c;";
+	} elsif (ord($ch) >= 0 && ord($ch) < 0x20) {
+		return " ";
+#	} elsif ($ch eq ' ') {
+#		return "&nbsp;";
+	}
+	return $ch;
+}
+
+sub gen_svg
 {
-	Getopt::Long::Configure('require_order');
-	Getopt::Long::Configure('no_ignore_case');
-	usage() unless GetOptions(\%opts,
-		'duration=s',
-		'frames=s',
-		'help',
-		'label',
-		'nohash',
-		'slow=s',
-		'template=s',
-		);
-
-	usage(0) if $opts{help};
-
-	my $fn = shift @ARGV;
-	usage(0) if !$fn;
-
-	my $hashed = $opts{nohash} ? 0 : 1;
-
-	if ($fn !~ /\.raw$/) {
-		$fn .= ".raw";
-	}
-
-	my $is_player = ($opts{template} || '') =~ /player/;
-
-	my $fh = new FileHandle($fn);
-	die "Cannot open $fn - $!" if !$fh;
-	my $nf = 0;
-	my $t = 0;
-	my @times;
-	my $csr_x;
-	my $csr_y;
-	my $cursor_color;
-
-	while (<$fh>) {
-		chomp;
-		if (/^frame:.*time: ([0-9.]+) rows: (\d+) columns: (\d+) csr: (\d+),(\d+)/) {
-			$nf++;
-			$t = $1;
-			$rows = $2;
-			$columns = $3;
-			$csr_x = $4;
-			$csr_y = $5;
-			push @times, $t;
-		} elsif (/^color (\d+): (.*)/) {
-			push @colors, $2;
-		} elsif (/^cursor (.*)/) {
-			$cursor_color = $1;
-		}
-	}
-	if ($nf == 0) {
-		print "cannot locate frames - is this the correct file?\n";
-		exit(1);
-	}
-	print "Frames: $nf Time: $t\n";
 	my $duration = $opts{duration} || $t;
 	my $fht = 17;
 	my $fw = 8;
@@ -95,6 +80,9 @@ sub main
 	my $tfn = $opts{template};
 	if ($tfn !~ /\//) {
 		$tfn = "$FindBin::RealBin/templates/$tfn.svg";
+		if (! -f $tfn) {
+			$tfn =~ s/svg$/html/;
+		}
 	}
 	my $tfh = new FileHandle($tfn);
 	die "Cannot open template: $tfn - $!" if !$tfh;
@@ -119,18 +107,23 @@ sub main
 
 	my $colors = '';
 	for (my $i = 0; $i < @colors; $i++) {
-		$colors .= sprintf "\t.c$i {fill: #$colors[$i];}\n";
+		if (!$opts{js}) {
+			$colors .= sprintf "\t.c$i {fill: #$colors[$i];}\n";
+		}
 	}
 
-	$fh = new FileHandle($fn);
+	my $fh = new FileHandle($fn);
+	my %color_hash;
 	my $frame_time;
 	my $y = 0;
 	my $x = 0;
+	my @jsframes;
 	my @frames;
 	my @frame;
 	my %finfo;
 	my %rects;
 	my $frame_no = 0;
+	my @timings;
 	my $row = 0;
 	my $col = 0;
 	my $g = 0;
@@ -152,18 +145,25 @@ sub main
 				@frame = ();
 				last if $opts{frames} && @frames > $opts{frames};
 			}
-print "$_\n";
+			print "$_\n" if $opts{verbose};
 			$row = 0;
 			$col = 0;
+			$jsframes[$frame_no] .= "</div>" if $frame_no;
 			$frame_no++;
 			$finfo{$frame_no}{csr_x} = $csr_x;
 			$finfo{$frame_no}{csr_y} = $csr_y;
+			push @timings, $frame_time;
+
+			my $hidden = $frame_no > 1 ? " style=\"display: none\"" : "";
+			$jsframes[$frame_no] =
+				"<div id=\"frame$frame_no\"$hidden>";
 			next;
 		}
 
 		$x = 0;
 		my $ln = $_;
 		my $line = '';
+		my $jsline = "";
 		for (my $i = 0; $i < length($ln); ) {
 			my $j = 0;
 			for ($j = $i; $j < length($ln); $j++) {
@@ -179,30 +179,13 @@ print "$_\n";
 			my $s = '';
 			for (my $k = $i; $k < $i + $len; $k++) {
 				my $ch = substr($ln, $k, 1);
-				if ($ch eq '<') {
-					$s .= "&lt;";
-				} elsif ($ch eq '&') {
-					$s .= "&amp;";
-				} elsif ($attr & 0x10 && $ch eq 'l') {
-					$s .= "&#x250c;";
-				} elsif ($attr & 0x10 && $ch eq 'q') {
-					$s .= "&#x2500;";
-				} elsif ($attr & 0x10 && $ch eq 'x') {
-					$s .= "&#x2502;";
-				} elsif ($attr & 0x10 && $ch eq 'm') {
-					$s .= "&#x2514;";
-				} elsif ($attr & 0x10 && $ch eq 'k') {
-					$s .= "&#x2510;";
-				} elsif ($attr & 0x10 && $ch eq 'j') {
-					$s .= "&#x2518;";
-				} elsif (ord($ch) >= 0 && ord($ch) < 0x20) {
-					#$s .= sprintf("<$ch:%2x>", ord($ch));
-					$s .= " ";
-				} else {
-					$s .= $ch;
-				}
+				$s .= encode($attr, $ch);
 			}
 			my $tl = $len * $fw;
+
+			$jsline .= "<row class='c${fg}_$bg'>$s</row>";
+			$color_hash{"${fg}_$bg"} = 1;
+
 			$rects{$frame_no} .= "<rect x=\"$x\" y=\"$y\" width=\"$tl\" height=\"$fht\" class=\"c$bg\"/>\n" if $bg;
 			$line .= "<text x=\"$x\" textLength=\"$tl\" class=\"c$fg\">";
 			$line .= $s;
@@ -211,6 +194,7 @@ print "$_\n";
 			$i += $len;
 			$x += $len * $fw;
 		}
+		$jsframes[$frame_no] .= "$jsline<br>";
 		if (!defined($line_hash{$line})) {
 			$line_hash{$line} = $lh++;
 		}
@@ -225,6 +209,13 @@ print "$_\n";
 		$g++;
 	}
 	push @frames, \@frame if @frame;
+	$jsframes[$frame_no] .= "</div>\n" if $frame_no;
+
+	foreach my $c (keys(%color_hash)) {
+		my ($fg, $bg) = split("_", $c);
+		$colors .= sprintf("\t.c$c {color: #%s; background-color: #%s;}\n",
+			$colors[$fg], $colors[$bg]);
+	}
 
 	my @flines;
 	my $f = 0;
@@ -265,6 +256,12 @@ print "$_\n";
 	###############################################
 	#   Generate output file.		      #
 	###############################################
+	$jsframes[0] = "";
+	my $jsframe = join("", @jsframes);
+	my $timings = join(", ", @timings);
+
+	$template =~ s/\$frames/$jsframe/g;
+	$template =~ s/\$timings/$timings/g;
 	$template =~ s/\$cursor/$cursor_color/g;
 	$template =~ s/\$rows/$rows/g;
 	$template =~ s/\$columns/$columns/g;
@@ -276,14 +273,84 @@ print "$_\n";
 	$template =~ s/\$\{t}/$t/g;
 	$template =~ s/\$defs1/$defs1/g;
 	$template =~ s/\$defs2/$defs2/g;
+	my $num_frames = scalar(@frames);
+	$template =~ s/\$num_frames/$num_frames/g;
+
 	my $progress_y = $page_ht;
 	$template =~ s/\$progress_y/$progress_y/g;
 
-	printf "Creating: /tmp/test.svg, size %d KB\n", length($template) / (1024);
-	my $ofh = new FileHandle(">/tmp/test.svg");
+	my $ofn = $opts{js} ? "/tmp/test.html" : "/tmp/test.svg";
+	printf "Creating: $ofn, size %d KB\n", length($template) / (1024);
+	my $ofh = new FileHandle(">$ofn");
+	die "Cannot create: $ofn - $!" if !$ofh;
 	print $ofh $template;
+}
 
+sub main
+{
+	Getopt::Long::Configure('require_order');
+	Getopt::Long::Configure('no_ignore_case');
+	usage() unless GetOptions(\%opts,
+		'duration=s',
+		'frames=s',
+		'help',
+		'js',
+		'label',
+		'nohash',
+		'slow=s',
+		'template=s',
+		'verbose',
+		);
 
+	usage(0) if $opts{help};
+
+	$fn = shift @ARGV;
+	usage(0) if !$fn;
+
+	$hashed = $opts{nohash} ? 0 : 1;
+
+	if ($fn !~ /\.raw$/) {
+		$fn .= ".raw";
+	}
+
+	read_file();
+
+	if (!$opts{template} && $opts{js}) {
+		$opts{template} = "js";
+	} elsif (!$opts{template}) {
+		$opts{template} = "player";
+	}
+
+	$is_player = ($opts{template} || '') =~ /player/;
+
+	gen_svg();
+}
+sub read_file
+{
+	my $fh = new FileHandle($fn);
+	die "Cannot open $fn - $!" if !$fh;
+
+	while (<$fh>) {
+		chomp;
+		if (/^frame:.*time: ([0-9.]+) rows: (\d+) columns: (\d+) csr: (\d+),(\d+)/) {
+			$nf++;
+			$t = $1;
+			$rows = $2;
+			$columns = $3;
+			$csr_x = $4;
+			$csr_y = $5;
+			push @times, $t;
+		} elsif (/^color (\d+): (.*)/) {
+			push @colors, $2;
+		} elsif (/^cursor (.*)/) {
+			$cursor_color = $1;
+		}
+	}
+	if ($nf == 0) {
+		print "cannot locate frames - is this the correct file?\n";
+		exit(1);
+	}
+	print "Frames: $nf Time: $t\n";
 }
 #######################################################################
 #   Print out command line usage.				      #
@@ -298,10 +365,27 @@ sub usage
 mksvg.pl -- create SVG/HTML session out of a terminal recording
 Usage: mksvg.pl [switches]
 
+  This utility takes the raw "asciicast" files, which fcterm 
+  generates, and provides a standalone html file - in SVG or
+  JavaScript format, suitable for embedding in a web site.
+
+  The advantage of these files, over, for example, screen recording,
+  is crystal clear rendition of screen activity, and, very much
+  smaller. SVG format is much smaller than vanilla javascript.
+  But recordings can work out at 1MB per minute of screen activity,
+  or more. Be wary of sending a large payload into the browser.
+
+  The recordings have a playbar, so the playback can be paused or
+  fwd/rew.
+
+  This tool is very similar to termtosvg, but has better 
+  integration with fcterm, and CRiSP terminal fonts.
+
 Switches:
 
   -duration NN   Set animation duration to NN milliseconds.
   -frames NN     Only render the first N frames.
+  -js            Generate vanilla Javascript file, instead of SVG.
   -label         Put a frame marker on the top of each page.
   -nohash        Dont hash the chunks of text - bigger output file, but
                  easier to debug.

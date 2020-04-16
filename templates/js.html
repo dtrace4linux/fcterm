@@ -1,0 +1,66 @@
+<html>
+ <meta charset="UTF-8"> 
+<body onload="tw()">
+<h1>Testing</h1>
+
+<style type="text/css">
+  row {
+       font-family: 'DejaVu Sans Mono', monospace;
+       font-style: normal;
+       font-size: 14px;
+       }
+
+  .cursor {fill: #$cursor;}
+  .foreground {fill: #c5c5c5;}
+  .background {fill: #1c1c1c;}
+$colors
+
+</style>
+
+<button onclick="start()">Start</button>
+<button onclick="stop()">Stop</button>
+
+<pre>
+$frames
+</pre>
+
+<script>
+var row = 1;
+var timings = [ $timings ];
+var running = 1;
+
+function start() {
+	running = 1;
+	tw();
+}
+function stop() {
+	running = 0;
+}
+
+function tw() {
+	if (running == 0) {
+		return;
+	}
+
+	var t1 = timings[row];
+
+	var e = document.getElementById("frame" + row);
+	e.style.display = "none";
+
+	if (++row > $num_frames) {
+		row = 1;
+	}
+	var e1 = document.getElementById("frame" + row);
+	e1.style.display = "block";
+
+	var t2 = timings[row];
+	var t= (t2 - t1) * 1000;
+	if (t < 100) {
+		t = 100;
+	}
+        setTimeout(tw, t);
+}
+</script>
+
+</body>
+</html>
