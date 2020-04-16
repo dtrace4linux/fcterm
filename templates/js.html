@@ -1,9 +1,33 @@
 <html>
  <meta charset="UTF-8"> 
 <body onload="tw()">
-<h1>Testing</h1>
+
+<p>
 
 <style type="text/css">
+
+  #play-button {
+               transform: translate(30px, calc(100% - 45px));
+           }
+  #pause-button {
+               transform: translate(30px, calc(100% - 45px));
+           }
+  #wide_track {
+               transform: translate(150px, calc(100% - 45px));
+           }
+  #track {
+               transform: translate(150px, calc(100% - 33px));
+           }
+  #slider_button {
+               transform: translate(0px, calc(100% - 30px));
+           }
+  #timer {
+               transform: translate(60px, calc(100% - 38px));
+               font-family: 'DejaVu Sans Mono', monospace;
+               font-style: normal;
+               font-size: 14px;
+           }
+
   ln {
        font-family: 'DejaVu Sans Mono', monospace;
        font-style: normal;
@@ -16,17 +40,48 @@
   .background {fill: #1c1c1c;}
 $colors
 
+.slider {
+  appearance: none;
+  width: 400; /* Full-width */
+  height: 14; /* Specified height */
+  background: #434343; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+/* Mouse-over effects */
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+.slider::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #4CAF50; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+.button {
+  background: #4caf50;
+  }
 </style>
-
-<button onclick="start()">Start</button>
-<button onclick="stop()">Stop</button>
 
 $frames
 
+<button onclick="play_pause()" id="play_pause">|></button>
+  <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+<span id="duration">         </span>
+<span id="debug">hexxxxxxxxxxxxxxxxllo world</span>
+</div>
+
 <script>
+var slider = document.getElementById("myRange");
+var debug = document.getElementById("debug");
 var row = 1;
 var timings = [ $timings ];
 var running = 1;
+var duration = ${t};
+var dorange = 1;
+var tmo;
 
 function start() {
 	running = 1;
@@ -36,12 +91,58 @@ function stop() {
 	running = 0;
 }
 
+function play_pause() {
+	var e = document.getElementById("play_pause");
+	running = !running;
+	if (running) {
+		e.innerHTML = "|>";
+		tw();
+	} else {
+		e.innerHTML = "||";
+	}
+}
+
+slider.oninput = function() {
+	var nrow = Math.round((this.value / 100) * timings.length);
+	if (nrow == row) {
+		return;
+	}
+	
+	var e = document.getElementById("frame" + row);
+	e.style.display = "none";
+	row = nrow-1;
+
+//	debug.innerHTML = "slider: " + this.value + " row=" + row + "/" + timings.length;
+	running = 1;
+	dorange = 0;
+	tw(0);
+	dorange = 1;
+
+	var e = document.getElementById("play_pause");
+	e.innerHTML = "||";
+	running = 0;
+} 
+
+function timer_from_seconds(t) {
+    minutes = Math.floor(t / 60);
+    seconds = Math.floor(t % 60);
+    return minutes + ':' + ("0" + seconds).slice(-2)
+}
+
 function tw() {
 	if (running == 0) {
 		return;
 	}
 
+	clearTimeout(tmo);
+
 	var t1 = timings[row];
+	var pc = (t1 * 100) / (duration / 1000);
+
+	if (dorange) {
+		var slider = document.getElementById("myRange");
+		slider.value = pc;
+	}
 
 	var e = document.getElementById("frame" + row);
 	e.style.display = "none";
@@ -57,7 +158,16 @@ function tw() {
 	if (t < 100) {
 		t = 100;
 	}
-        setTimeout(tw, t);
+
+	var d = document.getElementById("duration");
+	d.innerHTML = 
+		timer_from_seconds(t2) + 
+		"/" + timer_from_seconds(duration / 1000);
+
+	if (dorange) {
+	        tmo = setTimeout(tw, t);
+
+	}
 }
 </script>
 
