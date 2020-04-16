@@ -148,7 +148,7 @@ sub gen_svg
 			print "$_\n" if $opts{verbose};
 			$row = 0;
 			$col = 0;
-			$jsframes[$frame_no] .= "</div>" if $frame_no;
+			$jsframes[$frame_no] .= "</div>\n" if $frame_no;
 			$frame_no++;
 			$finfo{$frame_no}{csr_x} = $csr_x;
 			$finfo{$frame_no}{csr_y} = $csr_y;
@@ -156,7 +156,7 @@ sub gen_svg
 
 			my $hidden = $frame_no > 1 ? " style=\"display: none\"" : "";
 			$jsframes[$frame_no] =
-				"<div id=\"frame$frame_no\"$hidden>";
+				"<div id=\"frame$frame_no\"$hidden>\n";
 			next;
 		}
 
@@ -183,7 +183,7 @@ sub gen_svg
 			}
 			my $tl = $len * $fw;
 
-			$jsline .= "<row class='c${fg}_$bg'>$s</row>";
+			$jsline .= "<ln class='c${fg}_$bg'>$s</ln>";
 			$color_hash{"${fg}_$bg"} = 1;
 
 			$rects{$frame_no} .= "<rect x=\"$x\" y=\"$y\" width=\"$tl\" height=\"$fht\" class=\"c$bg\"/>\n" if $bg;
@@ -279,7 +279,8 @@ sub gen_svg
 	my $progress_y = $page_ht;
 	$template =~ s/\$progress_y/$progress_y/g;
 
-	my $ofn = $opts{js} ? "/tmp/test.html" : "/tmp/test.svg";
+	my $ofn = $opts{o} ? $opts{o} :
+		$opts{js} ? "/tmp/test.html" : "/tmp/test.svg";
 	printf "Creating: $ofn, size %d KB\n", length($template) / (1024);
 	my $ofh = new FileHandle(">$ofn");
 	die "Cannot create: $ofn - $!" if !$ofh;
@@ -297,6 +298,7 @@ sub main
 		'js',
 		'label',
 		'nohash',
+		'o=s',
 		'slow=s',
 		'template=s',
 		'verbose',
@@ -389,6 +391,8 @@ Switches:
   -label         Put a frame marker on the top of each page.
   -nohash        Dont hash the chunks of text - bigger output file, but
                  easier to debug.
+  -o <filename>  Name of output file. Defaults to /tmp/test.svg or
+  		 /tmp/test.html
   -slow NN       Slow down animation by this multiplier
   -template      Select the style of generated SVG generated. Options are
                  
