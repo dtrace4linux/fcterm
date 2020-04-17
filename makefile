@@ -34,12 +34,15 @@ clang:
 	export OBJDIR=bin.clang ; \
 	. ./config.def ; $(MAKE) all0
 
-all0: $(OBJDIR)/fcterm $(OBJDIR)/pty $(OBJDIR)/ptysrv
+all0: $(OBJDIR)/fcterm $(OBJDIR)/pty $(OBJDIR)/ptysrv $(OBJDIR)/mksvg.pl
 
 include/sequence.h: mkseq.sh
 	mkseq.sh > include/sequence.h
 include/code.h: mkcode.sh
 	mkcode.sh > include/code.h
+
+$(OBJDIR)/mksvg.pl: mksvg.pl
+	ln -s ../mksvg.pl $(OBJDIR)
 
 $(OBJDIR)/fcterm:	$(OBJDIR)/fcterm.o $(OBJ) 
 	$(PURIFY) $(CC) -o $(OBJDIR)/fcterm $(OBJDIR)/fcterm.o $(OBJ) $(XPM_LIB) $(XAW_LINK)
@@ -51,6 +54,8 @@ install:
 	rm -f $(HOME)/bin/fcterm-$$d$$v ; \
 	cp bin.linux-x86_64/fcterm $(HOME)/bin/fcterm-$$d$$v; \
 	ln -s fcterm-$$d$$v $(HOME)/bin/fcterm
+	rm -f $(HOME)/bin/mksvg.pl ; \
+	ln -s $(HOME)/src/ctw/mksvg.pl $(HOME)/bin/mksvg.pl
 
 make_macos:
 	export PLATFORM=apple-osx-10.7-x86 ; \

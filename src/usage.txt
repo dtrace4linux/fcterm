@@ -106,6 +106,9 @@ CTW_HISTORY
 CTW_LOGDIR
     Directory where fcterm stores its state and screen logs.
 
+CTW_MKSVG
+    Path to the "mksvg.pl" script to create screen recordings.
+
 CTW_WORD_CHARS
     Specify the word-break characters for double-click selection.
 

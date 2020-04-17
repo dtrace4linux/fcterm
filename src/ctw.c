@@ -561,6 +561,7 @@ int	*(*XftDrawStringUtf8_ptr)();
 # if !defined(verify)
 void verify(CtwWidget ctw);
 # endif
+char	*dirname(char *);
 static void ctw_log_asciicast2(CtwWidget ctw);
 static void ctw_log_string(CtwWidget ctw, char *str, int len);
 void group_enable(int n);
@@ -786,6 +787,7 @@ int ctw_history = 1;
 static int crwin_debug;
 static int crwin_do_cont;
 static int draw_watch;
+static char *mksvg;
 
 static int	ctw_usleep(int, CtwWidget);
 int	nanosleep();
@@ -1124,6 +1126,28 @@ initialize(Widget treq, Widget tnew)
 
 	if (cp != NULL)
 		word_chars = cp;
+
+	if (mksvg) {
+		;
+		}
+	else if ((cp = getenv("CTW_MKSVG")) != NULL)
+		mksvg = cp;
+	else {
+		char buf1[BUFSIZ];
+		struct stat sbuf;
+
+		int n = readlink("/proc/self/exe", buf, sizeof buf-1);
+		if (n > 0) {
+			buf[n] = '\0';
+			}
+		cp = dirname(buf);
+		snprintf(buf1, sizeof buf1, "%s/mksvg.pl", cp);
+		chk_free(cp);
+		if (stat(buf1, &sbuf) < 0) {
+			strcpy(buf1, "./mksvg.pl");
+			}
+		mksvg = chk_strdup(buf1);
+	}
 
 	if (user == NULL) {
 		if ((user = getenv("USER")) == NULL) {
@@ -8101,23 +8125,42 @@ ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
 			(unsigned) fg, (unsigned) bg);
 		fprintf(fp, "}\n");
 		gettimeofday(&ctw->ctw.c_asciicast_start, NULL);
+
 		break;
 
 	  case RECORD_STOP:
-		if (ctw->ctw.c_asciicast_fp) {
-			snprintf(buf, sizeof buf, "ctw: recording stopped: output here:\r\n  %s\r\n", ctw->ctw.c_asciicast_fn);
-			ctw_add_string2(ctw, buf, strlen(buf));
-			chk_free_ptr((void **) &ctw->ctw.c_asciicast_fn);
+		if (ctw->ctw.c_asciicast_fp == NULL)
+			break;
 
-			fclose(ctw->ctw.c_asciicast_fp);
-			ctw->ctw.c_asciicast_fp = NULL;
+		snprintf(buf, sizeof buf, "ctw: recording stopped: output here:\r\n  %s\r\n", ctw->ctw.c_asciicast_fn);
+		ctw_add_string2(ctw, buf, strlen(buf));
 
-			if (ctw->ctw.c_asciicast_fp2) {
-				fclose(ctw->ctw.c_asciicast_fp2);
-				ctw->ctw.c_asciicast_fp2 = NULL;
-				}
-			ctw_asciitext_flash(ctw, FALSE);
+		fclose(ctw->ctw.c_asciicast_fp);
+		ctw->ctw.c_asciicast_fp = NULL;
+
+		if (ctw->ctw.c_asciicast_fp2) {
+			fclose(ctw->ctw.c_asciicast_fp2);
+			ctw->ctw.c_asciicast_fp2 = NULL;
 			}
+		ctw_asciitext_flash(ctw, FALSE);
+		/***********************************************/
+		/*   Launch mksvg.pl to convert to SVG.	       */
+		/***********************************************/
+		snprintf(buf, sizeof buf, "%s %s 2>&1", mksvg, ctw->ctw.c_asciicast_fn);
+		ctw_add_string2(ctw, buf, strlen(buf));
+		ctw_add_string2(ctw, "\r\n", 2);
+
+		if ((fp = popen(buf, "r")) != NULL) {
+			while (fgets(buf, sizeof buf, fp)) {
+				if (buf[strlen(buf) - 1] == '\n')
+					buf[strlen(buf) - 1] = '\0';
+				ctw_add_string2(ctw, buf, strlen(buf));
+				ctw_add_string2(ctw, "\r\n", 2);
+			}
+			pclose(fp);
+		}
+
+		chk_free_ptr((void **) &ctw->ctw.c_asciicast_fn);
 	  	break;
 	  }
 
