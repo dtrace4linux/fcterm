@@ -135,6 +135,9 @@
 # if	CR_LINUX_ARMV6L
 #	include	"machos/linux-armv6l.h"
 # endif
+# if	CR_LINUX_ARMV7L
+#	include	"machos/linux-armv7l.h"
+# endif
 # if	CR_LINUX_LIBC5
 #	include	"machos/linux_libc5.h"
 # endif

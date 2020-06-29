@@ -1,11 +1,7 @@
 #!/bin/sh
 
 CC="gcc  -D_FORTIFY_SOURCE=0 -m32 -O2 -g -W -Wall -fno-stack-protector -fno-inline -fno-strict-aliasing"
-if [ -d /usr/include/freetype2 ]; then
-#	CC="$CC -DHAVE_FREETYPE -I/usr/include/freetype2"
-	CC="$CC -DHAVE_FREETYPE_XFT `freetype-config --cflags`"
-#	FT=-lXft
-fi
+CC="$CC -DHAVE_FREETYPE_XFT `pkgconf --cflags freetype2`"
 CFLAGS="-DCR_LINUX_X86_32 -DCR_LINUX"
 #FT=-lXft
 OBJDIR=bin.$OS_TYPE

@@ -561,6 +561,7 @@ int	*(*XftDrawStringUtf8_ptr)();
 # if !defined(verify)
 void verify(CtwWidget ctw);
 # endif
+void get_log_name(CtwWidget ctw, char *buf, int size, char *);
 char	*dirname(char *);
 static void ctw_log_asciicast2(CtwWidget ctw);
 static void ctw_log_string(CtwWidget ctw, char *str, int len);
@@ -1583,7 +1584,6 @@ HandleExpose(Widget w, XExposeEvent *event)
 void
 resize_refresh_from_log(CtwWidget ctw)
 {	char	buf[128 * 1024];
-	char	*name;
 	int	fd;
 	struct stat sbuf;
 	int	n;
@@ -1595,11 +1595,7 @@ static int backtrack_size = -1;
 			backtrack_size = cp ? atoi(cp) : (64 * 1024);
 		}
 
-	name = ctw->ctw.ttyname ? basename(ctw->ctw.ttyname) : "ZZ";
-	
-	snprintf(buf, sizeof buf, "%s/%s/fcterm-%s%s-pty.log", 
-			ctw->ctw.log_dir, user,
-			isdigit(*name) ? "tty" : "", name);
+	get_log_name(ctw, buf, sizeof buf, NULL);
 	if ((fd = open(buf, O_RDONLY)) < 0)
 		return;
 
@@ -4420,8 +4416,12 @@ static line_t	lbuf;
 		ctw->ctw.c_spill_line = 0;
 		}
 	if (ctw->ctw.c_spill_fp == NULL &&
-	    (ctw->ctw.c_spill_fp = fopen(ctw->ctw.c_spill_name, "r")) == NULL)
+	    (ctw->ctw.c_spill_fp = fopen(ctw->ctw.c_spill_name, "r")) == NULL) {
+	    	snprintf(buf, sizeof buf, "[history #%d unavailable]", ln);
+		for (i = 0; buf[i] && i < ctw->ctw.columns; i++)
+			lbuf.l_text[i].vb_byte = buf[i];
 		return &lbuf;
+		}
 
 	/***********************************************/
 	/*   Use  the  line  cache  hint to get there  */
@@ -4541,6 +4541,17 @@ funcvalue (int keycode)
 		case XK_End:	return 220;
 		default:	return(-1);
 	}
+}
+void
+get_log_name(CtwWidget ctw, char *buf, int size, char *str)
+{	char	*name;
+
+	name = ctw->ctw.ttyname ? basename(ctw->ctw.ttyname) : "ZZ";
+	
+	snprintf(buf, size, "%s/%s/fcterm-%s%s-pty%s%s.log", 
+			ctw->ctw.log_dir, user,
+			isdigit(*name) ? "tty" : "", name,
+			str ? "-" : "", str ? str : "");
 }
 /**********************************************************************/
 /*   Add a drawable to the graph chain.				      */
@@ -5316,9 +5327,7 @@ printf("skip %d:%d\n", ln, ctw->ctw.spill_cnt);
 		/***********************************************/
 		create_fcterm_dir(ctw);
 
-		snprintf(buf, sizeof buf, "%s/%s/fcterm-%s%s.log",
-				ctw->ctw.log_dir, user,
-				isdigit(*name) ? "tty" : "", name);
+		get_log_name(ctw, buf, sizeof buf, NULL);
 		remove(buf);
 		if (symlink(ctw->ctw.c_spill_name, buf) < 0) {
 			fprintf(stderr, "fcterm: symlink(%s, %s) error - %s\n",
@@ -8534,6 +8543,40 @@ ctw_log_asciicast2(CtwWidget ctw)
 		}
 	fflush(fp);
 }
+void
+lc_record(CtwWidget ctw, char *str, int len)
+{
+	while (len > 0) {
+		char *cp = memchr(str, '\n', len);
+		int	ln = ctw->ctw.c_lcache_line;
+		if (cp == NULL) {
+			fwrite(str, len, 1, ctw->ctw.c_log_fp);
+			return;
+			}
+
+		if ((ln % CHUNK_SIZE) == 0 || ctw->ctw.c_lcache == NULL) {
+			int idx = ln / CHUNK_SIZE;
+
+			if (ctw->ctw.c_lcache == 0)
+				ctw->ctw.c_lcache = (line_cache_t *) chk_zalloc((idx + 1) * sizeof(line_cache_t));
+			else
+				ctw->ctw.c_lcache = (line_cache_t *) chk_realloc((char *) ctw->ctw.c_lcache, 
+					(idx + 1) * sizeof(line_cache_t));
+			ctw->ctw.c_lcache_size = idx;
+
+			if (crwin_debug)
+				printf("lcache resize: ln=%d idx=%d\n", ln, idx);
+			ctw->ctw.c_lcache[idx].lc_number = ln;
+			ctw->ctw.c_lcache[idx].lc_offset = ftell(ctw->ctw.c_log_fp);
+			}
+
+		fwrite(str, cp - str + 1, 1, ctw->ctw.c_log_fp);
+		len -= cp - str + 1;
+		str = cp + 1;
+
+	ctw->ctw.c_lcache_line++;
+		}
+}
 /**********************************************************************/
 /*   Log  the  PTY  output,  including  escape  sequences,  etc to a  */
 /*   rolling log file.						      */
@@ -8546,7 +8589,6 @@ ctw_log_string(CtwWidget ctw, char *str, int len)
 	char	buf[BUFSIZ];
 	char	buf2[BUFSIZ];
 	char	buf3[BUFSIZ];
-	char	*name;
 	int	i;
 	
 	if (!ctw->ctw.c_logging_enabled || len == 0)
@@ -8554,11 +8596,7 @@ ctw_log_string(CtwWidget ctw, char *str, int len)
 
 	ctw_log_asciicast(ctw, str, len);
 
-	name = ctw->ctw.ttyname ? basename(ctw->ctw.ttyname) : "ZZ";
-	
-	snprintf(buf, sizeof buf, "%s/%s/fcterm-%s%s-pty.log", 
-			ctw->ctw.log_dir, user,
-			isdigit(*name) ? "tty" : "", name);
+	get_log_name(ctw, buf, sizeof buf, NULL);
 
 	if (ctw->ctw.c_log_fp == NULL) {
 		if ((ctw->ctw.c_log_fp = fopen(buf, "a")) == NULL) {
@@ -8570,7 +8608,7 @@ ctw_log_string(CtwWidget ctw, char *str, int len)
 			}
 		}
 
-	fwrite(str, len, 1, ctw->ctw.c_log_fp);
+	lc_record(ctw, str, len);
 	fflush(ctw->ctw.c_log_fp);
 	if (stat(buf, &sbuf) < 0)
 		return;
@@ -8591,12 +8629,17 @@ ctw_log_string(CtwWidget ctw, char *str, int len)
 		strftime(buf3, sizeof buf3, "%Y%m%d-%H%M%S", localtime(&t));
 		snprintf(buf3 + strlen(buf3), sizeof buf3 - strlen(buf3) - 1,
 			"-%03d", i);
-		snprintf(buf2, sizeof buf2, "%s/%s/fcterm-%s%s-pty-%s.log", 
-				ctw->ctw.log_dir, user,
-				isdigit(*name) ? "tty" : "", name, buf3);
+		get_log_name(ctw, buf2, sizeof buf2, buf3);
 
 		snprintf(buf3, sizeof buf3, "%s.gz", buf2);
-		if (stat(buf3, &sbuf) < 0)
+		/***********************************************/
+		/*   Be  careful of race condition because we  */
+		/*   spawn  gzip  into  the  background. Make  */
+		/*   sure the old uncompressed log and the gz  */
+		/*   log  dont exist, before we decide on the  */
+		/*   name.				       */
+		/***********************************************/
+		if (stat(buf2, &sbuf) < 0 && stat(buf3, &sbuf) < 0)
 			break;
 		}
 

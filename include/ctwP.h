@@ -316,6 +316,7 @@ typedef struct ctw_part {
 	int	c_spill_append;	/* In append mode.		*/
 	unsigned long c_spill_bytes;
 	unsigned int c_spill_size;
+	int	c_lcache_line;
 	line_cache_t *c_lcache;	/* Fast index into spill file so we can find lines quickly. */
 	int	c_lcache_size;
 	/***********************************************/

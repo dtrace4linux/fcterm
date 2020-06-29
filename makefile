@@ -26,6 +26,7 @@ OBJ=	\
 	$(OBJDIR)/usage.o
 
 all:
+	tools/packages.sh
 	. ./config.def ; $(MAKE) all0
 
 clang:
@@ -71,12 +72,12 @@ make_macos:
 	CFLAGS="-DCR_APPLE_OSX_10_7_X86 " \
 	$(MAKE) -e all0
 make_rpi:
-	-mkdir bin.linux-armv6l
-	-ln -s bin.linux-armv6l bin
-	$(MAKE) BIN=bin.linux-armv6l \
-		CFLAGS="-DCR_LINUX_ARMV6L" \
-		OS_TYPE=linux-armv6l \
-		OBJDIR=bin.linux-armv6l \
+	-mkdir bin.linux-armv7l
+	-ln -s bin.linux-armv7l bin
+	$(MAKE) BIN=bin.linux-armv7l \
+		CFLAGS="-DCR_LINUX_ARMV7L" \
+		OS_TYPE=linux-armv7l \
+		OBJDIR=bin.linux-armv7l \
 		XAW_LINK="$(FT) -lXaw -lXmu -lXext -lXt -lSM -lICE -lX11 -ldl" \
 		all0
 
