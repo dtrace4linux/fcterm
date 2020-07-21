@@ -141,7 +141,7 @@ noise:
 release:
 	b=`mkrelease.pl -incbuild` ; \
 	$(MAKE) ; \
-	git commit -m "Release b$b" . || true
+	git commit -m "Release b$$b" . || true
 	strip bin/fcterm
 	../../crisp/bin/elfrewrite bin/fcterm
 	build=b`grep build_no include/build.h | sed -e 's/^.* \([0-9][0-9]*\).*$$/\1/'` ; \

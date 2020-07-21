@@ -561,6 +561,7 @@ int	*(*XftDrawStringUtf8_ptr)();
 # if !defined(verify)
 void verify(CtwWidget ctw);
 # endif
+static void create_fcterm_dir(CtwWidget ctw);
 void get_log_name(CtwWidget ctw, char *buf, int size, char *);
 char	*dirname(char *);
 static void ctw_log_asciicast2(CtwWidget ctw);
@@ -1387,6 +1388,8 @@ initialize(Widget treq, Widget tnew)
 		}
 
 	}
+	
+	create_fcterm_dir((CtwWidget) tnew);
 }
 /**********************************************************************/
 /*   Try  and  keep  track of whether we have the focus or not so we  */
@@ -1578,7 +1581,7 @@ HandleExpose(Widget w, XExposeEvent *event)
 }
 
 /**********************************************************************/
-/*   Rerdraw  tail  end of screen when resizing, to try and get line  */
+/*   Redraw  tail  end  of screen when resizing, to try and get line  */
 /*   wrap, etc working.						      */
 /**********************************************************************/
 void
@@ -1591,8 +1594,7 @@ static int backtrack_size = -1;
 
 	if (backtrack_size < 0) {
 		char *cp = getenv("CTW_BACKTRACK_SIZE");
-		if (cp)
-			backtrack_size = cp ? atoi(cp) : (64 * 1024);
+		backtrack_size = cp ? atoi(cp) : (64 * 1024);
 		}
 
 	get_log_name(ctw, buf, sizeof buf, NULL);
@@ -3141,9 +3143,16 @@ create_fcterm_dir(CtwWidget ctw)
 	snprintf(buf, sizeof buf, "%s/%s", 
 			ctw->ctw.log_dir,
 			user);
-	if (stat(buf, &sbuf) == 0)
-		return;
-	if (mkdir(buf, 0700) < 0) {
+	if (stat(buf, &sbuf) < 0 &&
+	    mkdir(buf, 0700) < 0) {
+		fprintf(stderr, "fcterm: mkdir(%s) failed\n", buf);
+		perror("error");
+	}
+	snprintf(buf, sizeof buf, "%s/%s/fcterm", 
+			ctw->ctw.log_dir,
+			user);
+	if (stat(buf, &sbuf) < 0 &&
+	    mkdir(buf, 0700) < 0) {
 		fprintf(stderr, "fcterm: mkdir(%s) failed\n", buf);
 		perror("error");
 	}
@@ -4231,6 +4240,14 @@ draw_special_line_chars(CtwWidget ctw, int row, int c, char *buf, int len,
 				ctw->ctw.x11_colors[0],
 				ctw->ctw.x11_colors[7],
 				attr);
+		if (bp == buf) {
+			/***********************************************/
+			/*   Something  strange  is  going  on - just  */
+			/*   skip the offending byte.		       */
+			/***********************************************/
+			buf++;
+			continue;
+			}
 		draw_line(ctw, row, c, buf, bp - buf, fg, bg, attr);
 		c += bp - buf;
 		buf = bp;
@@ -4372,6 +4389,25 @@ dsp_get_max_lines(CtwWidget ctw)
 	return ctw->ctw.spill_cnt + ctw->ctw.max_lines;
 //	return ctw->ctw.spill_cnt + ctw->ctw.tot_rows;
 }
+int 
+parse_esc(char *str, int *args, int len, int *nump)
+{
+	*nump = 0;
+	while (isdigit(*str)) {
+		int n = 0;
+		while (isdigit(*str)) {
+			n = 10 * n + *str++ - '0';
+			}
+		if (len > 0) {
+			(*nump)++;
+			*args++ = n;
+			len--;
+			}
+		if (*str == ';')
+			str++;
+		}
+	return *str;
+}
 /**********************************************************************/
 /*   Get virtual line.						      */
 /**********************************************************************/
@@ -4415,12 +4451,14 @@ static line_t	lbuf;
 		ctw->ctw.c_spill_fp = NULL;
 		ctw->ctw.c_spill_line = 0;
 		}
-	if (ctw->ctw.c_spill_fp == NULL &&
-	    (ctw->ctw.c_spill_fp = fopen(ctw->ctw.c_spill_name, "r")) == NULL) {
-	    	snprintf(buf, sizeof buf, "[history #%d unavailable]", ln);
-		for (i = 0; buf[i] && i < ctw->ctw.columns; i++)
-			lbuf.l_text[i].vb_byte = buf[i];
-		return &lbuf;
+	if (ctw->ctw.c_spill_fp == NULL) {
+		get_log_name(ctw, buf, sizeof buf, NULL);
+		if ((ctw->ctw.c_spill_fp = fopen(buf, "r")) == NULL) {
+		    	snprintf(buf, sizeof buf, "[history #%d unavailable]", ln);
+			for (i = 0; buf[i] && i < ctw->ctw.columns; i++)
+				lbuf.l_text[i].vb_byte = buf[i];
+			return &lbuf;
+			}
 		}
 
 	/***********************************************/
@@ -4442,11 +4480,66 @@ static line_t	lbuf;
 		}
 	ctw->ctw.c_spill_line = ln + 1;
 
+# if 1
+	{int c;
 	len = strlen(buf) - 1;
-	for (i = 0; i < len; i++) {
+	int	fg = lbuf.l_text[0].vb_fcolor;
+	int	bg = lbuf.l_text[0].vb_bcolor;
+	for (c = 0, i = 0; buf[i] && c < ctw->ctw.columns; ) {
+		int ch = buf[i++];
+		switch (ch) {
+		  case '\r':
+		  case '\n':
+		  	continue;
+		  case '\033':
+		  	if (buf[i] == ']') {
+				while (buf[i] && buf[i] != ('g' & 0x1f))
+					i++;
+				}
+		  	else if (buf[i] == '[') {
+				int	args[10];
+				int	n;
+				int	j;
+
+				int type = parse_esc(buf + i + 1, args, sizeof args / sizeof args[0], &n); 
+				while (buf[i] && !isalpha(buf[i]))
+					i++;
+
+				if (type == 'm') {
+					for (j = 0; j < n; j++) {
+						switch (args[j]) {
+						  case 30: case 31: case 32: case 33: case 34: case 35: case 36: case 37:
+						  	fg = args[j];
+							break;
+						  case 40: case 41: case 42: case 43: case 44: case 45: case 46: case 47:
+						  	bg = args[j];
+							break;
+						  }
+					}
+				}
+			} else {
+				while (buf[i] && !isalpha(buf[i]))
+					i++;
+				}
+			if (buf[i])
+				i++;
+		  	continue;
+		  default:
+			lbuf.l_text[c].vb_fcolor = fg;
+			lbuf.l_text[c].vb_bcolor = bg;
+			lbuf.l_text[c].vb_byte = ch;
+			c++;
+			break;
+		  }
+		}
+	}
+# else
+	len = strlen(buf) - 1;
+	for (i = 0; i < len && i < ctw->ctw.columns; i++) {
 		lbuf.l_text[i].vb_byte = buf[i];
 		}
 	lbuf.l_attr |= LA_SPILT;
+# endif
 
 	return &lbuf;
 }
@@ -4548,7 +4641,7 @@ get_log_name(CtwWidget ctw, char *buf, int size, char *str)
 
 	name = ctw->ctw.ttyname ? basename(ctw->ctw.ttyname) : "ZZ";
 	
-	snprintf(buf, size, "%s/%s/fcterm-%s%s-pty%s%s.log", 
+	snprintf(buf, size, "%s/%s/fcterm/%s%s-pty%s%s.log", 
 			ctw->ctw.log_dir, user,
 			isdigit(*name) ? "tty" : "", name,
 			str ? "-" : "", str ? str : "");
@@ -5301,7 +5394,7 @@ printf("skip %d:%d\n", ln, ctw->ctw.spill_cnt);
 		int	i;
 
 		for (i = 0; i < 1000; i++) {
-			snprintf(buf, sizeof buf, "%s/%s/fcterm-%s%s-%%Y%%m%%d-%03d.log", 
+			snprintf(buf, sizeof buf, "%s/%s/fcterm/%s%s-%%Y%%m%%d-%03d.log", 
 				ctw->ctw.log_dir, user,
 				isdigit(*name) ? "tty" : "", name, i);
 			strftime(buf2, sizeof buf2, buf, localtime(&t));
@@ -8549,6 +8642,8 @@ lc_record(CtwWidget ctw, char *str, int len)
 	while (len > 0) {
 		char *cp = memchr(str, '\n', len);
 		int	ln = ctw->ctw.c_lcache_line;
+		int	sz;
+
 		if (cp == NULL) {
 			fwrite(str, len, 1, ctw->ctw.c_log_fp);
 			return;
@@ -8570,11 +8665,24 @@ lc_record(CtwWidget ctw, char *str, int len)
 			ctw->ctw.c_lcache[idx].lc_offset = ftell(ctw->ctw.c_log_fp);
 			}
 
-		fwrite(str, cp - str + 1, 1, ctw->ctw.c_log_fp);
-		len -= cp - str + 1;
+		sz = cp - str + 1;
+		fwrite(str, sz, 1, ctw->ctw.c_log_fp);
+		len -= sz;
 		str = cp + 1;
 
-	ctw->ctw.c_lcache_line++;
+		ctw->ctw.c_lcache_line++;
+		}
+
+	if (crwin_debug) {
+		FILE *fp = fopen("/tmp/lcache.log", "w");
+		for (int i = 0; fp && i < ctw->ctw.c_lcache_size; i++) {
+			fprintf(fp, "%d: ln=%d idx=%ld\n", 
+				i,
+				ctw->ctw.c_lcache[i].lc_number,
+				ctw->ctw.c_lcache[i].lc_offset);
+			}
+		if (fp)
+			fclose(fp);
 		}
 }
 /**********************************************************************/
@@ -8609,6 +8717,10 @@ ctw_log_string(CtwWidget ctw, char *str, int len)
 		}
 
 	lc_record(ctw, str, len);
+
+	// Dont do spilling - thats just lots of little files, but means we wont optimise
+	return;
+
 	fflush(ctw->ctw.c_log_fp);
 	if (stat(buf, &sbuf) < 0)
 		return;

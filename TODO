@@ -4,3 +4,7 @@ fcterm
 3. nodraw during restart/recovery
 4. auto termtosvg mode
 5. if in svg mode, we may need to downsize input buffer - more granular.
+
+6. watch mem/freemem and annoying alert to avoid swap death.
+7. rpi unicode annoyances.
+8. add 1m/1k ln count to scrollbar
