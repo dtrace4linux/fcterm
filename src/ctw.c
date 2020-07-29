@@ -5170,6 +5170,12 @@ handle_utf8(CtwWidget w, char *str, char *str_end)
 	int	len = str_end - str;
 	int	nbytes, todo, u;
 	int	b1, b2, b3, b4, b5;
+static int map_to_space = -1;
+
+	if (map_to_space < 0) {
+		char *cp = getenv("CTW_UTF8_MAP_TO_SPACE");
+		map_to_space = cp ? atoi(cp) : 0;
+		}
 
 	if (w->ctw.utfp == NULL)
 		w->ctw.utfp = w->ctw.utfbuf;
@@ -5257,6 +5263,8 @@ handle_utf8(CtwWidget w, char *str, char *str_end)
 			};
 		ctw_add_raw_string(w, (char *) &line_draw[u & 0x1f], 1);
 		}
+	else if (map_to_space)
+		ctw_add_raw_string(w, " ", 1);
 	else if (u < 0x10000) {
 		sprintf(buf, "\\U%04x", u);
 		ctw_add_raw_string(w, buf, strlen(buf));
