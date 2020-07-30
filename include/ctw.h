@@ -284,7 +284,7 @@ struct map {
 /*   spare for now.						      */
 /**********************************************************************/
 typedef struct vbyte_t {
-	unsigned char	vb_byte;
+	unsigned short	vb_byte;
 	unsigned char	vb_attr;
 	unsigned char	vb_fcolor;
 	unsigned char	vb_bcolor;

@@ -320,6 +320,7 @@ char code_text[] = {
 # define	DEFAULT_WIDTH	(7 * 80)
 # define	DEFAULT_FONT	XtDefaultFont
 
+static int utf8_mode;
 static char	*user;
 static XtIntervalId wheel_timer;
 static int 	default_rows = 24;
@@ -622,7 +623,7 @@ static 	void	do_logging PROTO((CtwWidget, int));
 static Atom 	FetchAtom();
 static  Boolean convert_proc();
 static  char	*handle_escape PROTO((CtwWidget, char *, char *));
-static  char	*handle_utf8 PROTO((CtwWidget, char *, char *));
+static  char	*handle_utf8 PROTO((CtwWidget, char *, char *, int *uch));
 static void	set_reverse_video PROTO((CtwWidget, int));
 static  int	compute_length PROTO((CtwWidget, int, int, int));
 static  int	do_at_parms PROTO((CtwWidget));
@@ -5164,7 +5165,7 @@ U-04000000 - U-7FFFFFFF: 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
 */
 /**********************************************************************/
 static char *
-handle_utf8(CtwWidget w, char *str, char *str_end)
+handle_utf8(CtwWidget w, char *str, char *str_end, int *uch)
 {	unsigned char	*cp = w->ctw.utfp;
 	char	buf[16];
 	int	len = str_end - str;
@@ -5175,6 +5176,8 @@ static int map_to_space = -1;
 	if (map_to_space < 0) {
 		char *cp = getenv("CTW_UTF8_MAP_TO_SPACE");
 		map_to_space = cp ? atoi(cp) : 0;
+		cp = getenv("CTW_UTF8_MODE");
+		utf8_mode = cp ? atoi(cp) : 0;
 		}
 
 	if (w->ctw.utfp == NULL)
@@ -5194,7 +5197,10 @@ static int map_to_space = -1;
 		nbytes = 6;
 	else {
 		w->ctw.utfp = NULL;
-		ctw_add_raw_string(w, str-1, 1);
+		if (utf8_mode)
+			*uch = u;
+		else
+			ctw_add_raw_string(w, str-1, 1);
 		return str;
 		}
 
@@ -5205,8 +5211,9 @@ static int map_to_space = -1;
 		w->ctw.utfp += todo;
 		str += todo;
 		}
-	if (w->ctw.utfp - w->ctw.utfbuf < nbytes)
+	if (w->ctw.utfp - w->ctw.utfbuf < nbytes) {
 		return str;
+		}
 
 	cp = w->ctw.utfbuf + 1;
 	if ((u & 0xe0) == 0xc0) {
@@ -5249,7 +5256,10 @@ static int map_to_space = -1;
 		b5 = *cp++;
 		u = (u << 30) | ((b1 & 0x3f) << 24) | ((b2 & 0x3f) << 18) | ((b3 & 0x3f) << 12) | ((b4 & 0x3f) << 6) | (b5 & 0x3f);
 		}
-	if (u < 0x100) {
+
+	if (utf8_mode)
+		;
+	else if (u < 0x100) {
 		buf[0] = u;
 		ctw_add_raw_string(w, buf, 1);
 		}
@@ -5266,14 +5276,15 @@ static int map_to_space = -1;
 	else if (map_to_space)
 		ctw_add_raw_string(w, " ", 1);
 	else if (u < 0x10000) {
-		sprintf(buf, "\\U%04x", u);
+		snprintf(buf, sizeof buf, "\\U%04x", u);
 		ctw_add_raw_string(w, buf, strlen(buf));
 		}
 	else {
-		sprintf(buf, "\\U%08x", u);
+		snprintf(buf, sizeof buf, "\\U%08x", u);
 		ctw_add_raw_string(w, buf, strlen(buf));
 		}
 	w->ctw.utfp = NULL;
+	*uch = u;
 	return str;
 }
 /**********************************************************************/
@@ -7764,6 +7775,7 @@ ctw_add_string2(CtwWidget ctw, char *str, int len)
 	int	bold_extra = 0;
 	int	big_opt = len > 3000;
 	int	hilited;
+	int	uch;
 
 	if (len == 0)
 		return;
@@ -7790,7 +7802,7 @@ ctw_add_string2(CtwWidget ctw, char *str, int len)
 		str = handle_escape(ctw, str, str_end);
 		}
 	if (ctw->ctw.utfp)
-		str = handle_utf8(ctw, str, str_end);
+		str = handle_utf8(ctw, str, str_end, &uch);
 
 	attr = ctw->ctw.attr;
 
@@ -7818,8 +7830,11 @@ DEFAULT:
 				if (top_y > 0)
 					top_y--;
 				bot_y++;
-			  	str = handle_utf8(ctw, str, str_end);
-				goto start_again;
+			  	str = handle_utf8(ctw, str, str_end, &uch);
+				if (!utf8_mode)
+					goto start_again;
+				ch = uch;
+				str--;
 				}
 
 		  	if (vp >= vp_end) {
