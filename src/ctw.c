@@ -7287,7 +7287,7 @@ setup_x11_colors(CtwWidget new, Display *dpy)
 	int	default_depth;
 	int		i, r, g, b;
 	static char	*color_tbl[] = {
-"#000000", "#b21818", "#18b218", "#b2b218", "#4040ee", "#b218b2", "#18b2b2", "#b2b2b2",
+"#000000", "#ef3518", "#18b218", "#b2b218", "#4040ee", "#b218b2", "#18b2b2", "#b2b2b2",
 "#000000", "#ff5454", "#54ff54", "#ffff54", "#5454ff", "#ff54ff", "#54ffff", "#ffffff",
 "#000000", "#ff0000", "#00ff00", "#ffff00", "#0000ff", "#ff00ff", "#00ffff", "#ffffff",
 "#000000", "#ff0000", "#00ff00", "#ffff00", "#0000ff", "#ff00ff", "#00ffff", "#ffffff",

@@ -98,6 +98,7 @@ struct menu_commands menu_commands[] = {
 		{" Snap history",	SNAP_HISTORY, 0},
 		{" Lower window",	LOWER_WINDOW, 0},
 		{" Zoom window",	ZOOM_WINDOW, 0},
+		{" Zoom screen",	ZOOM_SCREEN, 0},
 		{" Search",	        MENU_SEARCH, 0},
 		{" Show minimap",	MENU_TERMINAL_MAP, 0},
 
@@ -246,6 +247,7 @@ void	status_timer_proc();
 void	timeout_proc();
 void	ok_font();
 void	cancel_font();
+void	zoom_screen();
 void	zoom_window();
 char	*getenv();
 void	terminal_attributes();
@@ -1046,6 +1048,9 @@ menu_callback(Widget widget, enum menu_items val, caddr_t call_data)
 	  	break;
 	  case LOWER_WINDOW:
 	  	XLowerWindow(XtDisplay(top_level), XtWindow(top_level));
+	  	break;
+	  case ZOOM_SCREEN:
+	  	zoom_screen();
 	  	break;
 	  case ZOOM_WINDOW:
 	  	zoom_window();
@@ -2544,6 +2549,65 @@ x11_io_error_handler(Display *dpy)
 	restart_fcterm();
 	return 0;
 }
+
+/**********************************************************************/
+/*   Zoom to about 2/3rd of screen - useful for demos.		      */
+/**********************************************************************/
+void
+zoom_screen()
+{	Display	*dpy = XtDisplay(top_level);
+static	int	zooming = TRUE;
+static	Position	x, y;
+static	Dimension	fheight, fwidth;
+	Widget	menu_item;
+	int	swd, sht;
+	int	n;
+	Arg	args[20];
+
+// TODO: Fix this - it doesnt work properly.
+
+	menu_item = find_menu_item(menu_commands, ZOOM_SCREEN);
+	if (menu_item == NULL || zooming) {
+		n = 0;
+		XtSetArg(args[n], XtNlabel, " Unzoom screen"); n++;
+		if (menu_item) {
+			XtSetValues(menu_item, args, n);
+			}
+		n = 0;
+		XtSetArg(args[n], XtNx, &x); n++;
+		XtSetArg(args[n], XtNy, &y); n++;
+		XtSetArg(args[n], XtNheight, &fheight); n++;
+		XtSetArg(args[n], XtNwidth, &fwidth); n++;
+		XtGetValues(top_level, args, n);
+
+		swd = DisplayWidth(dpy, DefaultScreen(dpy));
+		sht = DisplayHeight(dpy, DefaultScreen(dpy));
+		XtVaSetValues(top_level,
+			XtNx,	swd * 0.20,
+			XtNy,	sht * 0.20,
+			NULL);
+		XtVaSetValues(top_level,
+			XtNwidth, swd * 0.66,
+			XtNheight, sht * 0.66,
+			NULL);
+		zooming = FALSE;
+		}
+	else {
+		n = 0;
+		XtSetArg(args[n], XtNlabel, " Zoom screen"); n++;
+		XtSetValues(menu_item, args, n);
+
+		XtVaSetValues(top_level,
+			XtNx,	x + mwm_x_offset,
+			XtNy,	y + mwm_x_offset,
+			XtNheight, fheight,
+			XtNwidth, fwidth,
+			NULL);
+
+		zooming = TRUE;
+		}
+}
+
 /**********************************************************************/
 /*   Zoom/unzoom the window by the height of the screen. Same as old  */
 /*   XView mechanism.						      */
