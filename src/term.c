@@ -488,6 +488,7 @@ do_switches(int argc, char **argv)
 {	int	i;
 	char	*cp;
 	int	flag;
+	struct stat sbuf;
 
 	for (i = 1; i < argc; i++) {
 		int	no = FALSE;
@@ -618,6 +619,11 @@ do_switches(int argc, char **argv)
 			  	if (++i >= argc)
 					usage();
 			  	command_to_exec = &argv[i];
+				if (stat(command_to_exec[0], &sbuf) < 0) {
+					fprintf(stderr, "fcterm: command to execute does not exist.\n");
+					perror(command_to_exec[0]);
+					exit(1);
+					}
 				return argc;
 			  case 'f':
 			  	fork_flag = FALSE;

@@ -8,3 +8,8 @@ fcterm
 6. watch mem/freemem and annoying alert to avoid swap death.
 7. rpi unicode annoyances.
 8. add 1m/1k ln count to scrollbar
+9. random core dump on startup when resizing
+10. when resizing - showing old history multiple times
+11. on start up, showing history for *a* pty - decide between
+    autorestart and start.
+12. on startup - dump some output, scrolling stops.

@@ -2873,7 +2873,26 @@ blank_line_ptr(CtwWidget ctw, line_t *lp)
 static void
 change_name(CtwWidget ctw, int flags, char *str)
 {	ctw_callback_t	reason;
+	int	b = 0;
+	int	nb = 0;
+	int	i;
 
+	/***********************************************/
+	/*   Protect against mangled title changes.    */
+	/***********************************************/
+	for (i = 0; str[i]; i++) {
+		if ((unsigned) str[i] < ' ' || str[i] >= 0x7f)
+			b++;
+		else
+			nb++;
+		}
+	if (b)
+		return;
+
+	/***********************************************/
+	/*   If the data looks like garbage, we could  */
+	/*   have been catting a binary file.	       */
+	/***********************************************/
 	reason.reason = CTWR_SET_TITLE;
 	reason.client_data = ctw->ctw.client_data;
 	reason.flags = flags;
@@ -7773,7 +7792,8 @@ ctw_add_string2(CtwWidget ctw, char *str, int len)
 	int	bot_y;
 	int	pc_charset = ctw->ctw.flags[CTW_PC_CHARSET];
 	int	bold_extra = 0;
-	int	big_opt = len > 3000;
+static int big_opt_count;
+	int	big_opt = 0;
 	int	hilited;
 	int	uch;
 
@@ -7783,8 +7803,16 @@ ctw_add_string2(CtwWidget ctw, char *str, int len)
 	if (ctw->ctw.nest_level++ == 0)
 		turn_off_cursor(ctw);
 
-	if (big_opt)
-		ctw->ctw.nodraw++;
+	/***********************************************/
+	/*   Show  some  occasional  updates  to  the  */
+	/*   screen.				       */
+	/***********************************************/
+	if (big_opt_count < 15 && len > 3000) {
+		big_opt_count++;
+		big_opt = 1;
+		}
+	else
+		big_opt_count = 0;
 
 	top_y = ctw->ctw.y;
 	bot_y = ctw->ctw.y;
