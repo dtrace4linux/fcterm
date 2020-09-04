@@ -258,6 +258,10 @@ static void
 ProtocolHandler( Widget w, XtPointer closure, XEvent *event, Boolean *cont )
 {	Atom WM_PROTOCOLS;
 
+	UNUSED_PARAMETER(w);
+	UNUSED_PARAMETER(closure);
+	UNUSED_PARAMETER(cont);
+
 	switch (event->type) {
 	  case ClientMessage: {
 		XClientMessageEvent *mp = (XClientMessageEvent *) event;
@@ -266,14 +270,19 @@ ProtocolHandler( Widget w, XtPointer closure, XEvent *event, Boolean *cont )
 		if (mp->message_type != WM_PROTOCOLS)
 			break;
 
-#if 1
-	  	printf("got a client message: %d %ld win=%d top=%d\n", 
+#if 0
+	  	printf("got a client message: %ld %ld win=%ld top=%ld closure=%p\n", 
 			mp->message_type,
 			mp->data.l[0],
 			mp->window,
-			XtWindow(top_level));
+			XtWindow(top_level), closure);
 #endif
-break;
+
+		if (closure == (XtPointer) 1) {
+			XtPopdown(w);
+			break;
+		}
+
 		if ((Atom) mp->data.l[0] == WM_DELETE_WINDOW &&
 		    mp->window == XtWindow(top_level)) {
 			printf("Received WM_DELETE_WINDOW - terminating\n");
@@ -552,6 +561,8 @@ about_box(int x, int y)
 	XtAddCallback(w1, XtNcallback, about_ok, shell);
 
 	XSetWMProtocols(dpy, XtWindow(shell), &WM_DELETE_WINDOW, 1);
+	XtAddRawEventHandler(shell, (EventMask)0, TRUE,
+                             ProtocolHandler, (XtPointer) 1);
 //	printf("added protocol\n");
 }
 /**********************************************************************/
@@ -1553,6 +1564,8 @@ terminal_attributes(int x, int y)
 	/*   when "x" is pressed.		       */
 	/***********************************************/
 	XSetWMProtocols(XtDisplay(shell), XtWindow(shell), &WM_DELETE_WINDOW, 1);
+	XtAddRawEventHandler(shell, (EventMask)0, TRUE,
+                             ProtocolHandler, (XtPointer) 1);
 }
 /**********************************************************************/
 /*   Toggle visibility of scrollbar.				      */
@@ -1748,9 +1761,7 @@ ok_dialog(Widget w, XtPointer client_data, XtPointer call_data)
 /*   Function called to apply current attribute settings.	      */
 /**********************************************************************/
 void
-apply_dialog(w, client_data, call_data)
-Widget	w;
-XtPointer	client_data, call_data;
+apply_dialog(Widget w, XtPointer client_data, XtPointer call_data)
 {
 	int	n;
 	Arg	args[20];
