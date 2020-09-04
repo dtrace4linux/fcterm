@@ -2819,7 +2819,9 @@ application_mouse(CtwWidget w, int state, int flag, XEvent *event, int x, int y)
 static void
 blank_line(CtwWidget w, int row)
 {	line_t	*lp = dsp_get_row(w, row);
-	blank_line_ptr(w, lp);
+
+	if (lp)
+		blank_line_ptr(w, lp);
 }
 /**********************************************************************/
 /*   Blank a physical line pointer - so we can handle resize.	      */
@@ -4489,6 +4491,8 @@ static line_t	lbuf;
 	if (idx > ctw->ctw.c_lcache_size) {
 		printf("ctw: lcache problem, ln=%d idx=%d (maxidx=%d)\n", ln, idx, ctw->ctw.c_lcache_size);
 		}
+	if (ctw->ctw.c_lcache == NULL)
+		return NULL;
 	fseek(ctw->ctw.c_spill_fp, ctw->ctw.c_lcache[idx].lc_offset, SEEK_SET);
 	i = idx * CHUNK_SIZE;
 	for ( ; i <= ln; i++) {
@@ -7810,9 +7814,11 @@ static int big_opt_count;
 	if (big_opt_count < 15 && len > 3000) {
 		big_opt_count++;
 		big_opt = 1;
+		ctw->ctw.nodraw++;
 		}
 	else
 		big_opt_count = 0;
+big_opt = 0;
 
 	top_y = ctw->ctw.y;
 	bot_y = ctw->ctw.y;

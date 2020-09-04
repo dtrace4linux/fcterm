@@ -95,6 +95,7 @@ XtIntervalId	save_state_id;
 XtIntervalId	timer_id;
 XtIntervalId	cfg_timer_id;
 XtIntervalId	map_timer_id;
+Atom     WM_DELETE_WINDOW;
 
 XtAppContext	app_con;
 
@@ -183,6 +184,8 @@ init_term()
 
 	cfg_timer_id = XtAppAddTimeOut(app_con, 1000L, 
 		(XtTimerCallbackProc) group_config_poll, &cfg_timer_id);
+
+	WM_DELETE_WINDOW = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
 }
 /**********************************************************************/
 /*   Create a new screen structure.				      */

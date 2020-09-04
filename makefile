@@ -23,7 +23,8 @@ OBJ=	\
 	$(OBJDIR)/rotate.o \
 	$(OBJDIR)/scrbar.o \
 	$(OBJDIR)/themes.o \
-	$(OBJDIR)/usage.o
+	$(OBJDIR)/usage.o \
+	$(OBJDIR)/version.o
 
 all:
 	tools/packages.sh
@@ -109,6 +110,8 @@ $(OBJDIR)/themes.o:	src/themes.c src/themes.json
 	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/themes.o src/themes.c
 $(OBJDIR)/usage.o:	src/usage.c
 	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/usage.o src/usage.c
+$(OBJDIR)/version.o:	src/version.c
+	$(CC) $(INC) $(CFLAGS) -c -o $(OBJDIR)/version.o src/version.c
 src/usage.c: src/usage.txt makefile
 	(echo 'const char *usage_text = ' ; \
 	sed -e 's/"/\\"/g' -e 's/^\(.*\)/"\1\\n"/' < src/usage.txt ; \

@@ -77,6 +77,7 @@ static char **fonts = bitmap_fonts;
 
 int 	cur_font;
 extern int	freetype_flag;
+extern Atom WM_DELETE_WINDOW;
 
 /**********************************************************************/
 /*   Description for the popup menu.				      */
@@ -253,6 +254,32 @@ char	*getenv();
 void	terminal_attributes();
 void menu_new_screen(fcterm_t *, int);
 
+static void
+ProtocolHandler( Widget w, XtPointer closure, XEvent *event, Boolean *cont )
+{	Atom WM_PROTOCOLS;
+
+	switch (event->type) {
+	  case ClientMessage: {
+		XClientMessageEvent *mp = (XClientMessageEvent *) event;
+
+		WM_PROTOCOLS = XInternAtom(XtDisplay(top_level), "WM_PROTOCOLS", False);
+		if (mp->message_type != WM_PROTOCOLS)
+			break;
+
+		if (mp->data.l[0] == WM_DELETE_WINDOW) {
+			printf("Recevied WM_DELETE_WINDOW - terminating\n");
+			exit(1);
+			}
+
+#if 0
+	  	printf("got a client message: %d %ld\n", 
+			mp->message_type,
+			mp->data.l[0]);
+#endif
+		break;
+		}
+	  }
+}
 /**********************************************************************/
 /*   Main entry point.						      */
 /**********************************************************************/
@@ -426,6 +453,9 @@ main(int argc, char **argv)
 	layout_frame();
 
 	XtRealizeWidget(top_level);
+	XSetWMProtocols(XtDisplay(top_level), XtWindow(top_level), &WM_DELETE_WINDOW, 1);
+	XtAddRawEventHandler(top_level, (EventMask)0, TRUE,
+                             ProtocolHandler, (XtPointer) NULL);
 
 	set_title(cur_ctw, CHANGE_TITLE | CHANGE_ICON, NULL);
 	
@@ -465,7 +495,7 @@ about_box(int x, int y)
 {	static char	*about_text[] = {
 		"FCTERM - Color terminal emulator",
 		"",
-		"(C) 1990-2020 Paul Fox, Foxtrot Systems Ltd",
+		"(C) 1990-2021 Paul Fox, Foxtrot Systems Ltd",
 		"",
 		"E-mail: crisp.editor:gmail.com, paul.d.fox@gmail.com",
 		"",
@@ -477,11 +507,13 @@ about_box(int x, int y)
 	int	i;
 	int	n;
 	Arg	args[20];
+	Display	*dpy = XtDisplay(top_level);
 
 	for (i = 0; about_text[i]; i++) {
 		if (strcmp(about_text[i], "<version>") == 0) {
 			sprintf(verbuf, "Fcterm version v%d.%03d-b%d PID:%d",
-				MAJ_VERSION, MIN_VERSION, version_build_no, getpid());
+				MAJ_VERSION, MIN_VERSION, VERSION_BUILD_NO, 
+				getpid());
 			about_text[i] = verbuf;
 			break;
 			}
@@ -514,6 +546,9 @@ about_box(int x, int y)
 		commandWidgetClass, pane0, args, n);
 	XtPopup(shell, XtGrabNone);
 	XtAddCallback(w1, XtNcallback, about_ok, shell);
+
+	XSetWMProtocols(dpy, XtWindow(shell), &WM_DELETE_WINDOW, 1);
+//	printf("added protocol\n");
 }
 /**********************************************************************/
 /*   Pop down about dialog box.                                       */
@@ -1290,10 +1325,10 @@ static int first_time = TRUE;
 	first_time = TRUE;
 
 	snprintf(verbuf, sizeof verbuf,
-		"Fcterm version v%d.%03d-%d-b%d", 
+		"Fcterm version v%d.%03d-%s-b%d", 
 			MAJ_VERSION, MIN_VERSION, 
-			version_build_date_yyyymmdd,
-			version_build_no);
+			VERSION_BUILD_DATE_YYYYMMDD,
+			VERSION_BUILD_NO);
 
 	for (i = 0; msgs[i]; i++) {
 		msg = "\033[31;43m";
