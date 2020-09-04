@@ -7818,7 +7818,6 @@ static int big_opt_count;
 		}
 	else
 		big_opt_count = 0;
-big_opt = 0;
 
 	top_y = ctw->ctw.y;
 	bot_y = ctw->ctw.y;

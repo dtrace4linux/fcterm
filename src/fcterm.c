@@ -266,16 +266,20 @@ ProtocolHandler( Widget w, XtPointer closure, XEvent *event, Boolean *cont )
 		if (mp->message_type != WM_PROTOCOLS)
 			break;
 
-		if (mp->data.l[0] == WM_DELETE_WINDOW) {
-			printf("Recevied WM_DELETE_WINDOW - terminating\n");
+#if 1
+	  	printf("got a client message: %d %ld win=%d top=%d\n", 
+			mp->message_type,
+			mp->data.l[0],
+			mp->window,
+			XtWindow(top_level));
+#endif
+break;
+		if ((Atom) mp->data.l[0] == WM_DELETE_WINDOW &&
+		    mp->window == XtWindow(top_level)) {
+			printf("Received WM_DELETE_WINDOW - terminating\n");
 			exit(1);
 			}
 
-#if 0
-	  	printf("got a client message: %d %ld\n", 
-			mp->message_type,
-			mp->data.l[0]);
-#endif
 		break;
 		}
 	  }
@@ -1543,6 +1547,12 @@ terminal_attributes(int x, int y)
 	XawPanedSetMinMax(w1, 70, 70);
 
 	XtPopup(shell, XtGrabNone);
+
+	/***********************************************/
+	/*   Disable  auto  connection  close from WM  */
+	/*   when "x" is pressed.		       */
+	/***********************************************/
+	XSetWMProtocols(XtDisplay(shell), XtWindow(shell), &WM_DELETE_WINDOW, 1);
 }
 /**********************************************************************/
 /*   Toggle visibility of scrollbar.				      */
