@@ -144,9 +144,9 @@ noise:
 release:
 	b=`mkrelease.pl -incbuild` ; \
 	$(MAKE) ; \
-	git commit -m "Release b$$b" . || true
-	strip bin/fcterm
-	../../crisp/bin/elfrewrite bin/fcterm
+	git commit -m "Release b$$b" . || true ; \
+	strip bin/fcterm ; \
+	../../crisp/bin/elfrewrite bin/fcterm ; \
 	build=$$b ; \
 	build=`date +%Y%m%d-`$$build ; \
 	cd .. ; mv ctw ctw-$$build ; \
