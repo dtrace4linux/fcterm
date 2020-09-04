@@ -147,7 +147,7 @@ release:
 	git commit -m "Release b$$b" . || true
 	strip bin/fcterm
 	../../crisp/bin/elfrewrite bin/fcterm
-	build=b`grep build_no include/build.h | sed -e 's/^.* \([0-9][0-9]*\).*$$/\1/'` ; \
+	build=$$b ; \
 	build=`date +%Y%m%d-`$$build ; \
 	cd .. ; mv ctw ctw-$$build ; \
 	tar cvf - ctw-$$build/bin/fcterm \
