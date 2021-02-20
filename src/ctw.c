@@ -6147,7 +6147,7 @@ reset_screen(CtwWidget w)
 	w->ctw.blank.vb_bcolor = BLACK;
 	if (w->ctw.flags[CTW_REVERSE_VIDEO])
 		set_reverse_video(w, FALSE);
-	w->ctw.old_color_avail = TRUE;
+	w->ctw.old_color_avail = FALSE;
 	w->ctw.old_fg_color = WHITE;
 	w->ctw.old_bg_color = BLACK;
 	w->ctw.curr_cset = 0;
@@ -6793,6 +6793,10 @@ check_cursor:
 					handle_focus_change(ctw, TRUE);
 				break;
 			  case 7: {
+			  	/***********************************************/
+			  	/*   If  we see two ESC[7m's, the second cant  */
+			  	/*   undo the reverse video.		       */
+			  	/***********************************************/
 			  	if (ctw->ctw.old_color_avail == FALSE) {
 					int	n = ctw->ctw.attr.vb_fcolor;
 					ctw->ctw.old_color_avail = TRUE;
@@ -6848,7 +6852,7 @@ check_cursor:
 			  case 34: case 35: case 36: case 37:
 		  		ctw->ctw.old_fg_color = ctw->ctw.blank.vb_fcolor;
 		  		ctw->ctw.old_bg_color = ctw->ctw.blank.vb_bcolor;
-				ctw->ctw.old_color_avail = TRUE;
+				ctw->ctw.old_color_avail = FALSE;
 			  	ctw->ctw.attr.vb_fcolor = args[i] - 30;
 				ctw->ctw.attr.vb_attr2 &= ~VB2_FG_24;
 			  	break;
@@ -6884,7 +6888,7 @@ check_cursor:
 			  case 44: case 45: case 46: case 47:
 		  		ctw->ctw.old_fg_color = ctw->ctw.blank.vb_fcolor;
 		  		ctw->ctw.old_bg_color = ctw->ctw.blank.vb_bcolor;
-				ctw->ctw.old_color_avail = TRUE;
+				ctw->ctw.old_color_avail = FALSE;
 			  	ctw->ctw.attr.vb_bcolor = args[i] - 40;
 				ctw->ctw.attr.vb_attr2 &= ~VB2_BG_24;
 			  	break;
@@ -6928,7 +6932,7 @@ check_cursor:
 			  case 94: case 95: case 96: case 97:
 		  		ctw->ctw.old_fg_color = ctw->ctw.blank.vb_fcolor;
 		  		ctw->ctw.old_bg_color = ctw->ctw.blank.vb_bcolor;
-				ctw->ctw.old_color_avail = TRUE;
+				ctw->ctw.old_color_avail = FALSE;
 			  	ctw->ctw.attr.vb_fcolor = args[i] - 90;
 			  	break;
 
@@ -6936,7 +6940,7 @@ check_cursor:
 			  case 104: case 105: case 106: case 107:
 		  		ctw->ctw.old_fg_color = ctw->ctw.blank.vb_fcolor;
 		  		ctw->ctw.old_bg_color = ctw->ctw.blank.vb_bcolor;
-				ctw->ctw.old_color_avail = TRUE;
+				ctw->ctw.old_color_avail = FALSE;
 			  	ctw->ctw.attr.vb_bcolor = args[i] - 100;
 			  	break;
 			  case 1900:
@@ -8162,7 +8166,9 @@ start_again:
 		    	bold_extra = 1;
 		    	}
 		*vp = attr;
-		if (pc_charset && pc_chars[attr.vb_byte]) {
+		if (pc_charset && 
+		    (attr.vb_byte & ~0xff) == 0 &&
+		    pc_chars[attr.vb_byte]) {
 			vp->vb_attr |= VB_LINE;
 			vp->vb_byte = pc_chars[attr.vb_byte];
 			}
