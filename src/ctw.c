@@ -4,10 +4,10 @@
 /*  Author:        P. D. Fox                                          */
 /*  Created:       25 Nov 1991                     		      */
 /*                                                                    */
-/*  Copyright (c) 1990-2020 Paul Fox                                  */
+/*  Copyright (c) 1990-2021 Paul Fox                                  */
 /*                All Rights Reserved.                                */
 /*                                                                    */
-/*   $Header: Last edited: 17-Mar-2020 1.75 $ 			      */
+/*   $Header: Last edited: 29-Mar-2021 1.76 $ 			      */
 /*--------------------------------------------------------------------*/
 /*  Description:  Color terminal widget.                              */
 /*                                                                    */
@@ -1908,7 +1908,7 @@ static char *cur = "DACB";
 		&keysym, &compose_status);
 
 # define TRACE(str) if (crwin_debug) {printf("%s(%d): " #str, __FILE__, __LINE__); }
-# define RETURN() if (crwin_debug) {printf("%s(%d): return\n", __FILE__, __LINE__); } return;
+# define RETURN() {if (crwin_debug) {printf("%s(%d): return\n", __FILE__, __LINE__); } return;}
 	/***********************************************/
 	/*   If  we  were  frozen from scrolling then  */
 	/*   allow us to scroll again.		       */
@@ -2924,39 +2924,7 @@ command_input(CtwWidget ctw, int keymod_mask, int keysym, int ch)
 	if (ch == 0x0d) {
 		chk_free_ptr((void **) &ctw->ctw.c_search);
 		if (strncmp(ctw->ctw.c_ibuf, "cmap", 4) == 0) {
-			int	r, g, b;
-			char	buf[64];
-
-			ctw_add_string(ctw, "Color map ESC [ 38 ; 5 ; nn m\r\n", -1);
-			ctw_add_string(ctw, "Color cube 6x6x6\r\n", -1);
-			for (g = 0; g < 6; g++) {
-				for (r = 0; r < 6; r++) {
-					for (b = 0; b < 6; b++) {
-						int c = 16 + r * 36 + g * 6 + b;
-						snprintf(buf, sizeof buf, "\x1b[48;5;%dm  ", c);
-						ctw_add_string(ctw, buf, -1);
-						}
-					ctw_add_string(ctw, "\x1b[48;5;0m ", -1);
-					}
-				ctw_add_string(ctw, "\r\n", -1);
-				}
-
-			ctw_add_string(ctw, "Grayscale ramp\r\n", -1);
-			for (r = 232; r < 256; r++) {
-				snprintf(buf, sizeof buf, "\x1b[48;5;%dm  ", r);
-				ctw_add_string(ctw, buf, -1);
-				}
-			ctw_add_string(ctw, "\r\n", -1);
-			ctw_add_string(ctw, "Normal colors\r\n", -1);
-			for (r = 0; r < 8; r++) {
-				snprintf(buf, sizeof buf, "\x1b[%d;%dm  %d  ", 
-					r == 0 ? 37 : 30,
-					r + 40,
-					r);
-				ctw_add_string(ctw, buf, -1);
-			}
-			ctw_add_string(ctw, "\r\n", -1);
-			ctw_add_string(ctw, "\x1b[48;5;0m\n", -1);
+			show_color_map(ctw);
 			}
 		else if (strncmp(ctw->ctw.c_ibuf, "code", 4) == 0) {
 			ctw_add_string(ctw, code_text, -1);
@@ -4435,7 +4403,7 @@ parse_esc(char *str, int *args, int len, int *nump)
 /**********************************************************************/
 static line_t *
 dsp_get_row(CtwWidget ctw, int ln)
-{	int	i, idx, len;
+{	int	i, idx;
 	char	buf[BUFSIZ];
 	vbyte_t	space;
 static int old_columns;
@@ -4506,7 +4474,6 @@ static line_t	lbuf;
 
 # if 1
 	{int c;
-	len = strlen(buf) - 1;
 	int	fg = lbuf.l_text[0].vb_fcolor;
 	int	bg = lbuf.l_text[0].vb_bcolor;
 	for (c = 0, i = 0; buf[i] && c < ctw->ctw.columns; ) {
@@ -4558,7 +4525,7 @@ static line_t	lbuf;
 		}
 	}
 # else
-	len = strlen(buf) - 1;
+	int len = strlen(buf) - 1;
 	for (i = 0; i < len && i < ctw->ctw.columns; i++) {
 		lbuf.l_text[i].vb_byte = buf[i];
 		}
@@ -6253,6 +6220,45 @@ show_cursor(CtwWidget w)
 		}
 	w->ctw.cursor_state = CURSOR_ON;
 }
+
+void
+show_color_map(CtwWidget ctw)
+{
+	int	r, g, b;
+	char	buf[64];
+
+	ctw_add_string(ctw, "Color map ESC [ 38 ; 5 ; nn m\r\n", -1);
+	ctw_add_string(ctw, "Color cube 6x6x6\r\n", -1);
+	for (g = 0; g < 6; g++) {
+		for (r = 0; r < 6; r++) {
+			for (b = 0; b < 6; b++) {
+				int c = 16 + r * 36 + g * 6 + b;
+				snprintf(buf, sizeof buf, "\x1b[48;5;%dm  ", c);
+				ctw_add_string(ctw, buf, -1);
+				}
+			ctw_add_string(ctw, "\x1b[48;5;0m ", -1);
+			}
+		ctw_add_string(ctw, "\r\n", -1);
+		}
+
+	ctw_add_string(ctw, "Grayscale ramp\r\n", -1);
+	for (r = 232; r < 256; r++) {
+		snprintf(buf, sizeof buf, "\x1b[48;5;%dm  ", r);
+		ctw_add_string(ctw, buf, -1);
+		}
+	ctw_add_string(ctw, "\r\n", -1);
+	ctw_add_string(ctw, "Normal colors\r\n", -1);
+	for (r = 0; r < 8; r++) {
+		snprintf(buf, sizeof buf, "\x1b[%d;%dm  %d  ", 
+			r == 0 ? 37 : 30,
+			r + 40,
+			r);
+		ctw_add_string(ctw, buf, -1);
+	}
+	ctw_add_string(ctw, "\r\n", -1);
+	ctw_add_string(ctw, "\x1b[48;5;0m\n", -1);
+}
+
 static void
 scroll_down(CtwWidget w, int start_line, int num_lines)
 {	int	i, j;
@@ -7106,6 +7112,9 @@ check_cursor:
 				break;
 			  case 1948:
 			  	cmd_asciitext_record(ctw, RECORD_SILENT);
+				break;
+			  case 1949:
+			  	show_color_map(ctw);
 				break;
 			  }
 			}

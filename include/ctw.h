@@ -572,4 +572,5 @@ void	ctw_set_spill_size(unsigned size);
 
 void	ctw_send_input(CtwWidget ctw, XEvent *event, String *x, Cardinal *y);
 
+void show_color_map(CtwWidget ctw);
 #endif /* _Ctw_h */

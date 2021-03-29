@@ -13,3 +13,7 @@ fcterm
 11. on start up, showing history for *a* pty - decide between
     autorestart and start.
 12. on startup - dump some output, scrolling stops.
+
+^[]11;red^G
+^[]11;#rrggbb^G
+https://invisible-island.net/xterm/ctlseqs/ctlseqs.pdf
