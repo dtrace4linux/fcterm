@@ -7,7 +7,7 @@
 /*  Copyright (c) 1990-2021 Paul Fox                                  */
 /*                All Rights Reserved.                                */
 /*                                                                    */
-/*   $Header: Last edited: 29-Mar-2021 1.76 $ 			      */
+/*   $Header: Last edited: 19-Apr-2021 1.77 $ 			      */
 /*--------------------------------------------------------------------*/
 /*  Description:  Color terminal widget.                              */
 /*                                                                    */
@@ -3344,6 +3344,12 @@ do_csi_quest(CtwWidget ctw, int cmd, int arg_no, int *args)
 			ctw->ctw.cursor_state = flag ? CURSOR_ON : CURSOR_HIDDEN;
 			if (flag)
 				show_cursor(ctw);
+			/***********************************************/
+			/*   Make sure we dont leave turd behind.      */
+			/***********************************************/
+			int	y = ctw->ctw.y;
+			int x = ctw->ctw.x >= ctw->ctw.columns ? ctw->ctw.columns - 1 : ctw->ctw.x;
+			update_region(ctw, y, x, y+1, x+1);
 			return TRUE;
 		  case 47:
 		  	/***********************************************/
@@ -6228,6 +6234,7 @@ show_color_map(CtwWidget ctw)
 	char	buf[64];
 
 	ctw_add_string(ctw, "Color map ESC [ 38 ; 5 ; nn m\r\n", -1);
+	ctw_add_string(ctw, "Color map ESC [ 38 ; 2 ; rr ; gg ; bb m\r\n", -1);
 	ctw_add_string(ctw, "Color cube 6x6x6\r\n", -1);
 	for (g = 0; g < 6; g++) {
 		for (r = 0; r < 6; r++) {
