@@ -769,6 +769,7 @@ handle_commands(int i, int argc, char **argv)
 "\n"
 "colormap            Show ESC color map\n"
 "create-screen <n>   Create or switch to the screen specified [0..11]\n"
+"escseq              Show escape sequences\n"
 "group / ungroup     Enable grouping of fcterm's. Grouping will keep the\n"
 "                    relative positions fixed. Useful when screen size\n"
 "                    changes.\n"
@@ -795,6 +796,11 @@ handle_commands(int i, int argc, char **argv)
 		if (strcmp(cp, "colormap") == 0) {
 			printf("\033[1949m");
 			continue;
+			}
+		if (strcmp(cp, "escseq") == 0) {
+			extern char sequences[];
+			printf("%s", sequences);
+			exit(0);
 			}
 		if (strcmp(cp, "group") == 0) {
 			printf("\033[1938;1mGrouping enabled.\n");
