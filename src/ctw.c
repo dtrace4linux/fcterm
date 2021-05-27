@@ -184,6 +184,13 @@
 /*   ESC [ ? 2 f	Push current font onto stack.                 */
 /*   ESC [ ? 3 f	Pop font from stack.                          */
 /*   								      */
+/*   ESC [ 22;0 t     Save xterm icon title and window title on stack                  */
+/*   ESC [ 22;1 t     Save xterm title on stack                */
+/*   ESC [ 22;2 t     Save xterm window title on stack                */
+/*   ESC [ 23;0 t     Restore xterm icon and window title from stack  */
+/*   ESC [ 23;1 t     Restore xterm icon title from stack  */
+/*   ESC [ 23;2 t     Restore window title from stack  */
+/*   								      */
 /*   ESC [ = C    	Hide cursor                                   */
 /*   ESC [ = 1C    	Invisible cursor.                             */
 /*   								      */
@@ -6709,7 +6716,7 @@ check_cursor:
 	  case 'c':
 	  	/***********************************************/
 	  	/*   ESC[c -- ask for answerback message.      */
-	  	/***********************************************/
+	  	/***********************************************/      \
 		send_input(ctw, "\033[?1;2c", 7);
 		break;
 	  case 'g':
@@ -6766,6 +6773,10 @@ check_cursor:
 			  	ctw->ctw.attr.vb_fcolor = ctw->ctw.old_fg_color;
 			  	ctw->ctw.attr.vb_bcolor = ctw->ctw.old_bg_color;
 				}
+			else {
+			  	ctw->ctw.attr.vb_fcolor = WHITE;
+			  	ctw->ctw.attr.vb_bcolor = BLACK;
+			}
 			ctw->ctw.old_color_avail = FALSE;
 /*			arg_no = 1;
 			args[0] = 0;*/
@@ -6786,6 +6797,7 @@ check_cursor:
 				  	ctw->ctw.attr.vb_bcolor = ctw->ctw.old_bg_color;
 					}
 				ctw->ctw.old_color_avail = 0;
+				ctw->ctw.attr.vb_attr2 &= ~VB2_FG_24;
 				break;
 				}
 			  case 1:
