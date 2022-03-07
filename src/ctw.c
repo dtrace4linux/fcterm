@@ -1151,7 +1151,8 @@ initialize(Widget treq, Widget tnew)
 			buf[n] = '\0';
 			}
 		cp = dirname(buf);
-		snprintf(buf1, sizeof buf1, "%s/mksvg.pl", cp);
+		if (snprintf(buf1, sizeof buf1, "%s/mksvg.pl", cp) < 0)
+			abort();
 		chk_free(cp);
 		if (stat(buf1, &sbuf) < 0) {
 			strcpy(buf1, "./mksvg.pl");
@@ -1170,7 +1171,8 @@ initialize(Widget treq, Widget tnew)
 	/***********************************************/
 	/*   Possible memleak.			       */
 	/***********************************************/
-	snprintf(buf, sizeof buf, "/var/tmp/%s/CtwLog.XXXXXX", user);
+	if (snprintf(buf, sizeof buf, "/var/tmp/%s/CtwLog.XXXXXX", user) < 0)
+		abort();
 	new->ctw.log_file = chk_strdup(buf);
 
 	UNUSED_PARAMETER(treq);
@@ -1950,7 +1952,8 @@ static char *cur = "DACB";
 	    keysym == 'o') {
 	    	if (ctw->ctw.c_flags & CTWF_CTRLO_MODE) {
 		    	ctw->ctw.c_flags &= ~CTWF_CTRLO_MODE;
-			snprintf(buf, sizeof buf, "\r\n\033[47;30m[Ctrl-O typed - resuming output, %d lines discarded, %lu bytes]\x1b[37;40m\r\n", ctw->ctw.c_discards, ctw->ctw.c_discard_bytes);
+			if (snprintf(buf, sizeof buf, "\r\n\033[47;30m[Ctrl-O typed - resuming output, %d lines discarded, %lu bytes]\x1b[37;40m\r\n", ctw->ctw.c_discards, ctw->ctw.c_discard_bytes) < 0)
+				abort();
 			ctw_add_string(ctw, buf, -1);
 			}
 		else {
@@ -1965,8 +1968,9 @@ static char *cur = "DACB";
 	    keysym == ' ') {
 status:
 		time_str();
-		snprintf(buf, sizeof buf, "\033[47;30m[%s %d lines discarded, %lu bytes]\x1b[37;40m\r\n", 
-			time_str(), ctw->ctw.c_discards, ctw->ctw.c_discard_bytes);
+		if (snprintf(buf, sizeof buf, "\033[47;30m[%s %d lines discarded, %lu bytes]\x1b[37;40m\r\n", 
+			time_str(), ctw->ctw.c_discards, ctw->ctw.c_discard_bytes) < 0)
+				abort();
 		ctw->ctw.c_flags &= ~CTWF_CTRLO_MODE;
 		ctw_add_string(ctw, buf, -1);
 		ctw->ctw.c_flags |= CTWF_CTRLO_MODE;
@@ -2810,10 +2814,11 @@ application_mouse(CtwWidget w, int state, int flag, XEvent *event, int x, int y)
 	if (state & (Mod1Mask | Mod2Mask | Mod3Mask | Mod4Mask | Mod5Mask))
 		m |= 0x04;
 
-	snprintf(buf, sizeof buf, "\033[%d;%d;%d;%d;%dM", 
+	if (snprintf(buf, sizeof buf, "\033[%d;%d;%d;%d;%dM", 
 		event->xbutton.button, 
 		flag,
-		m, r, c);
+		m, r, c) < 0)
+		abort();
 	reason.reason = CTWR_INPUT;
 	reason.client_data = w->ctw.client_data;
 	reason.ptr = buf;
@@ -3137,17 +3142,21 @@ create_fcterm_dir(CtwWidget ctw)
 {	char	buf[BUFSIZ];
 	struct stat sbuf;
 
-	snprintf(buf, sizeof buf, "%s/%s", 
+	if (snprintf(buf, sizeof buf, "%s/%s", 
 			ctw->ctw.log_dir,
-			user);
+			user) < 0)
+		abort();
+
 	if (stat(buf, &sbuf) < 0 &&
 	    mkdir(buf, 0700) < 0) {
 		fprintf(stderr, "fcterm: mkdir(%s) failed\n", buf);
 		perror("error");
 	}
-	snprintf(buf, sizeof buf, "%s/%s/fcterm", 
+	if (snprintf(buf, sizeof buf, "%s/%s/fcterm", 
 			ctw->ctw.log_dir,
-			user);
+			user) < 0)
+		abort();
+
 	if (stat(buf, &sbuf) < 0 &&
 	    mkdir(buf, 0700) < 0) {
 		fprintf(stderr, "fcterm: mkdir(%s) failed\n", buf);
@@ -4457,7 +4466,8 @@ static line_t	lbuf;
 	if (ctw->ctw.c_spill_fp == NULL) {
 		get_log_name(ctw, buf, sizeof buf, NULL);
 		if ((ctw->ctw.c_spill_fp = fopen(buf, "r")) == NULL) {
-		    	snprintf(buf, sizeof buf, "[history #%d unavailable]", ln);
+		    	if (snprintf(buf, sizeof buf, "[history #%d unavailable]", ln) < 0)
+				abort();
 			for (i = 0; buf[i] && i < ctw->ctw.columns; i++)
 				lbuf.l_text[i].vb_byte = buf[i];
 			return &lbuf;
@@ -4645,10 +4655,11 @@ get_log_name(CtwWidget ctw, char *buf, int size, char *str)
 
 	name = ctw->ctw.ttyname ? basename(ctw->ctw.ttyname) : "ZZ";
 	
-	snprintf(buf, size, "%s/%s/fcterm/%s%s-pty%s%s.log", 
+	if (snprintf(buf, size, "%s/%s/fcterm/%s%s-pty%s%s.log", 
 			ctw->ctw.log_dir, user,
 			isdigit(*name) ? "tty" : "", name,
-			str ? "-" : "", str ? str : "");
+			str ? "-" : "", str ? str : "") < 0)
+		abort();
 }
 /**********************************************************************/
 /*   Add a drawable to the graph chain.				      */
@@ -5279,11 +5290,13 @@ static int map_to_space = -1;
 	else if (map_to_space)
 		ctw_add_raw_string(w, " ", 1);
 	else if (u < 0x10000) {
-		snprintf(buf, sizeof buf, "\\U%04x", u);
+		if (snprintf(buf, sizeof buf, "\\U%04x", u) < 0)
+			abort();
 		ctw_add_raw_string(w, buf, strlen(buf));
 		}
 	else {
-		snprintf(buf, sizeof buf, "\\U%08x", u);
+		if (snprintf(buf, sizeof buf, "\\U%08x", u) < 0)
+			abort();
 		ctw_add_raw_string(w, buf, strlen(buf));
 		}
 	w->ctw.utfp = NULL;
@@ -5416,15 +5429,18 @@ printf("skip %d:%d\n", ln, ctw->ctw.spill_cnt);
 		int	i;
 
 		for (i = 0; i < 1000; i++) {
-			snprintf(buf, sizeof buf, "%s/%s/fcterm/%s%s-%%Y%%m%%d-%03d.log", 
+			if (snprintf(buf, sizeof buf, "%s/%s/fcterm/%s%s-%%Y%%m%%d-%03d.log", 
 				ctw->ctw.log_dir, user,
-				isdigit(*name) ? "tty" : "", name, i);
+				isdigit(*name) ? "tty" : "", name, i) < 0)
+				abort();
 			strftime(buf2, sizeof buf2, buf, localtime(&t));
-			snprintf(buf3, sizeof buf3, "%s.gz", buf2);
+			if (snprintf(buf3, sizeof buf3, "%s.gz", buf2) < 0)
+				abort();
 			if (stat(buf2, &sbuf) < 0 && stat(buf3, &sbuf) < 0)
 				break;
 			if (default_gzip_rollover && stat(buf3, &sbuf) < 0) {
-				snprintf(buf3, sizeof buf3, "gzip %s &", buf2);
+				if (snprintf(buf3, sizeof buf3, "gzip %s &", buf2) < 0)
+					abort();
 				if (system(buf3) != 0) 
 					perror("fcterm: gzip failed");
 				}
@@ -9386,28 +9402,35 @@ show_status(CtwWidget ctw)
 	char	*cp;
 	FILE	*fp;
 
-	snprintf(buf, sizeof buf, "Fcterm pid: %d\r\n", getpid());
+	if (snprintf(buf, sizeof buf, "Fcterm pid: %d\r\n", getpid()) < 0)
+		abort();
   	ctw_add_string(ctw, buf, -1);
-	snprintf(buf, sizeof buf, "Group     : %s\r\n", group_label);
+	if (snprintf(buf, sizeof buf, "Group     : %s\r\n", group_label) < 0)
+		abort();
   	ctw_add_string(ctw, buf, -1);
-	snprintf(buf, sizeof buf, "Grouping  : %s\r\n", group_status(0) ? "enabled" : "disabled");
+	if (snprintf(buf, sizeof buf, "Grouping  : %s\r\n", group_status(0) ? "enabled" : "disabled") < 0)
+		abort();
   	ctw_add_string(ctw, buf, -1);
 
 	cp = group_status2();
   	ctw_add_string(ctw, cp, -1);
 
-	snprintf(buf2, sizeof buf2, "%s/status.layout", log_dir);
-	snprintf(buf, sizeof buf, "fcterm: status in %s\r\n", buf2);
+	if (snprintf(buf2, sizeof buf2, "%s/status.layout", log_dir) < 0)
+		abort();
+	if (snprintf(buf, sizeof buf, "fcterm: status in %s\r\n", buf2) < 0)
+		abort();
 	if ((fp = fopen(buf2, "w")) != NULL) {
 		fprintf(fp, "%s", cp);
 		fclose(fp);
 	  	ctw_add_string(ctw, buf, -1);
 		}
 
-	snprintf(buf2, sizeof buf2, "%s/status.layout-%dx%d", log_dir,
+	if (snprintf(buf2, sizeof buf2, "%s/status.layout-%dx%d", log_dir,
 		DisplayWidth(dpy, DefaultScreen(dpy)),
-		DisplayHeight(dpy, DefaultScreen(dpy)));
-	snprintf(buf, sizeof buf, "fcterm: status in %s\r\n", buf2);
+		DisplayHeight(dpy, DefaultScreen(dpy))) < 0)
+		abort();
+	if (snprintf(buf, sizeof buf, "fcterm: status in %s\r\n", buf2) < 0)
+		abort();
 	if ((fp = fopen(buf2, "w")) != NULL) {
 		fprintf(fp, "%s", cp);
 		fclose(fp);

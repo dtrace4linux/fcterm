@@ -49,7 +49,7 @@
 # endif
 */
 #include	<netinet/in.h>
-#include	<tcplib.h>
+//#include	<tcplib.h>
 
 # define	PTY_SERVER_PORT 13456
 

@@ -97,7 +97,7 @@ static Pixel	bg_color;
 # define	DOWN_ARROW	1
 
 int	xs_XParseColor();
-static void	sbar_timer_proc();
+static void	sbar_timer_proc(ScrbarWidget, XtIntervalId *);
 static void	paint_arrow PROTO((ScrbarWidget, int));
 static void	paint_thumb PROTO((ScrbarWidget));
 static void	display_xpm_error PROTO((int, char *));

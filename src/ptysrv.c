@@ -540,7 +540,7 @@ cmd_status(netconn_t *conp, int argc, char **argv)
 			"%Y-%m-%d %H:%M:%S",
 			tm);
 		pwd = getpwuid(pty->p_uid);
-		sprintf(buf, "PTY  %-8s %s ref=%d %2dx%2d %s %s\n", 
+		(void) snprintf(buf, sizeof buf, "PTY  %-8s %s ref=%d %2dx%2d %s %s\n", 
 			pwd ? pwd->pw_name : "(anon)",
 			time_buf, pty->p_ref, 
 			pty->p_rows, pty->p_cols,
@@ -1239,7 +1239,7 @@ found_pty:
 	  	close(1);
 	  	close(2);
 
-		sprintf(tty, "TTY=%s", tty_name);
+		snprintf(tty, sizeof tty, "TTY=%s", tty_name);
 		putenv(tty);
 # if HAVE_SETSID
 		setsid();
