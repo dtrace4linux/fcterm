@@ -2049,11 +2049,11 @@ status:
 		  	RETURN();
 		  case XK_Insert:
 		  case XK_KP_Insert:
-		  	ctw_get_selection(ctw);
+		  	ctw_get_selection(ctw, 0);
 		  	RETURN();
 		  case XK_KP_0:
 		  	if (keymod_mask == 0) {
-				ctw_get_selection(ctw);
+				ctw_get_selection(ctw, 0);
 				RETURN();
 				}
 			break;
@@ -2066,7 +2066,7 @@ status:
 		  case XK_Insert:
 		  case XK_KP_Insert:
 		  case XK_KP_0:
-		  	ctw_get_selection(ctw);
+		  	ctw_get_selection(ctw, 0);
 		  	RETURN();
 		  }
 		}
@@ -2687,14 +2687,14 @@ CtwString(Widget w, XEvent *event, String *x, Cardinal *y)
 		Mod1Mask | Mod2Mask | Mod3Mask);
 	if ((keysym == XK_Insert || keysym == XK_KP_Insert) &&
 	    !ctw->ctw.flags[CTW_APPL_KEYPAD]) {
-	  	ctw_get_selection(ctw);
+	  	ctw_get_selection(ctw, 0);
 		return;
 		}
 	
 	switch (is_ctw_modifier(mask) ? keysym : 0) {
 	  case XK_Insert:
 	  case XK_KP_Insert:
-	  	ctw_get_selection(ctw);
+	  	ctw_get_selection(ctw, 0);
 	  	return;
 	  case XK_F1:
 	  case XK_F2:
@@ -5657,6 +5657,12 @@ requestor_callback(Widget w, XtPointer client_data,
 	reason.len = (int) *length;
 	XtCallCallbacks(w, XtNkbdCallback, (caddr_t) &reason);
 
+	if (client_data == (XtPointer) 1) {
+		reason.ptr = "\n";
+		reason.len = 1;
+		XtCallCallbacks(w, XtNkbdCallback, (caddr_t) &reason);
+	}
+
 	/***********************************************/
 	/*   Free it.				       */
 	/***********************************************/
@@ -8564,17 +8570,17 @@ ctw_get_line(CtwWidget ctw, int line_no)
 /*   Function to get the selection.				      */
 /**********************************************************************/
 void
-ctw_get_selection(CtwWidget ctw)
+ctw_get_selection(CtwWidget ctw, int add_nl)
 {
 	if (enable_primary)
 		XtGetSelectionValue((Widget) ctw, XA_PRIMARY, XA_STRING, (XtSelectionCallbackProc) requestor_callback, 
-			NULL, CurrentTime);
+			(XtPointer) add_nl, CurrentTime);
 	else if (enable_secondary)
 		XtGetSelectionValue((Widget) ctw, XA_SECONDARY, XA_STRING, (XtSelectionCallbackProc) requestor_callback, 
-			NULL, CurrentTime);
+			(XtPointer) add_nl, CurrentTime);
 	else if (enable_clipboard) {
 		XtGetSelectionValue((Widget) ctw, atom_clipboard, XA_STRING, (XtSelectionCallbackProc) requestor_callback, 
-			NULL, CurrentTime);
+			(XtPointer) add_nl, CurrentTime);
 		}
 	if (enable_cut_buffer0) {
 		}

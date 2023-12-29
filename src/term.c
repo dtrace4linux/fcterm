@@ -7,7 +7,7 @@
 /*   								      */
 /*   Author: Paul Fox						      */
 /*   Date:   February 1992       				      */
-/*   $Header: Last edited: 13-Dec-2019 1.12 $ 			      */
+/*   $Header: Last edited: 29-Dec-2023 1.13 $ 			      */
 /**********************************************************************/
 
 //#define __STRICT_ANSI__
@@ -140,6 +140,7 @@ extern int	enable_cut_buffer0;
 /**********************************************************************/
 /*   Prototypes.						      */
 /**********************************************************************/
+long	tcp_get_ipaddr(host);
 int	grantpt(int);
 int	unlockpt(int);
 char	*find_exec_path PROTO((char *, char *));
@@ -1231,7 +1232,7 @@ restart_fcterm()
 	fwrite(DSTR_STRING(&dstr), 1, DSTR_SIZE(&dstr), fp);
 	fclose(fp);
 
-	sprintf(buf1, "FCTERM_STATE=%s", buf);
+	snprintf(buf1, sizeof buf1, "FCTERM_STATE=%s", buf);
 	putenv(buf1);
 
 	dstr_free(&dstr);
@@ -1850,7 +1851,7 @@ static char	ctw_pid[32];
 	  	close(1);
 	  	close(2);
 
-		sprintf(tty, "TTY=%s", tty_name);
+		snprintf(tty, sizeof tty, "TTY=%s", tty_name);
 		putenv(tty);
 		if (setsid() < 0) {
 			perror("setsid");

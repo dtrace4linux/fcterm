@@ -440,7 +440,7 @@ caddr_t	call_data;
 	if ((ret = find_menu_widget(edit_tbl, widget)) >= 0) {
 		name = edit_tbl[ret].widget_name;
 		if (strcmp(name, "paste") == 0) {
-		  	ctw_get_selection((CtwWidget) ctw_widget);
+		  	ctw_get_selection((CtwWidget) ctw_widget, 0);
 			return;
 			}
 		if (strcmp(name, "alphabet") == 0) {

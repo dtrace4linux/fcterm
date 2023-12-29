@@ -497,7 +497,7 @@ void	ctw_set_pixmap_mode(CtwWidget ctw, int flag);
 /**********************************************************************/
 /*   Tell widget to grab the contents of the selection.		      */
 /**********************************************************************/
-void	ctw_get_selection(CtwWidget);
+void	ctw_get_selection(CtwWidget, int);
 
 /**********************************************************************/
 /*   Force mouse input.						      */

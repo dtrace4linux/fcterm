@@ -91,6 +91,7 @@ struct menu_commands {
 struct menu_commands menu_commands[] = {
 		{0,			LINE_MENU_ITEM, 0},
 		{" Paste",		PASTE, 0},
+		{" Paste+NL",		PASTE_NL, 0},
 		{" Mark position",	MARK_POSITION, 0},
 		{" Auto label",		LABEL_LINES, 0},
 		{" Font smaller",	FONT_SMALLER, 0},
@@ -1095,7 +1096,10 @@ menu_callback(Widget widget, enum menu_items val, caddr_t call_data)
 	  	reset_terminal(cur_ctw);
 	  	break;
 	  case PASTE:
-	  	ctw_get_selection((CtwWidget) cur_ctw->f_ctw);
+	  	ctw_get_selection((CtwWidget) cur_ctw->f_ctw, 0);
+	  	break;
+	  case PASTE_NL:
+	  	ctw_get_selection((CtwWidget) cur_ctw->f_ctw, 1);
 	  	break;
 	  case FONT_SMALLER:
 	  	cmd_font_smaller();
