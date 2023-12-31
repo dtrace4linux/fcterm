@@ -2010,6 +2010,7 @@ status:
 			keymod_mask);
 		}
 
+//printf("kbd=%d %d mask=%x\n", ctw->ctw.flags[CTW_KEYBOARD_SCROLL], ctw->ctw.flags[CTW_APPL_KEYPAD], mask);
 	if (ctw->ctw.flags[CTW_KEYBOARD_SCROLL] ||
 	    !ctw->ctw.flags[CTW_APPL_KEYPAD]) {
 		switch (keysym) {
@@ -3382,6 +3383,7 @@ do_csi_quest(CtwWidget ctw, int cmd, int arg_no, int *args)
 			return TRUE;
 
 		  case 1000:
+printf("line %d APPL_KEYPAD=%d\n", __LINE__, flag);
 			ctw->ctw.flags[CTW_APPL_KEYPAD] = flag;
 		  	return TRUE;
 
@@ -9083,8 +9085,8 @@ ctw_resize(CtwWidget ctw, int rows, int cols, int force)
 		return;
 	}
 
-	rows = rows * ctw->ctw.font_height + ctw->ctw.internal_height;
-	cols = cols * ctw->ctw.font_width + ctw->ctw.internal_width;
+	rows = rows * ctw->ctw.font_height + 2 * ctw->ctw.internal_height;
+	cols = cols * ctw->ctw.font_width + 2 * ctw->ctw.internal_width;
 	XtResizeWidget((Widget) ctw, cols, rows, 1);
 	Resize(ctw);
 }

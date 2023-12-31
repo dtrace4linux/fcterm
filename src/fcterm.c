@@ -2220,7 +2220,7 @@ set_font(char *font)
 	int	orig_rows, orig_columns;
 	int	fwidth, fheight;
 	fcterm_t *ctwp;
-	int	verbose = 1;
+//	int	verbose = 1;
 
 	if (strncmp(font, "* ", 2) == 0)
 		font += 2;
@@ -2255,13 +2255,23 @@ set_font(char *font)
 				ctwp->f_ctw->core.height,
 				rows, columns
 				);
-		/***********************************************/
-		/*   Re-use the row column size.	       */
-		/***********************************************/
-		if (0) {
+
+		if (1) {
+			/***********************************************/
+			/*   Keep same rows/cols.		       */
+			/***********************************************/
 			rows = orig_rows;
 			ctw_resize(ctwp->f_ctw, orig_rows, orig_columns, 1);
+			n = 0;
+			XtSetArg(args[n], XtNheight, ctwp->f_ctw->core.height + 8); n++;
+			XtSetArg(args[n], XtNwidth, ctwp->f_ctw->core.width + 16); n++;
+			XtSetValues(pane, args, n);
+			XtSetValues(scrollbar, args, n);
+			continue;
 		} else {
+			/***********************************************/
+			/*   Keep window size constant		       */
+			/***********************************************/
 			n = 0;
 			XtSetArg(args[n], XtNrows, rows); n++;
 			XtSetArg(args[n], XtNcolumns, columns); n++;

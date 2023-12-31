@@ -467,6 +467,11 @@ int	ctw_get_top_line(CtwWidget);
 int	ctw_get_total_rows(CtwWidget ctw);
 
 /**********************************************************************/
+/*   Set screen to a specific row x cols.			      */
+/**********************************************************************/
+void ctw_resize(CtwWidget ctw, int rows, int cols, int force);
+
+/**********************************************************************/
 /*   Set  the  line at the top of the display. Used for implementing  */
 /*   scrollable area.						      */
 /**********************************************************************/
