@@ -55,6 +55,7 @@ extern char *group_label;
 extern int version_major;
 extern int version_minor;
 extern int version_build_no;
+char	*font_file;
 int	direct;
 int	dump_flag;
 int	freetype_flag;
@@ -521,6 +522,13 @@ do_switches(int argc, char **argv)
 			}
 		if (strcmp(cp, "dump") == 0) {
 			dump_flag = TRUE;
+			continue;
+			}
+
+		if (strcmp(cp, "font_file") == 0) {
+			if (++i >= argc)
+				usage();
+			font_file = argv[i];
 			continue;
 			}
 

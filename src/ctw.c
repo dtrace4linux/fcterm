@@ -1733,8 +1733,8 @@ Set_values(CtwWidget cur, CtwWidget req, CtwWidget new, ArgList args, Cardinal *
 	/*   Watch for row/column changes.	       */
 	/***********************************************/
 	if (NE(ctw.rows) || NE(ctw.columns)) {
-		new->core.width = new->ctw.rows * new->ctw.font_height;
-		new->core.height = new->ctw.columns * new->ctw.font_width;
+		new->core.width = new->ctw.rows * new->ctw.font_height + 2 * new->ctw.internal_height;
+		new->core.height = new->ctw.columns * new->ctw.font_width + 2 * new->ctw.internal_width;
 		}
 # undef NE
 	/***********************************************/
@@ -2028,6 +2028,10 @@ status:
 		  case XK_R8:
 		  	if (mask == 0)
 				break;
+			if (mask & ControlMask) {
+				ctw_font_change_size(ctw, 1);
+				RETURN();
+			}
 			ctw_set_top_line(ctw, dsp_get_top(ctw) - 1);
 		  	RETURN();
 		  case XK_R9:
@@ -2040,6 +2044,10 @@ status:
 		  case XK_R14:
 		  	if (mask == 0)
 				break;
+			if (mask & ControlMask) {
+				ctw_font_change_size(ctw, -1);
+				RETURN();
+			}
 			ctw_set_top_line(ctw, dsp_get_top(ctw) + 1);
 		  	RETURN();
 		  case XK_R15:
@@ -4488,6 +4496,8 @@ static line_t	lbuf;
 	i = idx * CHUNK_SIZE;
 	for ( ; i <= ln; i++) {
 		if (fgets(buf, sizeof buf, ctw->ctw.c_spill_fp) == NULL) {
+			if (ln == 0)
+				break;
 			printf("fcterm(%d): Error reading line %d from spill file after %d lines\n",
 				getpid(), ln, i);
 			break;
@@ -8436,6 +8446,17 @@ ctw_emulation_name(int type)
 	  }
 }
 /**********************************************************************/
+/*   Increase/decrease font size				      */
+/**********************************************************************/
+void
+ctw_font_change_size(CtwWidget ctwp, int sz)
+{
+	if (sz < 0)
+		cmd_font_smaller();
+	else
+		cmd_font_larger();
+}
+/**********************************************************************/
 /*   Stop/start scrolling.					      */
 /**********************************************************************/
 int
@@ -9055,10 +9076,12 @@ ctw_set_spill_size(unsigned size)
 /*   Allow owner to force a specific size.			      */
 /**********************************************************************/
 void
-ctw_resize(CtwWidget ctw, int rows, int cols)
+ctw_resize(CtwWidget ctw, int rows, int cols, int force)
 {
-	if (ctw->ctw.rows == rows && ctw->ctw.columns == cols)
+	if (!force && ctw->ctw.rows == rows && ctw->ctw.columns == cols) {
+		//printf("ctw_resize -- no change\n");
 		return;
+	}
 
 	rows = rows * ctw->ctw.font_height + ctw->ctw.internal_height;
 	cols = cols * ctw->ctw.font_width + ctw->ctw.internal_width;

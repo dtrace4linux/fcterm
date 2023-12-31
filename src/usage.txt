@@ -6,6 +6,9 @@ fcterm [-isc | -sco] [standard X11 options]
   -dump     	  Dump screens to /tmp
   -e cmd ...	  Command to execute (last on line)
   -f		  Do not fork from shell.
+  -font_file <filename>
+                  List of fonts to use for smaller/larger font change
+		  Use '*' at start of line to indicate the default.
   -freetype	  Enable freetype fonts.
   -label <name>   Run using a label, so we can restore session
                   on startup (cwd and screen content).

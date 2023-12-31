@@ -446,6 +446,11 @@ int	ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn);
 void	ctw_add_raw_string(CtwWidget, char *, int);
 
 /**********************************************************************/
+/*   Cycle through font changes.				      */
+/**********************************************************************/
+void ctw_font_change_size(CtwWidget ctwp, int sz);
+
+/**********************************************************************/
 /*   Stop scrolling whilst playing with scrollbars.		      */
 /**********************************************************************/
 int	ctw_freeze_display(CtwWidget, int);

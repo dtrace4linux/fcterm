@@ -148,6 +148,7 @@ extern int	label_arg_specified;
 extern int	fork_flag;
 extern int	main_x;
 extern int	main_y;
+extern char	*font_file;
 static Widget	font_dialog;
 static Widget	dialog;
 static Widget	monitor;
@@ -360,6 +361,8 @@ main(int argc, char **argv)
 	/*   Now do command line switches.	       */
 	/***********************************************/
 	arg_index = do_switches(argc, argv);
+
+	read_font_file();
 
 	handle_commands(arg_index, argc, argv);
 
@@ -1836,6 +1839,33 @@ refresh_dialog(Widget w, XtPointer client_data, XtPointer call_data)
 		XtSetValues(w_attr[i], args, n);
 		}
 }
+
+void
+read_font_file()
+{	FILE	*fp;
+	char	buf[BUFSIZ];
+	char	**array;
+	int	i = 0;
+
+	if (font_file == NULL)
+		return;
+	if ((fp = fopen(font_file, "r")) == NULL)
+		return;
+
+	array = chk_zalloc(2 * sizeof(char *));
+	while (fgets(buf, sizeof buf, fp) != NULL) {
+		if (*buf == '#')
+			continue;
+		if (buf[strlen(buf)-1] == '\n')
+			buf[strlen(buf)-1] = '\0';
+		array = (char **) chk_realloc(array, (i + 2) * sizeof(char *));
+		array[i++] = chk_strdup(buf);
+		array[i] = NULL;
+	}
+	fonts = array;
+	fclose(fp);
+}
+
 /**********************************************************************/
 /*   Restore state from a previous session/label file.		      */
 /**********************************************************************/
@@ -2187,8 +2217,10 @@ set_font(char *font)
 {	int	n;
 	Arg	args[20];
 	int	rows, columns;
+	int	orig_rows, orig_columns;
 	int	fwidth, fheight;
 	fcterm_t *ctwp;
+	int	verbose = 1;
 
 	if (strncmp(font, "* ", 2) == 0)
 		font += 2;
@@ -2196,6 +2228,11 @@ set_font(char *font)
 		printf("set_font [%d]: %s\n", cur_font, font);
 
 	do_wm_hints(top_level, cur_ctw->f_ctw, FALSE);
+
+	n = 0;
+	XtSetArg(args[n], XtNrows, &orig_rows); n++;
+	XtSetArg(args[n], XtNcolumns, &orig_columns); n++;
+	XtGetValues(cur_ctw->f_ctw, args, n);
 
 	for (ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next) {
 		if (ctwp->f_pty_fd < 0)
@@ -2216,16 +2253,22 @@ set_font(char *font)
 				fwidth, fheight, 
 				ctwp->f_ctw->core.width,
 				ctwp->f_ctw->core.height,
-				rows, columns);
+				rows, columns
+				);
 		/***********************************************/
 		/*   Re-use the row column size.	       */
 		/***********************************************/
-		n = 0;
-		XtSetArg(args[n], XtNrows, rows); n++;
-		XtSetArg(args[n], XtNcolumns, columns); n++;
-		XtSetArg(args[n], XtNwidth, fwidth * columns); n++;
-		XtSetArg(args[n], XtNheight, fheight * rows); n++;
-		XtSetValues(ctwp->f_ctw, args, n);
+		if (0) {
+			rows = orig_rows;
+			ctw_resize(ctwp->f_ctw, orig_rows, orig_columns, 1);
+		} else {
+			n = 0;
+			XtSetArg(args[n], XtNrows, rows); n++;
+			XtSetArg(args[n], XtNcolumns, columns); n++;
+			XtSetArg(args[n], XtNwidth, fwidth * columns); n++;
+			XtSetArg(args[n], XtNheight, fheight * rows); n++;
+			XtSetValues(ctwp->f_ctw, args, n);
+		}
 
 		n = 0;
 		XtSetArg(args[n], XtNheight, fheight * rows); n++;
