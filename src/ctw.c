@@ -3383,7 +3383,6 @@ do_csi_quest(CtwWidget ctw, int cmd, int arg_no, int *args)
 			return TRUE;
 
 		  case 1000:
-printf("line %d APPL_KEYPAD=%d\n", __LINE__, flag);
 			ctw->ctw.flags[CTW_APPL_KEYPAD] = flag;
 		  	return TRUE;
 
@@ -4672,6 +4671,13 @@ get_log_name(CtwWidget ctw, char *buf, int size, char *str)
 			isdigit(*name) ? "tty" : "", name,
 			str ? "-" : "", str ? str : "") < 0)
 		abort();
+
+	/***********************************************/
+	/*   If  we are redrawing the last few lines,  */
+	/*   ensure we flush the pending output	       */
+	/***********************************************/
+	if (ctw->ctw.c_log_fp)
+		fflush(ctw->ctw.c_log_fp);
 }
 /**********************************************************************/
 /*   Add a drawable to the graph chain.				      */
