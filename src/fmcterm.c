@@ -459,9 +459,7 @@ caddr_t	call_data;
 /*   Function called when OK button selected in dialog box.	      */
 /**********************************************************************/
 void
-ok_dialog(w, client_data, call_data)
-Widget	w;
-XtPointer	client_data, call_data;
+ok_dialog(Widget w, XtPointer client_data, XtPointer call_data)
 {
 	
 	ctw_set_attributes((CtwWidget) ctw_widget, attributes);
@@ -472,9 +470,7 @@ XtPointer	client_data, call_data;
 /*   Function called to apply current attribute settings.	      */
 /**********************************************************************/
 void
-apply_dialog(w, client_data, call_data)
-Widget	w;
-XtPointer	client_data, call_data;
+apply_dialog(Widget w, XtPointer client_data, XtPointer call_data)
 {
 	
 	ctw_set_attributes((CtwWidget) ctw_widget, attributes);

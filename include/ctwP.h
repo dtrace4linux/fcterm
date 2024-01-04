@@ -124,6 +124,7 @@ typedef struct graph_t {
 # define	CTWF_FROZEN	0x0001
 # define	CTWF_CMD_MODE   0x0002
 # define	CTWF_CTRLO_MODE	0x0004
+# define	CTWF_CMD_MODE_START   0x0008
 
 /**********************************************************************/
 /*   Number  of  columns  we  allocate  in  addition to the resource  */

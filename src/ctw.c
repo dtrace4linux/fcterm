@@ -1617,6 +1617,7 @@ static int backtrack_size = -1;
 	if (sbuf.st_size > backtrack_size)
 		lseek(fd, sbuf.st_size - backtrack_size, SEEK_SET);
 
+//	ctw_add_string(ctw, "\033[2J\033[H", 7);
 	while ((n = read(fd, buf, sizeof buf)) > 0) {
 		ctw_add_string2(ctw, buf, n);
 		}
@@ -1994,8 +1995,8 @@ status:
 
 	if (keymod_mask == (KEYMOD_META | KEYMOD_SHIFT) &&
 	    keysym == XK_F10) {
-	    	ctw->ctw.c_flags |= CTWF_CMD_MODE;
-	    	ctw->ctw.c_idx = 0;
+	    	ctw->ctw.c_flags |= CTWF_CMD_MODE | CTWF_CMD_MODE_START;
+	    	ctw->ctw.c_idx = strlen(ctw->ctw.c_ibuf);
 		command_input(ctw, keymod_mask, keysym, 0);
 		return;
 	    	}
@@ -2974,20 +2975,32 @@ command_input(CtwWidget ctw, int keymod_mask, int keysym, int ch)
 		}
 	ctw->ctw.c_flags |= CTWF_CMD_MODE;
 
-	if (keysym == XK_Home || keysym == XK_KP_Home)
+	if (keysym == XK_Home || keysym == XK_KP_Home) {
+		ctw->ctw.c_flags &= ~CTWF_CMD_MODE_START;
 		ctw->ctw.c_idx = 0;
-	else if (keysym == XK_End || keysym == XK_KP_End)
+		}
+	else if (keysym == XK_End || keysym == XK_KP_End) {
+		ctw->ctw.c_flags &= ~CTWF_CMD_MODE_START;
 		ctw->ctw.c_idx = strlen(ctw->ctw.c_ibuf);
-	else if (keysym == XK_Left || keysym == XK_KP_Left)
+		}
+	else if (keysym == XK_Left || keysym == XK_KP_Left) {
+		ctw->ctw.c_flags &= ~CTWF_CMD_MODE_START;
 		ctw->ctw.c_idx = MAX(0, ctw->ctw.c_idx - 1);
+		}
 	else if (keysym == XK_Right || keysym == XK_KP_Right) {
+		ctw->ctw.c_flags &= ~CTWF_CMD_MODE_START;
 		if (ctw->ctw.c_ibuf[ctw->ctw.c_idx])
 			ctw->ctw.c_idx++;
 		}
+	else if (ch == 0) {
+		}
 	else {
+		if (ctw->ctw.c_flags & CTWF_CMD_MODE_START) {
+			ctw->ctw.c_idx = 0;
+			ctw->ctw.c_ibuf[0] = '\0';
+		}
+		ctw->ctw.c_flags &= ~CTWF_CMD_MODE_START;
 		switch (ch) {
-		  case 0:
-		  	break;
 		  case '\b':
 			if (ctw->ctw.c_idx == 0)
 				break;
@@ -5829,6 +5842,30 @@ static struct match_t *matches = _matches;
 # define MAP_WORD	0x02
 # define MAP_LINK	0x04
 static int
+re_match(char *str, vbyte_t *vp, vbyte_t *vpend)
+{	vbyte_t *vp0 = vp;
+
+	for ( ; *str && vp < vpend; vp++, str++) {
+		if (*str == '.' && str[1] == '*') {
+			vbyte_t *vp2;
+			str += 2;
+			for (vp2 = vpend - 1; vp2 >= vp; vp2--) {
+				int n = re_match(str, vp2, vpend);
+				if (n)
+					return n + (vp2 - vp0);
+			}
+			return 0;
+		}
+
+		if (tolower(*str) != tolower(vp->vb_byte)) {
+			if (*str != '.')
+				return 0;
+		}
+	}
+	return vp - vp0;
+}
+
+static int
 print_search(CtwWidget ctw, line_t *lp, unsigned char *map)
 {	char	*str;
 	int	len;
@@ -5896,8 +5933,9 @@ static int done_read = FALSE;
 					if (toupper(str[i]) != toupper(vp1->vb_byte))
 						break;
 					}
-				if (str[i])
+				if (str[i]) {
 					continue;
+					}
 				if (vp1 < vpend && vp1->vb_byte == '_')
 					continue;
 
@@ -5973,8 +6011,12 @@ static int done_read = FALSE;
 			if (str[i] != vp1->vb_byte)
 				break;
 			}
-		if (str[i])
-			continue;
+		if (str[i]) {
+			int n = re_match(str, vp, vpend);
+			if (n == 0)
+				continue;
+			len = n;
+			}
 		for (j = 0; j < len; j++)
 			map[vp - lp->l_text + j] |= MAP_SEARCH;
 		vp += len;
@@ -8404,7 +8446,7 @@ ctw_asciitext_record(CtwWidget ctw, int cmd, char *fn)
 void
 ctw_command_mode(CtwWidget ctw)
 {
-    	ctw->ctw.c_flags |= CTWF_CMD_MODE;
+    	ctw->ctw.c_flags |= CTWF_CMD_MODE | CTWF_CMD_MODE_START;
     	ctw->ctw.c_idx = 0;
 	command_input(ctw, 0, 0, 0);
 }
@@ -8459,6 +8501,8 @@ ctw_emulation_name(int type)
 void
 ctw_font_change_size(CtwWidget ctwp, int sz)
 {
+	UNUSED_PARAMETER(ctwp);
+
 	if (sz < 0)
 		cmd_font_smaller();
 	else
@@ -8603,13 +8647,13 @@ ctw_get_selection(CtwWidget ctw, int add_nl)
 {
 	if (enable_primary)
 		XtGetSelectionValue((Widget) ctw, XA_PRIMARY, XA_STRING, (XtSelectionCallbackProc) requestor_callback, 
-			(XtPointer) add_nl, CurrentTime);
+			(XtPointer) (long) add_nl, CurrentTime);
 	else if (enable_secondary)
 		XtGetSelectionValue((Widget) ctw, XA_SECONDARY, XA_STRING, (XtSelectionCallbackProc) requestor_callback, 
-			(XtPointer) add_nl, CurrentTime);
+			(XtPointer) (long) add_nl, CurrentTime);
 	else if (enable_clipboard) {
 		XtGetSelectionValue((Widget) ctw, atom_clipboard, XA_STRING, (XtSelectionCallbackProc) requestor_callback, 
-			(XtPointer) add_nl, CurrentTime);
+			(XtPointer) (long) add_nl, CurrentTime);
 		}
 	if (enable_cut_buffer0) {
 		}
