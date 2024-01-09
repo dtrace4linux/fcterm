@@ -3380,14 +3380,14 @@ do_csi_quest(CtwWidget ctw, int cmd, int arg_no, int *args)
 			if (ctw->ctw.cursor_state == CURSOR_HIDDEN && !flag)
 				return TRUE;
 			ctw->ctw.cursor_state = flag ? CURSOR_ON : CURSOR_HIDDEN;
-			if (flag)
-				show_cursor(ctw);
 			/***********************************************/
 			/*   Make sure we dont leave turd behind.      */
 			/***********************************************/
 			int	y = ctw->ctw.y;
 			int x = ctw->ctw.x >= ctw->ctw.columns ? ctw->ctw.columns - 1 : ctw->ctw.x;
 			update_region(ctw, y, x, y+1, x+1);
+			if (flag)
+				show_cursor(ctw);
 			return TRUE;
 		  case 47:
 		  	/***********************************************/
