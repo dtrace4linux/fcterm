@@ -19,6 +19,8 @@
 # include	"ptysrv.h"
 # include	<pwd.h>
 # include	<time.h>
+# include	<sys/ioctl.h>
+
 # undef sscanf
 
 Head_p	hd_ptys;
@@ -69,6 +71,7 @@ char	*basename(char *);
 int	spawn_child(pty_t *pty);
 int	noinherit(int);
 int pty_close(List_p lp);
+int	tcp_connect(int, unsigned long, unsigned, unsigned long, unsigned);
 
 /**********************************************************************/
 /*   New connection coming in - accept it.			      */
@@ -488,7 +491,7 @@ cmd_restart(netconn_t *conp, int argc, char **argv)
 		pty_t *pty = (pty_t *) ll_elem(lp);
 
 		bp += strlen(buf);
-		sprintf(bp, "%d %s;",
+		snprintf(bp, sizeof buf - strlen(buf), "%d %s;",
 			pty->p_pty_fd,
 			pty->p_name);
 		ioctl(pty->p_pty_fd, F_SETFD, 0);
@@ -520,14 +523,14 @@ cmd_status(netconn_t *conp, int argc, char **argv)
 	UNUSED_PARAMETER(argc);
 	UNUSED_PARAMETER(argv);
 
-	sprintf(buf, "Allow: %s\n", allow_flag ? "YES" : "no");
+	snprintf(buf, sizeof buf, "Allow: %s\n", allow_flag ? "YES" : "no");
 	write(conp->n_fd, buf, strlen(buf));
 	write(conp->n_fd, "\n", 1);
 
 	/***********************************************/
 	/*   Sort entries into a useful order.	       */
 	/***********************************************/
-	ptys = (pty_t *) chk_alloc(ll_length(hd_ptys) * sizeof(pty_t *) + 1);
+	ptys = (pty_t **) chk_alloc(ll_length(hd_ptys) * sizeof(pty_t *) + 1);
 	for (i = 0, lp = ll_first(hd_ptys); lp; lp = ll_next(lp), i++) {
 		ptys[i] = (pty_t *) ll_elem(lp);
 		}
@@ -561,7 +564,7 @@ cmd_status(netconn_t *conp, int argc, char **argv)
 			"%Y-%m-%d %H:%M:%S",
 			tm);
 		pwd = getpwuid(conp1->n_uid);
-		sprintf(buf, "TCP%s %-8s %s %dx%d %s\n", 
+		snprintf(buf, sizeof buf, "TCP%s %-8s %s %dx%d %s\n", 
 			conp1->n_owner ? "*" : ":",
 			pwd ? pwd->pw_name : "(anon)",
 			time_buf, 
@@ -651,7 +654,7 @@ do_utmp(pty_t *cur_ctw, int remove_flag)
 		if (pwd)
 			name = pwd->pw_name;
 		else if ((name = getenv("LOGNAME")) == (char *) NULL) {
-			sprintf(buf, "UID#%ld", (long) getuid());
+			snprintf(buf, sizeof buf, "UID#%ld", (long) getuid());
 			name = buf;
 			}
 		}
@@ -1229,8 +1232,8 @@ found_pty:
 		/*   Brain-dead  systems  which  dont support  */
 		/*   window sizes.			       */
 		/***********************************************/
-		sprintf(lines_buf, "LINES=%d", rows);
-		sprintf(columns_buf, "COLUMNS=%d", cols);
+		snprintf(lines_buf, sizeof lines_buf, "LINES=%d", rows);
+		snprintf(columns_buf, sizeof columns_buf, "COLUMNS=%d", cols);
 		putenv(lines_buf);
 		putenv(columns_buf);
 		}
@@ -1296,7 +1299,7 @@ found_pty:
 		if (pty->p_console_flag) {
 			char	buf[64];
 			if (ioctl(tty_fd, TIOCCONS, (char *) &one) >= 0) {
-				sprintf(buf, "CTW_CONSOLE=(console)");
+				snprintf(buf, sizeof buf, "CTW_CONSOLE=(console)");
 				putenv(strdup(buf));
 				}
 			else {

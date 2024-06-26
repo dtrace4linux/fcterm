@@ -602,8 +602,8 @@ static void label_line(CtwWidget ctw);
 static int is_ctw_modifier(int mask);
 static void	initialize();
 static void	realize();
-static void	Destroy();
-static void	Resize();
+static void	Destroy(CtwWidget ctw);
+static void	Resize(CtwWidget ctw);
 static void	HandleExpose();
 static  Boolean	Set_values();
 static void	HandleFocusChange();
@@ -665,9 +665,11 @@ static void	draw_string PROTO((CtwWidget, int, int, char *, int, Pixel, Pixel, i
 static void	exposed_region PROTO((CtwWidget, int, int, int, int));
 static void	handle_focus_change PROTO((CtwWidget, int));
 static void	insert_line PROTO((CtwWidget, int, int, int, int));
-static void	lose_selection();
+static void	lose_selection(CtwWidget ctw, Atom *selection);
 static void	print_string PROTO((CtwWidget, line_t *, int, int, int));
-static void	requestor_callback();
+static void	requestor_callback(Widget w, XtPointer client_data, 
+	Atom *selection, Atom *type, 
+	XtPointer value, unsigned long *length, int *format);
 static void	reset_screen PROTO((CtwWidget));
 static void	scroll_down PROTO((CtwWidget, int, int));
 static void	scroll_rectangle PROTO((CtwWidget, int, int, int, int, int));
@@ -676,7 +678,7 @@ static void	scroll_up_local  PROTO((CtwWidget, int, int));
 static void	send_input PROTO((CtwWidget, char *, int));
 static void	send_str PROTO((CtwWidget, char *, int));
 static void	show_cursor PROTO((CtwWidget));
-static void	toggle_cursor();
+static void	toggle_cursor(CtwWidget ctw);
 static void	turn_off_cursor PROTO((CtwWidget));
 static void	turn_on_cursor PROTO((CtwWidget));
 static void	update_region PROTO((CtwWidget, int, int, int, int));
@@ -2221,10 +2223,10 @@ printf("   %d: keysym=%x mask=%x flags=%02x\n", k, keysym, keymod_mask, keymap[k
 			n = sunfuncvalue(keysym);
 			if (n < 0)
 				RETURN();
-			sprintf(rp, "%dz", n);
+			snprintf(rp, 10, "%dz", n);
 			}
 		else {
-			sprintf(rp, "%d~", funcvalue(keysym));
+			snprintf(rp, 10, "%d~", funcvalue(keysym));
 			}
 		rp += strlen(rp);
 		reason.len = rp - reply;
@@ -5709,15 +5711,16 @@ label_line(CtwWidget ctw)
 		return;
 
 	if (ctw->ctw.flags[CTW_NUMBER_LINES]) {
-		sprintf(buf, "[%06d]", dsp_get_top(ctw) + ctw->ctw.y);
+		snprintf(buf, sizeof buf, "[%06d]", dsp_get_top(ctw) + ctw->ctw.y);
 		ctw_add_string(ctw, buf, strlen(buf));
 		}
 	if (ctw->ctw.flags[CTW_LABEL_LINES]) {
 		gettimeofday(&tval, NULL);
 		tm = localtime(&tval.tv_sec);
-		sprintf(buf, "%04d", ctw->ctw.c_line_no++);
+		snprintf(buf, sizeof buf, "%04d", ctw->ctw.c_line_no++);
 		strftime(buf + 4, sizeof buf - 5, " %H:%M:%S", tm);
-		sprintf(buf + strlen(buf), ".%03d ", (int) (tval.tv_usec / 1000));
+		int sz = sizeof buf - strlen(buf);
+		snprintf(buf + strlen(buf), sz, ".%03d ", (int) (tval.tv_usec / 1000));
 		ctw_add_string(ctw, buf, strlen(buf));
 		}
 }
@@ -5763,6 +5766,7 @@ reset_font(CtwWidget w, int delete_flag)
 void
 reset_freetype_font(CtwWidget new, char *font)
 {
+# if HAVE_FREETYPE_XFT
 static char *old_font;
 	Display *dpy = XtDisplay((Widget) new);
 	int scr = DefaultScreen(dpy);
@@ -5814,6 +5818,7 @@ static char *old_font;
 
 	freetype_enabled = TRUE;
 	//printf("Xft: initialised (%s)\n", new->ctw.font);
+# endif
 }
 
 /**********************************************************************/
@@ -5927,7 +5932,7 @@ static int done_read = FALSE;
 				continue;
 			for (mp = matches; mp < &matches[num_matches]; mp++) {
 				char	*str = mp->m_str;
-				if (tolower(vp->vb_byte) != *str)
+				if (tolower(vp->vb_byte) != tolower(*str))
 					continue;
 				for (i = 0, vp1 = vp; str[i] && vp1 < vpend; vp1++, i++) {
 					if (toupper(str[i]) != toupper(vp1->vb_byte))
@@ -6005,10 +6010,10 @@ static int done_read = FALSE;
 		vbyte_t	*vp1;
 		int	i, j;
 
-		if (vp->vb_byte != *str)
+		if (tolower(vp->vb_byte) != tolower(*str))
 			continue;
 		for (i = 0, vp1 = vp; str[i] && vp1 < vpend; vp1++, i++) {
-			if (str[i] != vp1->vb_byte)
+			if (tolower(str[i]) != tolower(vp1->vb_byte))
 				break;
 			}
 		if (str[i]) {
@@ -9204,15 +9209,23 @@ ctw_save_state(CtwWidget ctw, dstr_t *dstrp)
 	unsigned char fg_color = 0;
 	unsigned char bg_color = 0;
 
-	sprintf(buf, "rows:%d\n", ctw->ctw.rows);
-	sprintf(buf + strlen(buf), "columns=%d\n", ctw->ctw.columns);
-	sprintf(buf + strlen(buf), "x=%d\n", ctw->ctw.x);
-	sprintf(buf + strlen(buf), "y=%d\n", ctw->ctw.y);
-	sprintf(buf + strlen(buf), "columns=%d\n", ctw->ctw.columns);
-	sprintf(buf + strlen(buf), "internal_height=%d\n", ctw->ctw.internal_height);
-	sprintf(buf + strlen(buf), "internal_width=%d\n", ctw->ctw.internal_width);
+	size_t sz = sizeof buf;
+	snprintf(buf, sz, "rows:%d\n", ctw->ctw.rows);
+	sz = sizeof buf - strlen(buf);
+	snprintf(buf + strlen(buf), sz, "columns=%d\n", ctw->ctw.columns);
+	sz = sizeof buf - strlen(buf);
+	snprintf(buf + strlen(buf), sz, "x=%d\n", ctw->ctw.x);
+	sz = sizeof buf - strlen(buf);
+	snprintf(buf + strlen(buf), sz, "y=%d\n", ctw->ctw.y);
+	sz = sizeof buf - strlen(buf);
+	snprintf(buf + strlen(buf), sz, "columns=%d\n", ctw->ctw.columns);
+	sz = sizeof buf - strlen(buf);
+	snprintf(buf + strlen(buf), sz, "internal_height=%d\n", ctw->ctw.internal_height);
+	sz = sizeof buf - strlen(buf);
+	snprintf(buf + strlen(buf), sz, "internal_width=%d\n", ctw->ctw.internal_width);
 	for (i = 0; i < CTW_MAX_ATTR; i++) {
-		sprintf(buf + strlen(buf), "attr%d=%d\n", i, ctw->ctw.flags[i]);
+		sz = sizeof buf - strlen(sz);
+		snprintf(buf + strlen(buf), sz, "attr%d=%d\n", i, ctw->ctw.flags[i]);
 		}
 	dstr_add_mem(dstrp, buf, strlen(buf));
 

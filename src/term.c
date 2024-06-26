@@ -40,6 +40,7 @@
 # include	"fcterm.bitmap"
 # include	"fcterm.xpm"
 # include	<X11/Xatom.h>
+# include	<sys/ioctl.h>
 
 # undef sscanf
 
@@ -141,7 +142,7 @@ extern int	enable_cut_buffer0;
 /**********************************************************************/
 /*   Prototypes.						      */
 /**********************************************************************/
-long	tcp_get_ipaddr(host);
+long	tcp_get_ipaddr(char *host);
 int	grantpt(int);
 int	unlockpt(int);
 char	*find_exec_path PROTO((char *, char *));
@@ -153,6 +154,7 @@ void set_status_label(fcterm_t *cur_ctw, char *title);
 void pty_output();
 void	group_config_poll(void *);
 char	*ptsname();
+int 	tcp_connect(int, unsigned long, unsigned, unsigned long, unsigned int);
 
 void
 init_term()
@@ -1197,7 +1199,7 @@ restart_fcterm()
 	new_argv[0] = prog_argv[0];
 	new_argv[1] = "-geom";
 	ctw_get_geometry((CtwWidget) cur_ctw->f_ctw, &rows, &cols);
-	sprintf(buf, "%dx%d+%d+%d", 
+	snprintf(buf, sizeof buf, "%dx%d+%d+%d", 
 		cols, rows, main_x, main_y);
 	new_argv[2] = chk_strdup(buf);
 	for (i = 1; i < prog_argc; i++)
@@ -1205,20 +1207,29 @@ restart_fcterm()
 	new_argv[i+2] = NULL;
 
 	dstr_init(&dstr, 1024);
-	sprintf(buf, "main.x=%d\nmain.y=%d\n", main_x, main_y);
+	snprintf(buf, sizeof buf, "main.x=%d\nmain.y=%d\n", main_x, main_y);
 	dstr_add_mem(&dstr, buf, strlen(buf));
 
 	for (ctwp = hd_ctw; ctwp; ctwp = ctwp->f_next) {
 		if (ctwp->f_id == GHOST_ID)
 			continue;
-		sprintf(buf, "[ctw]\n");
-		sprintf(buf + strlen(buf), "pty_fd=%d\n", ctwp->f_pty_fd);
-		sprintf(buf + strlen(buf), "pty_server=%d\n", ctwp->f_pty_server);
-		sprintf(buf + strlen(buf), "ttyname=%s\n", ctwp->f_ttyname);
-		sprintf(buf + strlen(buf), "label=%s\n", ctwp->f_label);
-		sprintf(buf + strlen(buf), "active=%d\n", ctwp->f_active);
-		sprintf(buf + strlen(buf), "pid=%d\n", ctwp->f_pid);
-		sprintf(buf + strlen(buf), "[pty]\n");
+		snprintf(buf, sizeof buf, "[ctw]\n");
+		int sz = sizeof(buf) - strlen(buf);
+		snprintf(buf + strlen(buf), sz, "pty_fd=%d\n", ctwp->f_pty_fd);
+		sz = sizeof(buf) - strlen(buf);
+		snprintf(buf + strlen(buf), sz, "pty_server=%d\n", ctwp->f_pty_server);
+		sz = sizeof(buf) - strlen(buf);
+		snprintf(buf + strlen(buf), sz, "ttyname=%s\n", ctwp->f_ttyname);
+		sz = sizeof(buf) - strlen(buf);
+		snprintf(buf + strlen(buf), sz, "label=%s\n", ctwp->f_label);
+		sz = sizeof(buf) - strlen(buf);
+		snprintf(buf + strlen(buf), sz, "active=%d\n", ctwp->f_active);
+		sz = sizeof(buf) - strlen(buf);
+		snprintf(buf + strlen(buf), sz, "pid=%d\n", ctwp->f_pid);
+		sz = sizeof(buf) - strlen(buf);
+		snprintf(buf + strlen(buf), sz, "[pty]\n");
+		sz = sizeof(buf) - strlen(buf);
+
 		dstr_add_mem(&dstr, buf, strlen(buf));
 		ctw_save_state((CtwWidget) ctwp->f_ctw, &dstr);
 		dstr_add_char(&dstr, '\n');
@@ -1686,7 +1697,8 @@ static char	ctw_pid[32];
 				cur_ctw->f_id + 1,
 				cur_ctw->f_id + 1);
 			if (cp) {
-				sprintf(buf + strlen(buf), " PTY_LABEL=");
+				int sz = sizeof buf - strlen(buf);
+				snprintf(buf + strlen(buf), sz, " PTY_LABEL=");
 				while (*cp) {
 					if (*cp == ' ')
 						strcat(buf, "_");
@@ -1701,7 +1713,7 @@ static char	ctw_pid[32];
 			putenv("PTY_LABEL=");
 			write(cur_ctw->f_pty_fd, "", 1);
 			write(cur_ctw->f_pty_fd, buf, strlen(buf) + 1);
-			sprintf(buf, "winsz rows=%d cols=%d", cur_ctw->f_rows, cur_ctw->f_cols);
+			snprintf(buf, sizeof buf, "winsz rows=%d cols=%d", cur_ctw->f_rows, cur_ctw->f_cols);
 			write(cur_ctw->f_pty_fd, "", 1);
 			write(cur_ctw->f_pty_fd, buf, strlen(buf) + 1);
 			cur_ctw->f_pty_server = TRUE;
@@ -1798,11 +1810,11 @@ static char	ctw_pid[32];
 		slavename = "/dev/dont-know";
 		for (letter1 = 'p'; letter1 < 'z'; letter1++) {
 			for (letter2 = 0; letter2 < 16; letter2++) {
-				sprintf(pty_name, "/dev/pty%c%x", letter1, letter2);
+				snprintf(pty_name, sizeof buf, "/dev/pty%c%x", letter1, letter2);
 				if ((cur_ctw->f_pty_fd = open(pty_name, O_RDWR)) >= 0) {
 					char	buf[BUFSIZ];
 
-					sprintf(tty_name, "/dev/tty%c%x", letter1, letter2);
+					snprintf(tty_name, sizeof tty_name, "/dev/tty%c%x", letter1, letter2);
 					slavename = malloc(strlen(pty_name) + 1);
 					strcpy(slavename, pty_name);
 
@@ -1818,7 +1830,7 @@ static char	ctw_pid[32];
 						goto found_pty;
 						}
 					fprintf(stderr, "Warning: %s could not be opened - trying next tty\n", tty_name);
-					sprintf(buf, "ls -l %s %s", pty_name, tty_name);
+					snprintf(buf, sizeof buf, "ls -l %s %s", pty_name, tty_name);
 					system(buf);
 					close(cur_ctw->f_pty_fd);
 					}
@@ -1849,8 +1861,8 @@ static char	ctw_pid[32];
 		/*   Brain-dead  systems  which  dont support  */
 		/*   window sizes.			       */
 		/***********************************************/
-		sprintf(lines_buf, "LINES=%d", rows);
-		sprintf(columns_buf, "COLUMNS=%d", cols);
+		snprintf(lines_buf, sizeof lines_buf, "LINES=%d", rows);
+		snprintf(columns_buf, sizeof columns_buf, "COLUMNS=%d", cols);
 		putenv(lines_buf);
 		putenv(columns_buf);
 		}
@@ -1915,7 +1927,7 @@ static char	ctw_pid[32];
 		if (console_flag) {
 			char	buf[64];
 			if (ioctl(tty_fd, TIOCCONS, (char *) &one) >= 0) {
-				sprintf(buf, "CTW_CONSOLE=(console)");
+				snprintf(buf, sizeof buf, "CTW_CONSOLE=(console)");
 				putenv(strdup(buf));
 				}
 			else {
@@ -2134,7 +2146,7 @@ snap_history(fcterm_t *cur_ctw)
 	int	j;
 	Arg	args[20];
 
-	sprintf(buf, "%s/CtwSnap.%d", log_dir, getpid());
+	snprintf(buf, sizeof buf, "%s/CtwSnap.%d", log_dir, getpid());
 	fp = fopen(buf, "w+");
 	if (fp == NULL) {
 		perror(buf);
@@ -2230,7 +2242,7 @@ dump_screens()
 		/***********************************************/
 		/*   Write the file only if it didnt change.   */
 		/***********************************************/
-		sprintf(buf, "%s/CtwDump.%s.%s", log_dir, getenv("USER"),
+		snprintf(buf, sizeof buf, "%s/CtwDump.%s.%s", log_dir, getenv("USER"),
 			basename(ctwp->f_ttyname));
 		if ((fd = open(buf, O_RDONLY)) >= 0) {
 			dstr_t dstr1;
@@ -2493,7 +2505,7 @@ do_utmp(fcterm_t *cur_ctw, int remove_flag)
 		if (pwd)
 			name = pwd->pw_name;
 		else if ((name = getenv("LOGNAME")) == (char *) NULL) {
-			sprintf(buf, "UID#%ld", (long) getuid());
+			snprintf(buf, sizeof buf, "UID#%ld", (long) getuid());
 			name = buf;
 			}
 		}

@@ -1,4 +1,11 @@
 #! /bin/sh
+
+case $(uname) in
+  Darwin)
+  	exit 0
+	;;
+esac
+
 err=0
 for i in "/usr/bin/pkgconf pkgconf" \
 	"/usr/include/X11/Xaw/Label.h libxaw7-dev" \

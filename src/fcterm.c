@@ -220,13 +220,13 @@ static int x11_error_handler(Display *dpy, XErrorEvent *event);
 static int x11_io_error_handler(Display *dpy);
 void layout_frame(void);
 int	create_screen(fcterm_t *, int, int, char *pwd);
-static void structure_notify_callback();
+static void structure_notify_callback(Widget w, XtPointer ptr, XEvent *event);
 Widget	create_menu PROTO((Widget, char *, struct menu_commands *));
 void	about_box();
 Widget	create_monitor_box();
 void	toggle_scrollbar(fcterm_t *);
-void	status_expose_callback();
-void	status_input_callback();
+void	status_expose_callback(Widget widget, XtPointer client_data, XtPointer call_data);
+void	status_input_callback(Widget widget, XtPointer client_data, DrawingAreaCallbackStruct *cbs);
 void	pane_focus_callback();
 void	pane_input_callback();
 void	sbar_callback();
@@ -234,22 +234,23 @@ void	jump_callback();
 void	scroll_callback();
 void	appl_callback();
 void	input_callback();
-void	top_callback();
+void	top_callback(Widget w, int type, ctw_callback_t *reason);
 void	menu_callback();
 void	mouse_callback();
 void	ok_dialog();
 void	about_ok();
-void	apply_dialog();
-void	cancel_dialog();
-void	refresh_dialog();
-void	toggle_callback();
-void	ok_status();
-void	clear_status();
-void	set_font();
-void	status_timer_proc();
-void	timeout_proc();
-void	ok_font();
-void	cancel_font();
+void	apply_dialog(Widget w, XtPointer client_data, XtPointer call_data);
+void	cancel_dialog(Widget w, XtPointer client_data, XtPointer call_data);
+void	refresh_dialog(Widget w, XtPointer client_data, XtPointer call_data);
+void	read_font_file(void);
+void	toggle_callback(Widget w, XtPointer client_data, XtPointer call_data);
+void	ok_dialog(Widget w, XtPointer client_data, XtPointer call_data);
+void	clear_status(Widget w, XtPointer client_data, XtPointer call_data);
+void	status_timer_proc(XtPointer client_data, XtIntervalId *timer);
+void	timeout_proc(XtPointer client_data, XtIntervalId *timer);
+void	ok_font(Widget w, XtPointer client_data, XtPointer call_data);
+void	ok_status(Widget w, XtPointer client_data, XtPointer call_data);
+void	cancel_font(Widget w, XtPointer client_data, XtPointer call_data);
 void	zoom_screen();
 void	zoom_window();
 char	*getenv();
@@ -528,7 +529,8 @@ about_box(int x, int y)
 
 	for (i = 0; about_text[i]; i++) {
 		if (strcmp(about_text[i], "<version>") == 0) {
-			sprintf(verbuf, "Fcterm version v%d.%03d-b%d PID:%d",
+			snprintf(verbuf, sizeof verbuf,
+				"Fcterm version v%d.%03d-b%d PID:%d",
 				MAJ_VERSION, MIN_VERSION, VERSION_BUILD_NO, 
 				getpid());
 			about_text[i] = verbuf;
@@ -1469,7 +1471,7 @@ terminal_attributes(int x, int y)
 			n = 0;
 			switch (i) {
 			  case CTW_EMULATION:
-			  	sprintf(buf, "%s: %s", attr_names[i], ctw_emulation_name(flags[i]));
+			  	snprintf(buf, sizeof buf, "%s: %s", attr_names[i], ctw_emulation_name(flags[i]));
 				break;
 			  case CTW_SIZE:
 			  case CTW_FONT_SIZE:
@@ -1480,14 +1482,14 @@ terminal_attributes(int x, int y)
 					parent, args, n);
 				parent = pane3;
 
-				sprintf(buf, "%s: ", attr_names[i]);
+				snprintf(buf, sizeof buf, "%s: ", attr_names[i]);
 				n = 0;
 				XtSetArg(args[n], XtNshowGrip, FALSE); n++;
 				XtSetArg(args[n], XtNjustify, XtJustifyRight); n++;
 				XtSetArg(args[n], XtNlabel, buf); n++;
 				w1 = XtCreateManagedWidget(attr_names[i],
 					labelWidgetClass, parent, args, n);
-				sprintf(buf, "%dx%d", flags[i] & 0xffff, flags[i] >> 16);
+				snprintf(buf, sizeof buf, "%dx%d", flags[i] & 0xffff, flags[i] >> 16);
 				n = 0;
 /*				XtSetArg(args[n], XtNbackground, 0); n++;
 				XtSetArg(args[n], XtNforeground, 1); n++;*/
@@ -1502,7 +1504,7 @@ terminal_attributes(int x, int y)
 					i++;
 				continue;
 			  case CTW_SPEED:
-			  	sprintf(buf, "Speed: %s", flags[i] == 100 ? "Fast" : "Slow");
+			  	snprintf(buf, sizeof buf, "Speed: %s", flags[i] == 100 ? "Fast" : "Slow");
 			  	break;
 			  default:
 				if (attr_names[i] == (char *) NULL) {
@@ -1510,7 +1512,7 @@ terminal_attributes(int x, int y)
 					XtSetArg(args[n], XtNsensitive, FALSE); n++;
 					}
 				else
-					sprintf(buf, "%s: %s  ", attr_names[i], flags[i] ? "Yes" : "No");
+					snprintf(buf, sizeof buf, "%s: %s  ", attr_names[i], flags[i] ? "Yes" : "No");
 				break;
 			  }
 			XtSetArg(args[n], XtNshowGrip, FALSE); n++;
@@ -1711,13 +1713,13 @@ create_monitor_box(int x, int y)
 		pane2, args, n);
 	n = 0;
 	XtSetArg(args[n], XtNshowGrip, FALSE); n++;
-	sprintf(buf, "%7ld", stats.tot_bytes);
+	snprintf(buf, sizeof buf, "%7ld", stats.tot_bytes);
 	XtSetArg(args[n], XtNlabel, buf); n++;
 	w_status[0] = XtCreateManagedWidget("Total", labelWidgetClass,
 		pane1, args, n);
 	n = 0;
 	XtSetArg(args[n], XtNshowGrip, FALSE); n++;
-	sprintf(buf, "%7ld", stats.bytes);
+	snprintf(buf, sizeof buf, "%7ld", stats.bytes);
 	XtSetArg(args[n], XtNlabel, buf); n++;
 	w_status[1] = XtCreateManagedWidget("Total", labelWidgetClass,
 		pane1, args, n);
@@ -1821,16 +1823,16 @@ refresh_dialog(Widget w, XtPointer client_data, XtPointer call_data)
 	for (i = 0; i < len; i++) {
 		switch (i) {
 		  case CTW_EMULATION:
-		  	sprintf(buf, "%s: %s", attr_names[i], ctw_emulation_name(flags[i]));
+		  	snprintf(buf, sizeof buf, "%s: %s", attr_names[i], ctw_emulation_name(flags[i]));
 			break;
 		  case CTW_SIZE:
 		  case CTW_FONT_SIZE:
-			sprintf(buf, "%dx%d", 
+			snprintf(buf, sizeof buf, "%dx%d", 
 				flags[i] & 0xffff,
 				flags[i] >> 16);
 			break;
 		  default:
-			sprintf(buf, "%s: %s  ", attr_names[i], flags[i] ? "Yes" : "No");
+			snprintf(buf, sizeof buf, "%s: %s  ", attr_names[i], flags[i] ? "Yes" : "No");
 			break;
 		  }
 		n = 0;
@@ -2179,7 +2181,7 @@ redraw_status_panel(int n)
 				break;
 			}
 		if (ctwp == NULL) {
-			sprintf(buf, " C-S-F%d", i + 1);
+			snprintf(buf, sizeof buf, " C-S-F%d", i + 1);
 			cp = buf;
 			}
 		else {
@@ -2445,7 +2447,7 @@ toggle_callback(Widget w, XtPointer client_data, XtPointer call_data)
 			attributes[i] = 95;
 		else
 			attributes[i] = 100;
-		sprintf(buf, "%s: %s", attr_names[i], attributes[i] == 100 ? "Fast" : "Slow");
+		snprintf(buf, sizeof buf, "%s: %s", attr_names[i], attributes[i] == 100 ? "Fast" : "Slow");
 		n = 0;
 		XtSetArg(args[n], XtNlabel, buf); n++;
 		XtSetArg(args[n], XtNstate, FALSE); n++;
@@ -2453,7 +2455,7 @@ toggle_callback(Widget w, XtPointer client_data, XtPointer call_data)
 	  	break;
 	  default:
 		attributes[i] = !attributes[i];
-		sprintf(buf, "%s: %s  ",
+		snprintf(buf, sizeof buf, "%s: %s  ",
 			attr_names[i], attributes[i] ? "Yes" : "No");
 		n = 0;
 		XtSetArg(args[n], XtNlabel, buf); n++;
@@ -2509,27 +2511,27 @@ timeout_proc(XtPointer client_data, XtIntervalId *timer)
 
 	if (stats.tot_bytes != old_stats.tot_bytes) {
 		n = 0;
-		sprintf(buf, "%7ld", stats.tot_bytes);
+		snprintf(buf, sizeof buf, "%7ld", stats.tot_bytes);
 		XtSetArg(args[n], XtNlabel, buf); n++;
 		XtSetValues(w_status[0], args, n);
 		}
 
 	if (stats.bytes != old_stats.bytes) {
 		n = 0;
-		sprintf(buf, "%7ld", stats.bytes);
+		snprintf(buf, sizeof buf, "%7ld", stats.bytes);
 		XtSetArg(args[n], XtNlabel, buf); n++;
 		XtSetValues(w_status[1], args, n);
 		}
 
 	n = 0;
 	t1 = t - stats.start_time;
-	sprintf(buf, "%7ld", stats.tot_bytes / (t1 ? t1 : 1));
+	snprintf(buf, sizeof buf, "%7ld", stats.tot_bytes / (t1 ? t1 : 1));
 	XtSetArg(args[n], XtNlabel, buf); n++;
 	XtSetValues(w_status[2], args, n);
 
 	n = 0;
 	t1 = t - stats.time;
-	sprintf(buf, "%7ld", stats.bytes / (t1 ? t1 : 1));
+	snprintf(buf, sizeof buf, "%7ld", stats.bytes / (t1 ? t1 : 1));
 	XtSetArg(args[n], XtNlabel, buf); n++;
 	XtSetValues(w_status[3], args, n);
 	/***********************************************/
@@ -2600,7 +2602,7 @@ x11_error_handler(Display *dpy, XErrorEvent *event)
 	mesg, BUFSIZ);
     (void) fprintf(fp, mesg, event->request_code);
 
-    sprintf(number, "%d", event->request_code);
+    snprintf(number, sizeof number, "%d", event->request_code);
     XGetErrorDatabaseText(dpy, "XRequest", number, "", buffer, BUFSIZ);
 
     (void) fprintf(fp, " (%s)\n", buffer);

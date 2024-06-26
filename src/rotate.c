@@ -4,6 +4,7 @@
 /**********************************************************************/
 /*# include	<malloc.h>*/
 # include	<memory.h>
+# include	<stdlib.h>
 
 # if defined(MSDOS) || defined(__MSDOS__)
 # 	define	TMP_SIZE	1024
@@ -11,17 +12,14 @@
 # 	define	TMP_SIZE	8192
 # endif
 
-static void	my_memcpy();
+static void	my_memcpy(char *p1, char *p2, int len);
 
 /**********************************************************************/
 /*   If amount > 0 then copy from start=>start+amount.		      */
 /*   If amount < 0 then copy from start+amount=>start.		      */
 /**********************************************************************/
 void
-rotate_mem(ptr, ptr_end, amount)
-char	*ptr;
-char	*ptr_end;
-int	amount;
+rotate_mem(char *ptr, char *ptr_end, int amount)
 {	char	tmpbuf[TMP_SIZE];
 	char	*tmp;
 	int	abs_amount = amount < 0 ? -amount : amount;
@@ -48,18 +46,15 @@ int	amount;
 		free(tmp);
 }
 static void
-my_memcpy(p1, p2, len)
-char	*p1;
-char	*p2;
-int	len;
+my_memcpy(char *p1, char *p2, int len)
 {
 	p1 += len;
 	p2 += len;
-	if (((int) p1 & 3) == 0 && ((int) p2 & 3) == 0 && (len & 3) == 0
+	if (((int) (long) p1 & 3) == 0 && ((int) (long) p2 & 3) == 0 && (len & 3) == 0
 	   && sizeof(long) == 4) {
-		while (len >= sizeof(long)) {
-			p1 -= sizeof(long);
-			p2 -= sizeof(long);
+		while (len >= (int) sizeof(long)) {
+			p1 -= (int) sizeof(long);
+			p2 -= (int) sizeof(long);
 			*(long *) p1 = *(long *) p2;
 			len -= sizeof(long);
 			}
@@ -72,9 +67,9 @@ char	*test1 = "abcdefghijklmnopq";
 int	test2[] = {
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0
 	};
-main(argc, argv)
-int	argc;
-char	**argv;
+
+int
+main(int argc, char **argv)
 {	int	n = atoi(argv[1]);
 	int	i;
 	rotate_mem(test1, test1 + strlen(test1), n);
